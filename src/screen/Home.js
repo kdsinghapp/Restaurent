@@ -17,8 +17,14 @@ import {useNavigation} from '@react-navigation/native';
 import {styles} from '../configs/Styles';
 import {BottomTabView} from '@react-navigation/bottom-tabs';
 import Arrow from '../assets/sgv/2arrow.svg';
+import { useSelector } from 'react-redux';
 export default function Home() {
+  const user = useSelector(state => state.auth.userData);
   const navigation = useNavigation();
+
+  console.log('====================user================');
+  console.log(user?.user_data?.useres_id);
+  console.log('====================================');
   const PopularDishes = ({item}) => (
     <TouchableOpacity
       onPress={() => {

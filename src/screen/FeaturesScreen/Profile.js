@@ -259,6 +259,11 @@ const Account = [
     screen: ScreenNameEnum.EDIT_PROFILE
   },
   {
+    name: 'My Restaurant',
+   
+    screen: ScreenNameEnum.UpdateRestaurantDetails
+  },
+  {
     name: 'My Dishes',
    
     screen: ScreenNameEnum.MY_DISHES_PROFILE

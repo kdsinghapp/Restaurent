@@ -29,6 +29,8 @@ import OrdersDetails from "../screen/FeaturesScreen/OrdersDetails";
 import TrackOrder from "../screen/FeaturesScreen/TrackOrder";
 import MyDishesProfile from "../screen/FeaturesScreen/MyDishesProfile";
 import RestaurantDetails from "../screen/FeaturesScreen/RestaurantDetails";
+import EditDish from "../screen/FeaturesScreen/EditDish";
+import UpdateRestaurantDetails from "../screen/FeaturesScreen/updateRestaurantDetails";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -110,6 +112,14 @@ const _routes = {
     {
       name: ScreenNameEnum.MY_DISHES_PROFILE,
       Component:MyDishesProfile ,
+    },
+    {
+      name: ScreenNameEnum.EditDish,
+      Component:EditDish ,
+    },
+    {
+      name: ScreenNameEnum.UpdateRestaurantDetails,
+      Component:UpdateRestaurantDetails ,
     },
    
    

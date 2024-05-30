@@ -78,6 +78,7 @@ export default function PasswordRest() {
     <ScrollView showsVerticalScrollIndicator={false} 
     
    >
+      <View style={{marginTop:20}}/>
       <TouchableOpacity
         onPress={() => {
           navigation.goBack();

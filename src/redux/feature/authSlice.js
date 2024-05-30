@@ -4,6 +4,7 @@ import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import {errorToast, successToast} from '../../configs/customToast';
+import axios from 'axios';
 
 const initialState = {
   isLoading: false,
@@ -15,54 +16,57 @@ const initialState = {
 };
 
 export const login = createAsyncThunk('login', async (params, thunkApi) => {
-  console.log('===============login=====================');
-  console.log(params.data);
 
-  try {
-    const myHeaders = new Headers();
-    myHeaders.append('Accept', 'application/json');
 
-    const formdata = new FormData();
-    formdata.append('identity', params.data.identity);
-    formdata.append('password', params.data.password);
 
-    const requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: formdata,
-      redirect: 'follow',
-    };
-
-    const respons = fetch(
-      base_url.url + '/restaurant/auth/login',
-      requestOptions,
-    )
-      .then(response => response.text())
-      .then(res => {
-        const response = JSON.parse(res);
-        console.log(response.message);
-        if (response.success) {
-          thunkApi.dispatch(loginSuccess(response.data));
-          params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
-          successToast(response.message);
-          return response.data;
+      
+      try {
+        // Create form data with identity and otp
+        const formData = new FormData();
+        formData.append('useres_identity', params.data.useres_identity);
+        formData.append('useres_password', params.data.useres_password);
+  
+        // Configure request headers
+        const myHeaders = new Headers();
+        myHeaders.append('Accept', 'application/json');
+  
+        // Create request options
+        const requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: formData,
+          redirect: 'follow',
+        };
+  
+        // Make POST request to verify OTP
+        const response = await fetch(
+          'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/login',
+          requestOptions,
+        );
+  
+        // Parse response as JSON
+        const responseData = await response.json();
+  
+        console.log('Response login :', responseData.success);
+  
+        // Handle successful response
+        if (responseData.success) {
+          successToast(responseData.message);
+          thunkApi.dispatch(loginSuccess(responseData.data));
+          // Assuming ScreenNameEnum.CREATE_PASSWORD is imported properly
+          params.navigation.navigate(ScreenNameEnum.RESTAURANT_DETAILS);
         } else {
-          errorToast(response.message);
-
-          return response.data;
+          errorToast(responseData.message); 
         }
-      })
-      .catch(error => console.error(error));
-
-    return respons;
-  } catch (error) {
-    console.log('Error:', error);
-    Alert.alert(
-      'Network error',
-      'Server not responding. Please try again later.',
-    );
-    return thunkApi.rejectWithValue(error);
-  }
+  
+        // Return response data
+        return responseData.data;
+      } catch (error) {
+        console.error('Error:', error);
+        errorToast('Network error');
+        // Reject with error
+        throw error;
+      }
 });
 export const sendOtpRestPass = createAsyncThunk(
   'auth/sendOtpRestPass',
@@ -91,7 +95,7 @@ export const sendOtpRestPass = createAsyncThunk(
       console.log('Response:', response);
 
       if (response.data.success) {
-        errorToast('OTP Sent Successfully');
+        successToast('OTP Sent Successfully');
         params.navigation.navigate(ScreenNameEnum.OTP_SCREEN, {
           identity: params.data.identity,
         });
@@ -119,39 +123,51 @@ export const sendOtpRestPass = createAsyncThunk(
 export const validOtp = createAsyncThunk(
   'auth/validOtp',
   async (params, thunkApi) => {
-    const {data, navigation} = params;
-
-    console.log('parms:', data.identity, data.otp);
     try {
-      // Create a new FormData object
+      // Create form data with identity and otp
       const formData = new FormData();
-      formData.append('identity', data.identity);
-      formData.append('otp', data.otp);
+      formData.append('identity', params.data.identity);
+      formData.append('otp', params.data.otp);
 
-      const response = await API.post('/restaurant/auth/verify-otp', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Set appropriate content type for form data
-        },
-      });
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
 
-      console.log('Response:', response.data);
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formData,
+        redirect: 'follow',
+      };
 
-      if (response.data.success) {
-        successToast('OTP Verified Successfully');
+      // Make POST request to verify OTP
+      const response = await fetch(
+        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/verify-otp',
+        requestOptions,
+      );
 
-        navigation.navigate(ScreenNameEnum.CREATE_PASSWORD, {identity: data});
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response:', responseData);
+
+      // Handle successful response
+      if (responseData.status === '1') {
+        successToast(responseData.message);
+        // Assuming ScreenNameEnum.CREATE_PASSWORD is imported properly
+        params.navigation.navigate(ScreenNameEnum.CREATE_PASSWORD);
       } else {
-        errorToast(response.data.message);
+        errorToast(responseData.message);
       }
 
-      return response.data;
+      // Return response data
+      return responseData.data;
     } catch (error) {
-      console.log('Error:', error);
-
-      errorToast('Network Error');
-      navigation.goBack();
-
-      return thunkApi.rejectWithValue(error);
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
     }
   },
 );

@@ -27,11 +27,10 @@ const isLoading = useSelector(state => state.auth.isLoading);
   const ValidOtp =()=>{
 
     const params = {
-      data: {
+     data:{
         identity:identity, 
-        otp:value
-        
-      },
+        otp:value,
+     },
       navigation: navigation,
     };
     dispatch(validOtp(params))
@@ -44,6 +43,7 @@ const isLoading = useSelector(state => state.auth.isLoading);
        {isLoading ? <Loading /> : null}
       {Platform.OS === 'ios' ?<View style={{height: 68}} />: <View style={{height:10}} />}
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={{marginTop:20}}/>
       <TouchableOpacity
         onPress={() => {
           navigation.goBack();

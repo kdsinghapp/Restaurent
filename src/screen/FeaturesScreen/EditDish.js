@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,27 +10,40 @@ import {
   StyleSheet,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
-import ScreenNameEnum from '../routes/screenName.enum';
-import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { add_restaurant_dish } from '../redux/feature/featuresSlice';
-import Loading from '../configs/Loader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function AddDish() {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from '../../configs/Loader';
+import ProfileHeader from './ProfileHeader';
+import { update_restaurant_dish } from '../../redux/feature/featuresSlice';
+
+export default function EditDish() {
+  const route = useRoute();
   const navigation = useNavigation();
-  const [image, setImage] = useState(null); // State to hold the selected image
-  const [dishName, setDishName] = useState('');
-  const [dishPrice, setDishPrice] = useState('');
-  const [dishOffer, setDishOffer] = useState('');
-  const [prepareTime, setPrepareTime] = useState('');
-  const [description, setDescription] = useState('');
+  const { item } = route.params;
+  const [image, setImage] = useState(item.restaurant_dish_image); // State to hold the selected image
+  const [dishName, setDishName] = useState(item.restaurant_dish_name);
+  const [dishPrice, setDishPrice] = useState(item.restaurant_dish_price);
+  const [dishOffer, setDishOffer] = useState(item.restaurant_dish_offer);
+  const [prepareTime, setPrepareTime] = useState(item.restaurant_dish_preapare_time);
+  const [description, setDescription] = useState(item.restaurant_dish_description);
 
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setDishName(item.restaurant_dish_name);
+    setDishPrice(item.restaurant_dish_price.toString());
+    setDishOffer(item.restaurant_dish_offer.toString());
+    setPrepareTime(item.restaurant_dish_preapare_time);
+    setDescription(item.restaurant_dish_description);
+    setImage({path:item.restaurant_dish_image});
+  }, [item]);
+
+
+  
   const openImageLibrary = () => {
     ImagePicker.openPicker({
       width: 300,
@@ -45,21 +58,26 @@ export default function AddDish() {
 
   const isDishNameValid = dishName.trim() !== '';
 
-  const Add_Dish = async () => {
+  const Update_Dish = async () => {
     const id = await AsyncStorage.getItem('Restaurant');
     const res = JSON.parse(id);
     const params = {
-      restaurant_dish_restaurant_id: res.res_id,
+       
+      restaurant_dish_id: item.restaurant_dish_id,
       restaurant_dish_name: dishName,
       restaurant_dish_price: dishPrice,
       restaurant_dish_offer: dishOffer,
       restaurant_dish_preapare_time: prepareTime,
       restaurant_dish_description: description,
-      restaurant_dish_image: {
+      restaurant_dish_image:image.uri?{
         uri: Platform.OS === 'android' ? image?.path : image?.path?.replace("file://", ""),
         type: image?.mime,
         name: `${Date.now()}.png`
-      },
+      }: {
+        uri:image.path,
+        name: 'image.png',
+        type: 'image/jpeg',
+    },
       navigation: navigation,
     };
 
@@ -75,7 +93,7 @@ export default function AddDish() {
         <View style={styles.androidMargin} />
       )}
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileHeader name={'Add Dish'} Dwidth={'25%'} />
+        <ProfileHeader name={'Edit Dish'} Dwidth={'25%'} />
         <TouchableOpacity
           onPress={openImageLibrary}
           style={styles.uploadButton}>
@@ -88,7 +106,7 @@ export default function AddDish() {
           ) : (
             <>
               <Image
-                source={require('../assets/croping/Upload3x.png')}
+                source={require('../../assets/croping/Upload3x.png')}
                 style={[styles.uploadImage, { height: 60, width: 60 }]}
               />
               <View style={styles.uploadTextContainer}>
@@ -105,6 +123,7 @@ export default function AddDish() {
             placeholderTextColor={'#ADA4A5'}
             style={styles.input}
             onChangeText={text => setDishName(text)}
+            value={dishName}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -114,6 +133,7 @@ export default function AddDish() {
             style={styles.input}
             onChangeText={text => setDishPrice(text)}
             keyboardType="numeric"
+            value={dishPrice}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -123,6 +143,7 @@ export default function AddDish() {
             style={styles.input}
             onChangeText={text => setDishOffer(text)}
             keyboardType="numeric"
+            value={dishOffer}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -132,6 +153,7 @@ export default function AddDish() {
             style={styles.input}
             onChangeText={text => setPrepareTime(text)}
             keyboardType="numeric"
+            value={prepareTime}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -140,19 +162,20 @@ export default function AddDish() {
             placeholderTextColor={'#ADA4A5'}
             style={styles.input}
             onChangeText={text => setDescription(text)}
+            value={description}
           />
         </View>
         <TouchableOpacity
           onPress={() => {
             if (isDishNameValid) {
-              Add_Dish();
+              Update_Dish();
             } else {
               alert('Please fill in all required fields.');
             }
           }}
           style={[styles.tabBtn, { marginTop: hp(5) }]}>
           <Text style={styles.nextButtonText}>
-            Add Dish
+            Update Dish
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -173,7 +196,6 @@ const styles = StyleSheet.create({
     height: 5,
   },
   uploadButton: {
-    
     backgroundColor: '#F7F8F8',
     height: hp(20),
     marginTop: 20,
@@ -230,3 +252,5 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+
+  

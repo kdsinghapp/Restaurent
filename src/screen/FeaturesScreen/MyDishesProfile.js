@@ -20,11 +20,38 @@ import {
   import ProfileHeader from './ProfileHeader';
   import ScreenNameEnum from '../../routes/screenName.enum';
 import { FlipInXDown } from 'react-native-reanimated';
+import { useDispatch, useSelector } from 'react-redux';
+import { get_restaurant_dish } from '../../redux/feature/featuresSlice';
+import Loading from '../../configs/Loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
  
  
   export default function MyDishesProfile() {
-  
+  const dispatch = useDispatch()
     const navigation = useNavigation()
+    const isLoading = useSelector(state => state.feature.isLoading);
+    const ResturantDish = useSelector(state => state.feature.ResturantDish);
+    const user = useSelector(state => state.auth.userData);
+   useEffect(()=>{
+      get_Mydishes()
+    },[])
+      
+
+    console.log('===========ResturantDish=========================');
+    console.log(ResturantDish);
+    console.log('====================================');
+    const get_Mydishes =async()=>{
+
+      const id = await AsyncStorage.getItem('Restaurant')
+       const res = JSON.parse(id)
+      
+      const params ={
+
+       user_id:res.res_id
+        
+      }
+  await dispatch(get_restaurant_dish(params))
+    }
     const Order_List = ({item}) => (
       <View
         style={[
@@ -45,7 +72,7 @@ import { FlipInXDown } from 'react-native-reanimated';
     
           <View>
             <Image
-              source={item.img}
+              source={{uri:item.restaurant_dish_image}}
               style={{height:100, width:100, 
                 borderRadius:50}}
             />
@@ -59,7 +86,7 @@ import { FlipInXDown } from 'react-native-reanimated';
                 fontWeight: '700',
                 lineHeight: 28,
               }}>
-              {item.name}
+              {item.restaurant_dish_name}
             </Text>
           </View>
           <View style={{marginTop:5}}>
@@ -70,11 +97,15 @@ import { FlipInXDown } from 'react-native-reanimated';
                 fontWeight: '700',
                 lineHeight: 24,
               }}>
-              {item.price}
+              {item.restaurant_dish_price}
             </Text>
           </View>
 
-          <TouchableOpacity style={{backgroundColor:'#7756FC',borderRadius:20,
+          <TouchableOpacity 
+          onPress={()=>{
+            navigation.navigate(ScreenNameEnum.EditDish,{item:item})
+          }}
+          style={{backgroundColor:'#7756FC',borderRadius:20,
           paddingHorizontal:30,paddingVertical:5,
           justifyContent:'center',alignItems:'center',marginTop:10}}>
             <Text style={{fontSize:14,fontWeight:'500',lineHeight:15,color:'#FFF'}}>Edit</Text>
@@ -83,10 +114,16 @@ import { FlipInXDown } from 'react-native-reanimated';
      
       </View>
     );
+
+
+
+  
+
     return (
       <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10}}>
       
       <ScrollView showsVerticalScrollIndicator={false}>
+        {isLoading?<Loading />:null}
         <View style={{flexDirection:'row',alignItems:'center',}}>
             <View style={{width:'90%'}}>
           <ProfileHeader name={'My Dishes'}  />
@@ -106,13 +143,19 @@ import { FlipInXDown } from 'react-native-reanimated';
             marginTop: hp(3),
             flex: 1,
           }}>
-          <FlatList
-            data={OrderList}
+        {ResturantDish &&  <FlatList
+            data={ResturantDish}
             numColumns={2}
             renderItem={Order_List}
             keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false} // Optional: hide horizontal scroll indicator
           />
+        }
+        {ResturantDish?.length == 0 &&
+        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+          <Text style={{color:"#777777",fontSize:12,fontWeight:'500'}}>No Dish Found</Text>
+          </View>
+        }
         
         </View>
         </ScrollView>

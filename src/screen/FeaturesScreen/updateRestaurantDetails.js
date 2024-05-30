@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,17 +16,44 @@ import ScreenNameEnum from '../../routes/screenName.enum';
 import Location from '../../assets/sgv/Location.svg';
 import ProfileHeader from './ProfileHeader';
 import ImagePicker from 'react-native-image-crop-picker';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { get_restaurant_details } from '../../redux/feature/featuresSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function RestaurantDetails() {
+export default function UpdateRestaurantDetails() {
   const isLoading = useSelector(state=>state.feature.isLoading)
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
   const [certificate, setCertificate] = useState(null);
 
-  const navigation = useNavigation();
+ 
+  const dispatch = useDispatch()
+  const navigation = useNavigation()
+  
+  const ResturantDish = useSelector(state => state.feature.ResturantDish);
+  const user = useSelector(state => state.auth.userData);
+ useEffect(()=>{
+    get_MyRestaurant()
+  },[])
+    
 
+  console.log('===========ResturantDish=========================');
+  console.log(ResturantDish);
+  console.log('====================================');
+  const get_MyRestaurant =async()=>{
+
+    const id = await AsyncStorage.getItem('Restaurant')
+     const res = JSON.parse(id)
+    
+    const params ={
+
+    //  res_id:res.res_id
+     res_id:'11'
+      
+    }
+await dispatch(get_restaurant_details(params))
+  }
   const openImageLibrary = (setImage) => {
     ImagePicker.openPicker({
       width: 300,

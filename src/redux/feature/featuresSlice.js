@@ -1,17 +1,23 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {API} from '../Api';
+import {API, base_url} from '../Api';
 
 import {Alert} from 'react-native';
+import { SuccessToast } from 'react-native-toast-message';
+import { errorToast, successToast } from '../../configs/customToast';
+import ScreenNameEnum from '../../routes/screenName.enum';
+import { err } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const initialState = {
   isLoading: false,
   isError: false,
   isSuccess: false,
   DashboardList: null,
-  ResturantDetails: null,
+  ResturantDish: null,
   Privacypolicy: null,
   TermsCondition:null,
   getProfile:null,
-  FavoriteList:null
+  FavoriteList:null,
+  ResturantDetails:null,
  
 };
 
@@ -39,24 +45,24 @@ export const get_HomeDashBoard = createAsyncThunk(
     }
   },
 );
-export const get_RestauRantDetails = createAsyncThunk(
-  'get_RestauRantDetails',
+export const get_restaurant_dish = createAsyncThunk(
+  'get_restaurant_dish',
   async (params, thunkApi) => {
-    console.log('================RestauRantDetails=APi===================');
+    console.log('================get_restaurant_dish=APi===================',params);
     try {
-      const response = await API.post('/restaurant/get-restaurant-by-id', params.data, {
+      const response = await API.get(`/restaurant/details/products/dishes/get-restaurant-dish?restaurant_id=${params.user_id}`, {
         headers: {
-          Authorization: `Bearer ${params.token}`,
+          Accept: 'application/json'
         },
       });
-      console.log('================RestauRantDetails=APi===================',response.data);
+      console.log('================get_restaurant_dish=APi===================',response.data);
       if (response.data.success) {
-        console.log('User get_RestauRantDetails Succesfuly');
+        console.log('User get_restaurant_dish Succesfuly');
       }
       return response.data.data;
     } catch (error) {
       console.log(
-        '🚀 ~ file: get_RestauRantDetails .js:16 ~ get_RestauRantDetails ~ error:',
+        '🚀 ~ file: get_restaurant_dish .js:16 ~ get_restaurant_dish ~ error:',
         error,
       );
 
@@ -64,6 +70,284 @@ export const get_RestauRantDetails = createAsyncThunk(
     }
   },
 );
+export const get_restaurant_details = createAsyncThunk(
+  'get_restaurant_details',
+  async (params, thunkApi) => {
+    console.log('================get_restaurant_details=APi===================',params);
+    try {
+      const response = await API.get(`/restaurant/details/get-restaurant-details-by-restaurant-user-id?res_users_restaurants_id=${params.res_id}`, {
+        headers: {
+          Accept: 'application/json'
+        },
+      });
+      console.log('================get_restaurant_details=APi===================',response.data);
+      if (response.data.success) {
+        console.log('User get_restaurant_details Succesfuly');
+      }
+      return response.data.data;
+    } catch (error) {
+      console.log(
+        '🚀 ~ file: get_restaurant_details  ~ error:',
+        error,
+      );
+
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);
+export const update_restaurant_details = createAsyncThunk(
+  'update_restaurant_details',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      const formdata = new FormData();
+      formdata.append("res_name", params.res_name);
+      formdata.append("res_address", params.res_address);
+      formdata.append("res_image", params.res_image);
+      formdata.append("res_certificate", params.res_certificate);
+      formdata.append("res_latitude", params.res_latitude);
+      formdata.append("res_longitude",params.res_longitude);
+      formdata.append("res_weekly_closed", params.res_weekly_closed);
+      formdata.append("res_monday_open", params.res_monday_open);
+      formdata.append("res_tuesday_open", params.res_tuesday_open);
+      formdata.append("res_wednesday_open", params.res_wednesday_open);
+      formdata.append("res_thursday_open", params.res_thursday_open);
+      formdata.append("res_friday_open", params.res_friday_open);
+      formdata.append("res_saturday_open", params.res_saturday_open);
+      formdata.append("res_sunday_open", params.res_sunday_open);
+      formdata.append("res_monday_close", params.res_monday_close);
+      formdata.append("res_tuesday_close", params.res_tuesday_close);
+      formdata.append("res_wednesday_close", params.res_wednesday_close);
+      formdata.append("res_thursday_close", params.res_thursday_close);
+      formdata.append("res_friday_close", params.res_friday_close);
+      formdata.append("res_saturday_close",params.res_saturday_close);
+      formdata.append("res_sunday_close", params.res_sunday_close);
+      formdata.append("res_users_restaurants_id", params.res_users_restaurants_id);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/details/update-restaurant-details`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response restaurant=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+        successToast(responseData.message);
+        params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+      } else {
+        errorToast(responseData.message); 
+       
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const delete_restaurant_dish = createAsyncThunk(
+  'delete_restaurant_dish',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      const formdata = new FormData();
+    
+     
+      formdata.append("restaurant_dish_id", params.restaurant_dish_id);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/details/delete-restaurant-dish`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response delete_restaurant_dish=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+        successToast(responseData.message);
+       
+       
+        params.navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE);
+      } else {
+        errorToast(responseData.message); 
+        console.log('====================================');
+      
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const add_restaurant_dish = createAsyncThunk(
+  'add_restaurant_dish',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      console.log('==========add_restaurant_dish==========================',params);
+   
+      const formdata = new FormData();
+      formdata.append("restaurant_dish_restaurant_id",params.restaurant_dish_restaurant_id);
+      formdata.append("restaurant_dish_name", params.restaurant_dish_name);
+      formdata.append("restaurant_dish_price",params.restaurant_dish_price);
+      formdata.append("restaurant_dish_offer", params.restaurant_dish_offer);
+      formdata.append("restaurant_dish_preapare_time", params.restaurant_dish_preapare_time);
+      formdata.append("restaurant_dish_description",params.restaurant_dish_description);
+      formdata.append("restaurant_dish_image",params.restaurant_dish_image);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/details/products/dishes/add-restaurant-dish`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response add_restaurant_dish=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+       successToast(responseData.message);
+       
+       params.navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE);
+      } else {
+        errorToast(responseData.message); 
+        console.log('==============add_restaurant_dish======================');
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const update_restaurant_dish = createAsyncThunk(
+  'update_restaurant_dish',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      console.log('==========update_restaurant_dish==========================',params);
+   
+      const formdata = new FormData();
+      formdata.append("restaurant_dish_id",params.restaurant_dish_id);
+      formdata.append("restaurant_dish_name", params.restaurant_dish_name);
+      formdata.append("restaurant_dish_price",params.restaurant_dish_price);
+      formdata.append("restaurant_dish_offer", params.restaurant_dish_offer);
+      formdata.append("restaurant_dish_preapare_time", params.restaurant_dish_preapare_time);
+      formdata.append("restaurant_dish_description",params.restaurant_dish_description);
+      formdata.append("restaurant_dish_image",params.restaurant_dish_image);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/details/products/dishes/update-restaurant-dish`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response update_restaurant_dish=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+       successToast(responseData.message);
+       
+        params.navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE);
+      } else {
+        errorToast(responseData.message); 
+        console.log('==============update_restaurant_dish======================');
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+
+
+  
 
 export const get_terms_conditions = createAsyncThunk(
   'get_terms_conditions',
@@ -177,16 +461,30 @@ const FeatureSlice = createSlice({
       state.isError = true;
       state.isSuccess = false;
     });
-    builder.addCase(get_RestauRantDetails.pending, state => {
+    builder.addCase(get_restaurant_dish.pending, state => {
       state.isLoading = true;
     });
-    builder.addCase(get_RestauRantDetails.fulfilled, (state, action) => {
+    builder.addCase(get_restaurant_dish.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.ResturantDish = action.payload;
+    });
+    builder.addCase(get_restaurant_dish.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(get_restaurant_details.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(get_restaurant_details.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
       state.isError = false;
       state.ResturantDetails = action.payload;
     });
-    builder.addCase(get_RestauRantDetails.rejected, (state, action) => {
+    builder.addCase(get_restaurant_details.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;
@@ -243,6 +541,58 @@ const FeatureSlice = createSlice({
       state.FavoriteList = action.payload;
     });
     builder.addCase(get_FavoriteList.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(update_restaurant_details.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(update_restaurant_details.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+    });
+    builder.addCase(update_restaurant_details.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(add_restaurant_dish.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(add_restaurant_dish.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+    });
+    builder.addCase(add_restaurant_dish.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(update_restaurant_dish.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(update_restaurant_dish.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+    });
+    builder.addCase(update_restaurant_dish.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(delete_restaurant_dish.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(delete_restaurant_dish.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+    });
+    builder.addCase(delete_restaurant_dish.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;
