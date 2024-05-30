@@ -1,0 +1,154 @@
+
+
+// import IniializeData from '../screens/WelcomeScreen/IniializeData';
+
+
+import ProfileRoutes from "../navigators/Profile_Stack";
+import TabNavigator from "../navigators/TabNavigator";
+
+import Location from "../screen/Location";
+import Login from "../screen/Login";
+import OtpScreen from "../screen/OtpScreen";
+import PasswordRest from "../screen/PasswordReset";
+import PrivacyPolicy from "../screen/PrivacyPolicy";
+import SignUp from "../screen/SignUp";
+import TermConditions from "../screen/TermConditions";
+import WELCOME_SCREEN from "../screen/WELCOME_SCREEN";
+import CreatePassword from "../screen/createPassword";
+import ScreenNameEnum from "./screenName.enum";
+
+import AddRestaurantDetails from "../screen/AddRestaurantDetails";
+import AddDish from "../screen/AddDish";
+import DishList from "../screen/DishList";
+import Home from "../screen/Home";
+import Profile from "../screen/FeaturesScreen/Profile";
+import Notification from "../screen/FeaturesScreen/Notification";
+import ChangePassword from "../screen/FeaturesScreen/ChangePassword";
+import EditProfile from "../screen/FeaturesScreen/EditProfile";
+import OrdersDetails from "../screen/FeaturesScreen/OrdersDetails";
+import TrackOrder from "../screen/FeaturesScreen/TrackOrder";
+import MyDishesProfile from "../screen/FeaturesScreen/MyDishesProfile";
+import RestaurantDetails from "../screen/FeaturesScreen/RestaurantDetails";
+
+const _routes = {
+  REGISTRATION_ROUTE: [
+    {
+      name: ScreenNameEnum.SPLASH_SCREEN,
+      Component:WELCOME_SCREEN,
+    },
+    {
+      name: ScreenNameEnum.LOGIN_SCREEN,
+      Component:Login,
+    },
+    {
+      name: ScreenNameEnum.SIGNUP_SCREEN,
+      Component:SignUp,
+    },
+    {
+      name: ScreenNameEnum.PASSWORD_RESET,
+      Component:PasswordRest,
+    },
+    {
+      name: ScreenNameEnum.OTP_SCREEN,
+      Component:OtpScreen,
+    },
+    {
+      name: ScreenNameEnum.CREATE_PASSWORD,
+      Component:CreatePassword,
+    },
+    
+    {
+      name: ScreenNameEnum.ADD_RESTAURANT_DETAILS,
+      Component:AddRestaurantDetails,
+    },
+    {
+      name: ScreenNameEnum.RESTAURANT_DETAILS,
+      Component:RestaurantDetails,
+    },
+    {
+      name: ScreenNameEnum.Add_DISH,
+      Component:AddDish,
+    },
+    {
+      name: ScreenNameEnum.EDIT_PROFILE,
+      Component:EditProfile,
+    },
+    {
+      name: ScreenNameEnum.DISH_LIST,
+      Component:DishList,
+    },
+    {
+      name: ScreenNameEnum.CHANGE_PASSWORD,
+      Component:ChangePassword ,
+    },
+    {
+      name: ScreenNameEnum.BOTTOM_TAB,
+      Component:TabNavigator,
+    },
+   
+    {
+      name: ScreenNameEnum.TERMS_CONDITIONS,
+      Component:TermConditions,
+    },
+    {
+      name: ScreenNameEnum.PRIVACY_POLICY,
+      Component:PrivacyPolicy,
+    },
+    {
+      name: ScreenNameEnum.NOTIFICATION_SCREEN,
+      Component:Notification ,
+    },
+   
+    {
+      name: ScreenNameEnum.ORDERS_DETAILS,
+      Component:OrdersDetails ,
+    },
+    {
+      name: ScreenNameEnum.TRACK_ORDER,
+      Component:TrackOrder ,
+    },
+    {
+      name: ScreenNameEnum.MY_DISHES_PROFILE,
+      Component:MyDishesProfile ,
+    },
+   
+   
+    
+  ],
+  
+  PROFILE_ROUTE: [
+    {
+      name: ScreenNameEnum.PROFILE_SCREEN,
+      Component:Profile,
+    }
+ 
+   
+    
+  ],
+
+
+  BOTTOMTAB_ROUTE:[
+    
+    {
+      name: ScreenNameEnum.HOME_SCREEN,
+      Component:Home,
+      logo:require('../assets/croping/HomeUnactive3x.png'),
+      lable:'Home'
+    },
+    {
+      name: ScreenNameEnum.Add_DISH,
+      Component:AddDish,
+      logo:require('../assets/croping/IconPlus3x.png'),
+      lable:''
+    },
+    {
+      name: ScreenNameEnum.PROFILE_STACK,
+      Component:ProfileRoutes,
+      logo:require('../assets/croping/Profile3x.png'),
+      lable:'Profile'
+    },
+  ]
+
+};
+
+export default _routes;
