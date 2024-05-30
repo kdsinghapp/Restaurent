@@ -6,11 +6,13 @@ import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from
     'react-native-confirmation-code-field';
 import Loading from '../configs/Loader';
 import ScreenNameEnum from '../routes/screenName.enum';
+import { useDispatch, useSelector } from 'react-redux';
+import { validOtp } from '../redux/feature/authSlice';
 
-export default function OtpScreen({}) {
+export default function OtpScreen({route}) {
+const {identity } = route.params
+const isLoading = useSelector(state => state.auth.isLoading);
 
-  
-  const isLoading = false;
   const navigation = useNavigation();
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({value, cellCount:4});
@@ -19,18 +21,20 @@ export default function OtpScreen({}) {
     value,
     setValue,
   });
+  const dispatch = useDispatch();
+  console.log(identity,value);
 
   const ValidOtp =()=>{
 
     const params = {
       data: {
-        user_id:userId, 
+        identity:identity, 
         otp:value
         
       },
       navigation: navigation,
     };
-    
+    dispatch(validOtp(params))
   }
 
 
@@ -108,12 +112,13 @@ style={{height:'80%',width:'80%'}}/>
       <TouchableOpacity
 
 onPress={()=>{
-  navigation.navigate(ScreenNameEnum.CREATE_PASSWORD)
+  ValidOtp()
+
 }}
 style={{
           backgroundColor: '#1D0B38',
           alignItems: 'center',
-          height: 60,
+          height:60,
           borderRadius:60,
        position:'absolute',
        bottom:10,

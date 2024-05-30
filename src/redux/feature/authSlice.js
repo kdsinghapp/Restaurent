@@ -67,37 +67,52 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
 export const sendOtpRestPass = createAsyncThunk(
   'auth/sendOtpRestPass',
   async (params, thunkApi) => {
-    const {data, navigation} = params;
-
     try {
-      // Create a new FormData object
+      console.log('==================params ==================');
+      console.log(params.data);
+      console.log('====================================');
+
       const formData = new FormData();
-      formData.append('identity', data.identity); // Adjust field names as per your API requirements
+      formData.append('identity', params.data.identity);
 
-      const response = await API.post('/auth/password-reset', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Set appropriate content type for form data
+      console.log('FormData:', formData);
+
+      const response = await API.post(
+        '/restaurant/auth/password-reset',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Accept: 'application/json', // Add Accept header for JSON
+          },
         },
-      });
+      );
 
-      if (response.data.status) {
-        Alert.alert('Success', 'OTP Sent Successfully');
+      console.log('Response:', response);
 
-        navigation.navigate(ScreenNameEnum.OTP_SCREEN, {
-          identity: data.identity,
+      if (response.data.success) {
+        errorToast('OTP Sent Successfully');
+        params.navigation.navigate(ScreenNameEnum.OTP_SCREEN, {
+          identity: params.data.identity,
         });
       } else {
-        Alert.alert('Failed', response.data.message);
+        errorToast(response.data.message);
       }
 
       return response.data;
     } catch (error) {
       console.log('Error:', error);
-      Alert.alert(
-        'Network Error',
-        'Server not responding, please try again later',
-      );
-      return thunkApi.rejectWithValue(error);
+      if (error.response) {
+        console.log('Error Response:', error.response);
+        errorToast(error.response.data.message || 'Network Error');
+      } else if (error.request) {
+        console.log('Error Request:', error.request);
+        errorToast('Network Error');
+      } else {
+        console.log('General Error:', error.message);
+        errorToast(error.message);
+      }
+      return thunkApi.rejectWithValue(error.message);
     }
   },
 );
@@ -113,7 +128,7 @@ export const validOtp = createAsyncThunk(
       formData.append('identity', data.identity);
       formData.append('otp', data.otp);
 
-      const response = await API.post('/auth/verify-otp', formData, {
+      const response = await API.post('/restaurant/auth/verify-otp', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Set appropriate content type for form data
         },
@@ -122,21 +137,18 @@ export const validOtp = createAsyncThunk(
       console.log('Response:', response.data);
 
       if (response.data.success) {
-        Alert.alert('Success', 'OTP Verified Successfully');
+        successToast('OTP Verified Successfully');
 
         navigation.navigate(ScreenNameEnum.CREATE_PASSWORD, {identity: data});
       } else {
-        Alert.alert('Failed', response.data.message);
+        errorToast(response.data.message);
       }
 
       return response.data;
     } catch (error) {
       console.log('Error:', error);
 
-      Alert.alert(
-        'Network Error',
-        'Server not responding, please try again later',
-      );
+      errorToast('Network Error');
       navigation.goBack();
 
       return thunkApi.rejectWithValue(error);
@@ -166,7 +178,7 @@ export const CreateNewPassword = createAsyncThunk(
       };
 
       const response = fetch(
-        'https://server-php-8-3.technorizen.com/loveeat/api/auth/create-new-password-without-login',
+        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/create-new-password',
         requestOptions,
       )
         .then(response => response.text())
@@ -175,10 +187,10 @@ export const CreateNewPassword = createAsyncThunk(
           console.log(response);
           if (response.success) {
             params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
-            Alert.alert('Success', 'Password updated successfully');
+            successToast('Password updated successfully');
             return response;
           } else {
-            Alert.alert('Failed', response.message);
+            errorToast(response.message);
             params.navigation.navigate(ScreenNameEnum.PASSWORD_RESET);
             return response;
           }
@@ -189,10 +201,7 @@ export const CreateNewPassword = createAsyncThunk(
     } catch (error) {
       console.log('Error:', error);
 
-      Alert.alert(
-        'Network Error',
-        'Server not responding, please try again later',
-      );
+      errorToast('Network Error');
 
       return thunkApi.rejectWithValue(error);
     }

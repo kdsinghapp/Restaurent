@@ -8,17 +8,24 @@ import {
 import TextInputField from '../configs/TextInput';
 import Loading from '../configs/Loader';
 import { styles } from '../configs/Styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { CreateNewPassword } from '../redux/feature/authSlice';
+import { errorToast } from '../configs/customToast';
 
 
 
 
 export default function CreatePassword({route}) {
+const {identity} = route.params
+
 
   const [ConfirmPassword, setConfirmPassword] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const isLoading = false;
+
   const navigation = useNavigation();
+  const isLoading = useSelector(state => state.auth.isLoading);
+  const dispatch =  useDispatch()
   const handlePassText = value => {
     setPassword(value);
   };
@@ -40,13 +47,16 @@ if(validatePassword(password)){
    setError('')
     const params = {
       data: {
-        user_id:user.id, 
-        password:password
+        identity:identity.identity, 
+        password:password,
+        otp:identity.otp
         
       },
       navigation: navigation,
+
+
     };
-    
+    dispatch(CreateNewPassword(params))
   }
   else{
    
@@ -57,16 +67,9 @@ if(validatePassword(password)){
   }
   else{
     setError('')
-    Alert.alert(
-      'Password',
+    errorToast(
       'Password and confirm password does not match.',
-      [
-        {
-          text: 'OK',
-          onPress: () => console.log('OK Pressed') 
-        }
-      ],
-      { cancelable: false }
+     
     );
   }
   }

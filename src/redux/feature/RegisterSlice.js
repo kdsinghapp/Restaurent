@@ -2,6 +2,8 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {API, base_url} from '../Api';
 import {Alert} from 'react-native';
 import ScreenNameEnum from '../../routes/screenName.enum';
+import { errorToast } from '../../configs/customToast';
+import { SuccessToast } from 'react-native-toast-message';
 const initialState = {
   isLoading: false,
   isError: false,
@@ -19,12 +21,12 @@ export const register = createAsyncThunk(
       myHeaders.append("Accept", "application/json");
       
       const formdata = new FormData();
-      formdata.append("full_name",params.data.full_name);
-      formdata.append("email", params.data.email);
-      formdata.append("mobile_number", params.data.mobile_number);
-      formdata.append("password",  params.data.password);
-      formdata.append("c_password", params.data.c_password);
-      formdata.append("country_code", params.data.country_code);
+      formdata.append("useres_full_name",params.data.full_name);
+      formdata.append("useres_email", params.data.email);
+      formdata.append("useres_mobile_number", params.data.mobile_number);
+      formdata.append("useres_password",  params.data.password);
+      formdata.append("useres_c_password", params.data.c_password);
+      formdata.append("useres_country_code", params.data.country_code);
       
       const requestOptions = {
         method: "POST",
@@ -33,36 +35,22 @@ export const register = createAsyncThunk(
         redirect: "follow"
       };
       
- const response =    fetch(base_url.url+"/auth/signup", requestOptions)
+ const response =    fetch(base_url.url+"/restaurant/auth/signup", requestOptions)
         .then((response) => response.text())
         .then((res) => {
           const response = JSON.parse(res)
     console.log(response);      
       if (response.success) {
         params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
-        Alert.alert(
-          'Success',
-          'User Registered Successfully',
-          [
-            {
-              text: 'Please Login',
-              onPress: () => console.log('OK Pressed'),
-            },
-          ],
-          {cancelable: false},
+     SuccessToast(
+          'User Registered Successfully'
+        
         );
         return response
       } else {
-        Alert.alert(
-          'Failed',
-          response.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => console.log('OK Pressed'),
-            },
-          ],
-          {cancelable: false},
+        
+          errorToast(response.message,
+          
         );
         return response
       }
@@ -74,16 +62,9 @@ export const register = createAsyncThunk(
       
     } catch (error) {
       console.log('🚀 ~ file: RegisterSlice.js:16 ~ register ~ error:', error);
-      Alert.alert(
+    errorToast(
         'Network error',
-        'server not responding please try later',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK Pressed'),
-          },
-        ],
-        {cancelable: false},
+        
       );
 
       return thunkApi.rejectWithValue(error);

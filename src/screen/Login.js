@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -19,6 +20,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {login} from '../redux/feature/authSlice';
 import {CountryPicker} from 'react-native-country-codes-picker';
 import Loading from '../configs/Loader';
+import { errorToast } from '../configs/customToast';
 export default function Login() {
   const [identity, setIdentity] = useState();
   const [password, setPassword] = useState('');
@@ -63,8 +65,7 @@ if(identity == ''){
 
   const Login = () => {
 
-    if(password.length < 8) {return Alert.alert(
-      'Password',
+    if(password.length < 8) {return errorToast(
       'The password field must be at least 8 characters.',
     );
   }
@@ -89,8 +90,7 @@ if(identity == ''){
       
       else if (numberRegex.test(identity)) {
         console.log('Login with Mobile ');
-        if(code =='') return Alert.alert(
-          'Country Code Empty',
+        if(code =='') return errorToast(
           'Please Select Country Code.',
         );
         const passwordWithoutSpaces = password.replace(/\s/g, '');
@@ -107,13 +107,12 @@ if(identity == ''){
       }
    
       else {
-        Alert.alert(
-          'Invalid Input',
+errorToast(
           'Please enter a valid email address or number.',
         );
       }
     } else {
-      Alert.alert('Require', 'email or number password field empty');
+     errorToast('email or number password field empty');
     }
   }
   };
@@ -122,6 +121,7 @@ if(identity == ''){
   return (
     <View style={{flex: 1}}>
       {isLoading ? <Loading /> : null}
+      <ScrollView  showsVerticalScrollIndicator={false}>
       <Image
         source={require('../assets/images/Image.png')}
         style={{height: hp(26), width: '100%'}}
@@ -263,8 +263,8 @@ if(identity == ''){
         <TouchableOpacity
           onPress={() => {}}
           style={{
-            position: 'absolute',
-            bottom: 8,
+          
+         
             height: 60,
             alignSelf: 'center',
             width: '98%',
@@ -299,6 +299,7 @@ if(identity == ''){
           </Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </View>
   );
 }

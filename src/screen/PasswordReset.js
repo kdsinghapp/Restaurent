@@ -4,19 +4,73 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useNavigation} from '@react-navigation/native';
 import Loading from '../configs/Loader';
 import ScreenNameEnum from '../routes/screenName.enum';
-
+import { sendOtpRestPass } from '../redux/feature/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import {CountryPicker} from 'react-native-country-codes-picker';
+import { errorToast } from '../configs/customToast';
 
 export default function PasswordRest() {
   const navigation = useNavigation();
 
   const [Email,setEmail] = useState('')
-  const [isLoading,setisLoading] = useState(false)
+  const [mobile, setMobile] = useState('')
+  const isLoading = useSelector(state => state.auth.isLoading);
+  const [show, setShow] = useState(false);
+  const [countryCode, setCountryCode] = useState('');
+  const [code, setCode] = useState('');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const numberRegex = /^[0-9]+$/;
+ 
+ 
+  const dispatch = useDispatch();
 
-  const validateEmail = email => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const Submit = () => {
+    if (Email != '' || mobile != '' ) {
+      if (emailRegex.test(Email)) {
+
+        console.log(' Email');
+       
+
+        const params = {
+          data: {
+            identity: Email,
+  
+           
+          },
+          navigation: navigation,
+        };
+ 
+        dispatch(sendOtpRestPass(params));
+      }
+      
+      else if (numberRegex.test(mobile)) {
+       
+        if(code =='') return errorToast(
+          'Please Select Country Code.',
+        );
+       
+        console.log('Mobile');
+        const params = {
+          data: {
+            identity: code+'-'+mobile,
+           
+          },
+          navigation: navigation,
+        };
+
+       dispatch(sendOtpRestPass(params));
+      }
+   
+      else {
+        Alert.alert(
+          'Invalid Input',
+          'Please enter a valid email address or number.',
+        );
+      }
+    } else {
+      Alert.alert('Require', 'email or number field empty');
+    }
   };
-
   return (
     <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
     {isLoading ? <Loading /> : null}
@@ -80,24 +134,47 @@ export default function PasswordRest() {
               SMS
             </Text>
           </View>
-          <View style={{}}>
+          <View style={{flexDirection:'row',alignItems:'center'}}>
+            <TouchableOpacity
+            onPress={()=>{
+              setShow(true)
+            }}
+            >
+              <Text style={{fontSize:16,fontWeight:'600',color:code!=''?'#000':'blue',marginRight:5}}>{code!=''?countryCode:'Code'}</Text>
+            </TouchableOpacity>
             <TextInput
               style={{
                 fontSize: 14,
                 lineHeight: 19.09,
                 fontWeight: '400',
-                color: '#9E9E9E',
+                color: '#000',
                 lineHeight:21
               }}   
               placeholder='Enter Mobile'
 
-              onChangeText={(txt)=>setEmail(txt)}
-              value={Email}
+              onChangeText={(txt)=>setMobile(txt)}
+              value={mobile}
               />
             
        
           </View>
         </View>
+        <CountryPicker
+            show={show}
+            // when picker button press you will get the country object with dial code
+            pickerButtonOnPress={item => {
+              setCountryCode(item.dial_code);
+             setCode(item.code)
+              setShow(false);
+            }}
+            popularCountries={['en', 'in', 'pl']}
+            style={{
+              // Styles for whole modal [View]
+              modal: {
+                height: 400,
+              },
+            }}
+          />
       </View>
       <View
         style={styles.tab}>
@@ -127,7 +204,7 @@ export default function PasswordRest() {
                 fontSize: 14,
                 lineHeight: 19.09,
                 fontWeight: '400',
-                color: '#9E9E9E',
+                color: '#000',
                 lineHeight:21
               }}   
               placeholder='Enter email'
@@ -148,12 +225,13 @@ style={{height:'80%',width:'80%'}}/>
       <TouchableOpacity
 
 onPress={()=>{
-  navigation.navigate(ScreenNameEnum.OTP_SCREEN)
+  Submit()
+
 }}
 style={{
           backgroundColor: '#1D0B38',
           alignItems: 'center',
-          height: 60,
+          height:60,
           borderRadius:60,
        
      
