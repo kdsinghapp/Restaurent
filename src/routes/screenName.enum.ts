@@ -21,6 +21,8 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   FAVORITE_SCREEN ='FAVORITE_SCREEN',
   PROFILE_SCREEN ='PROFILE_SCREEN',
   UpdateRestaurantDetails='UpdateRestaurantDetails',
+  UpdateAddRestaurantDetails ='UpdateAddRestaurantDetails',
+  MyOrder='MyOrder',
 
 //Features screen
 

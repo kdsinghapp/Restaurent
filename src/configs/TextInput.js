@@ -46,7 +46,7 @@ export default function TextInputField({...props}) {
         <View
           style={{
             overflow: 'hidden',
-            width: props.showEye ? '72%' : '90%',
+            width: props.showEye ? '75%' : '90%',
             marginLeft: props.firstLogo ? 0 : 15,
 
             height: 50,

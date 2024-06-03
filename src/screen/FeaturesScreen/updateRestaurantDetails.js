@@ -21,39 +21,42 @@ import { get_restaurant_details } from '../../redux/feature/featuresSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function UpdateRestaurantDetails() {
-  const isLoading = useSelector(state=>state.feature.isLoading)
+  const isLoading = useSelector(state => state.feature.isLoading);
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
   const [certificate, setCertificate] = useState(null);
 
- 
-  const dispatch = useDispatch()
-  const navigation = useNavigation()
-  
-  const ResturantDish = useSelector(state => state.feature.ResturantDish);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const restaurantDetails = useSelector(state => state.feature.ResturantDetails);
   const user = useSelector(state => state.auth.userData);
- useEffect(()=>{
-    get_MyRestaurant()
-  },[])
-    
 
-  console.log('===========ResturantDish=========================');
-  console.log(ResturantDish);
-  console.log('====================================');
-  const get_MyRestaurant =async()=>{
+  useEffect(() => {
+    get_MyRestaurant();
+  }, []);
 
-    const id = await AsyncStorage.getItem('Restaurant')
-     const res = JSON.parse(id)
-    
-    const params ={
 
-    //  res_id:res.res_id
-     res_id:'11'
-      
+
+  const get_MyRestaurant = async () => {
+    const id = await AsyncStorage.getItem('Restaurant');
+    const res = JSON.parse(id);
+
+    const params = {
+      res_id: res.res_id,
+     
+    };
+    await dispatch(get_restaurant_details(params));
+    // Set restaurant details
+    if (restaurantDetails) {
+      setRestaurantName(restaurantDetails.res_name || '');
+      setRestaurantLocation(restaurantDetails.res_address || '');
+      setRestaurantPhoto({path:restaurantDetails.res_image || null});
+      setCertificate({path:restaurantDetails.res_certificate || null});
     }
-await dispatch(get_restaurant_details(params))
-  }
+  };
+
   const openImageLibrary = (setImage) => {
     ImagePicker.openPicker({
       width: 300,
@@ -67,25 +70,33 @@ await dispatch(get_restaurant_details(params))
   };
 
   const handleNext = () => {
-    const restaurantDetails = {
+    const updatedRestaurantDetails = {
       res_name: restaurantName,
       res_address: restaurantLocation,
       res_latitude: 22.12,
       res_longitude: 77.75,
-      res_certificate: {
+      res_certificate: certificate.uri?{
         uri: Platform.OS === 'android' ? certificate?.path : certificate?.path?.replace("file://", ""),
         type: certificate?.mime,
         name: `${Date.now()}.png`
-      },
-      res_image: {
+      }: {
+        uri:certificate.path,
+        name: 'image.png',
+        type: 'image/jpeg',
+    },
+      res_image:restaurantPhoto.uri?{
         uri: Platform.OS === 'android' ? restaurantPhoto?.path : restaurantPhoto?.path?.replace("file://", ""),
         type: restaurantPhoto?.mime,
         name: `${Date.now()}.png`
-      },
+      }: {
+        uri:restaurantPhoto.path,
+        name: 'image.png',
+        type: 'image/jpeg',
+    },
     };
 
-    navigation.navigate(ScreenNameEnum.ADD_RESTAURANT_DETAILS,{item:restaurantDetails})
-    // Make the API call here with restaurantDetails
+    navigation.navigate(ScreenNameEnum.UpdateAddRestaurantDetails, { item: updatedRestaurantDetails ,restaurantDetails:restaurantDetails});
+    // Make the API call here with updatedRestaurantDetails
   };
 
   return (
@@ -164,11 +175,11 @@ await dispatch(get_restaurant_details(params))
           </TouchableOpacity>
         </View>
 
-      <TouchableOpacity
-        onPress={handleNext}
-        style={[styles.tabBtn, { bottom: 10,marginTop:hp(10) }]}>
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleNext}
+          style={[styles.tabBtn, { bottom: 10, marginTop: hp(10) }]}>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -199,7 +210,7 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 14,
     fontWeight: '400',
-    width:'90%',
+    width: '90%',
     color: '#000',
   },
   locationInputContainer: {
@@ -215,14 +226,14 @@ const styles = StyleSheet.create({
   imageUploadContainer: {
     backgroundColor: '#F7F8F8',
     height: hp(30),
-    padding:10,
+    padding: 10,
     marginTop: 20,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   image: {
-    height:'100%',
+    height: '100%',
     width: '100%',
   },
   uploadIcon: {

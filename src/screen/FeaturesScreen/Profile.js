@@ -203,6 +203,7 @@ const navigation = useNavigation()
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate(ScreenNameEnum.LOGIN_SCREEN)
+              setIsVisible(false)
               }}
               style={{
                 width: 225,
@@ -262,6 +263,11 @@ const Account = [
     name: 'My Restaurant',
    
     screen: ScreenNameEnum.UpdateRestaurantDetails
+  },
+  {
+    name: 'My Orders',
+   
+    screen: ScreenNameEnum.MyOrder
   },
   {
     name: 'My Dishes',

@@ -13,18 +13,49 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {styles} from '../configs/Styles';
 import {BottomTabView} from '@react-navigation/bottom-tabs';
 import Arrow from '../assets/sgv/2arrow.svg';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {get_order_data_by_id} from '../redux/feature/featuresSlice';
+import Loading from '../configs/Loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
+  const OrderDetails = useSelector(state => state.feature.OrderDetails);
+  const isLoading = useSelector(state => state.feature.isLoading);
   const navigation = useNavigation();
+  const isFocuse = useIsFocused();
 
-  console.log('====================user================');
-  console.log(user?.user_data?.useres_id);
-  console.log('====================================');
+
+  const dispatch = useDispatch();
+  const GetoderID = async timestamp => {
+    // Extracting components from the timestamp
+    const [date, time] = timestamp.split(' ');
+    const [year, month, day] = date.split('-');
+    const [hour, minute, second] = time.split(':');
+
+    // Creating the order ID
+    const orderId = `${year}${month}${day}${hour}${minute}${second}`;
+    return orderId;
+  };
+
+  useEffect(() => {
+    get_order();
+  }, [user, isFocuse]);
+  const get_order = async () => {
+    const id = await AsyncStorage.getItem('restaurant');
+    const params = {
+      data: {
+        restaurant_id: user.user_data?.restaurant_id,
+        status: 'Pending',
+      },
+      token: user?.token,
+    };
+
+    dispatch(get_order_data_by_id(params));
+  };
   const PopularDishes = ({item}) => (
     <TouchableOpacity
       onPress={() => {
@@ -89,12 +120,11 @@ export default function Home() {
       style={[
         styles.shadow,
         {
-       
           borderRadius: 10,
           marginTop: 20,
           backgroundColor: '#FFF',
           marginHorizontal: 5,
-          padding:10,
+          padding: 10,
         },
       ]}>
       <View
@@ -119,7 +149,7 @@ export default function Home() {
               fontWeight: '500',
               lineHeight: 18,
             }}>
-            ID: {item.Orderid}
+            ID: 
           </Text>
           <Text
             style={{
@@ -128,7 +158,7 @@ export default function Home() {
               fontWeight: '600',
               lineHeight: 24,
             }}>
-            {item.name}
+            {item.user_data.useres_full_name}
           </Text>
         </View>
         <View>
@@ -301,6 +331,8 @@ export default function Home() {
 
   return (
     <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10}}>
+      {isLoading ? <Loading /> : null}
+
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{
@@ -353,7 +385,7 @@ export default function Home() {
         <View style={{}}>
           <Text
             style={{
-              fontSize:20,
+              fontSize: 20,
               fontWeight: '800',
               lineHeight: 30,
               color: '#000',
@@ -366,13 +398,19 @@ export default function Home() {
           style={{
             flex: 1,
           }}>
-          <FlatList
-            data={OrderList}
-            renderItem={Order_List}
-            keyExtractor={item => item.id}
-            ListFooterComponent={<View style={{height: hp(2)}} />}
-            showsVerticalScrollIndicator={false} // Optional: hide horizontal scroll indicator
-          />
+          {OrderDetails ? (
+            <FlatList
+              data={OrderDetails}
+              renderItem={Order_List}
+              keyExtractor={item => item.id}
+              ListFooterComponent={<View style={{height: hp(2)}} />}
+              showsVerticalScrollIndicator={false} // Optional: hide horizontal scroll indicator
+            />
+          ) : (
+            <Text style={{fontSize: 18, fontWeight: '500', color: '#000'}}>
+              No Order Found
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>

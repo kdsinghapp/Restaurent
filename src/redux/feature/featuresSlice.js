@@ -18,6 +18,7 @@ const initialState = {
   getProfile:null,
   FavoriteList:null,
   ResturantDetails:null,
+  OrderDetails:null
  
 };
 
@@ -95,6 +96,7 @@ export const get_restaurant_details = createAsyncThunk(
     }
   },
 );
+
 export const update_restaurant_details = createAsyncThunk(
   'update_restaurant_details',
   async (params, thunkApi) => {
@@ -154,6 +156,60 @@ export const update_restaurant_details = createAsyncThunk(
       } else {
         errorToast(responseData.message); 
        
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const get_order_data_by_id = createAsyncThunk(
+  'get_order_data_by_id',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+
+      const formdata = new FormData();
+
+      formdata.append("restaurant_id", params.data.restaurant_id);
+      formdata.append("status", params.data.status);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/get-order-data-by-id`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('restaurant/get-order-data-by-id=>>>>>>>>>>>>> :', responseData);
+
+      // Handle successful response
+      if (responseData.success) {
+        //successToast(responseData.message);
+        //params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+      } else {
+        //errorToast(responseData.message); 
+       console.log('restaurant/get-order-data-by-id',responseData.message);
       }
 
       // Return response data
@@ -541,6 +597,20 @@ const FeatureSlice = createSlice({
       state.FavoriteList = action.payload;
     });
     builder.addCase(get_FavoriteList.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(get_order_data_by_id.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(get_order_data_by_id.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.OrderDetails = action.payload;
+    });
+    builder.addCase(get_order_data_by_id.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;
