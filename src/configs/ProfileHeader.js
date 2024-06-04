@@ -26,7 +26,7 @@ export default function ProfileHeader({name,Dwidth}) {
               navigation.goBack();
             }}>
             <Image
-              source={require('../assets/images/Back-Navs3x.png')}
+              source={require('../assets/croping/Back-Navs3x.png')}
               style={{height: 32, width: 32}}
             />
           </TouchableOpacity>

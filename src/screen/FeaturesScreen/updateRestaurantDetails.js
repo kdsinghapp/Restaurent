@@ -8,20 +8,24 @@ import {
   Platform,
   TextInput,
   StyleSheet,
+  PermissionsAndroid,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
-import Location from '../../assets/sgv/Location.svg';
 import ProfileHeader from './ProfileHeader';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { get_restaurant_details } from '../../redux/feature/featuresSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import GooglePlacesInput from '../../configs/AutoAddress';
+import Geolocation from '@react-native-community/geolocation';
 
 export default function UpdateRestaurantDetails() {
   const isLoading = useSelector(state => state.feature.isLoading);
+  const restaurantDetails = useSelector(state => state.feature.ResturantDetails);
+  const user = useSelector(state => state.auth.userData);
+
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
@@ -30,31 +34,53 @@ export default function UpdateRestaurantDetails() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const restaurantDetails = useSelector(state => state.feature.ResturantDetails);
-  const user = useSelector(state => state.auth.userData);
+  useEffect(() => {
+    if (user) {
+      get_MyRestaurant();
+    }
+    requestLocationPermission();
+  }, [user]);
 
   useEffect(() => {
-    get_MyRestaurant();
-  }, []);
-
-
-
-  const get_MyRestaurant = async () => {
-    const id = await AsyncStorage.getItem('Restaurant');
-    const res = JSON.parse(id);
-
-    const params = {
-      res_id: res.res_id,
-     
-    };
-    await dispatch(get_restaurant_details(params));
-    // Set restaurant details
     if (restaurantDetails) {
       setRestaurantName(restaurantDetails.res_name || '');
       setRestaurantLocation(restaurantDetails.res_address || '');
-      setRestaurantPhoto({path:restaurantDetails.res_image || null});
-      setCertificate({path:restaurantDetails.res_certificate || null});
+      setRestaurantPhoto({ path: restaurantDetails.res_image } || null);
+      setCertificate({ path: restaurantDetails.res_certificate } || null);
     }
+  }, [restaurantDetails]);
+
+  async function requestLocationPermission() {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: "Location Access Permission",
+            message: "We would like to use your location to show nearby places.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("You can use the location");
+        } else {
+          console.log("Location permission denied");
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      Geolocation.requestAuthorization();
+    }
+  }
+
+  const get_MyRestaurant = async () => {
+    const params = {
+      res_id: user.user_data?.restaurant_id,
+    };
+    await dispatch(get_restaurant_details(params));
   };
 
   const openImageLibrary = (setImage) => {
@@ -75,28 +101,35 @@ export default function UpdateRestaurantDetails() {
       res_address: restaurantLocation,
       res_latitude: 22.12,
       res_longitude: 77.75,
-      res_certificate: certificate.uri?{
-        uri: Platform.OS === 'android' ? certificate?.path : certificate?.path?.replace("file://", ""),
-        type: certificate?.mime,
+      res_certificate: certificate?.cropRect ? {
+        uri: Platform.OS === 'android' ? certificate.path : certificate.path.replace("file://", ""),
+        type: certificate.mime,
         name: `${Date.now()}.png`
-      }: {
-        uri:certificate.path,
+      } : {
+        uri: certificate.path,
         name: 'image.png',
         type: 'image/jpeg',
-    },
-      res_image:restaurantPhoto.uri?{
-        uri: Platform.OS === 'android' ? restaurantPhoto?.path : restaurantPhoto?.path?.replace("file://", ""),
-        type: restaurantPhoto?.mime,
+      },
+      res_image: restaurantPhoto?.cropRect ? {
+        uri: Platform.OS === 'android' ? restaurantPhoto.path : restaurantPhoto.path.replace("file://", ""),
+        type: restaurantPhoto.mime,
         name: `${Date.now()}.png`
-      }: {
-        uri:restaurantPhoto.path,
+      } : {
+        uri: restaurantPhoto.path,
         name: 'image.png',
         type: 'image/jpeg',
-    },
+      },
     };
 
-    navigation.navigate(ScreenNameEnum.UpdateAddRestaurantDetails, { item: updatedRestaurantDetails ,restaurantDetails:restaurantDetails});
-    // Make the API call here with updatedRestaurantDetails
+    navigation.navigate(ScreenNameEnum.UpdateAddRestaurantDetails, { item: updatedRestaurantDetails, restaurantDetails });
+  };
+
+  const handlePlaceSelected = (details) => {
+    if (details) {
+      setRestaurantLocation(details.formatted_address);
+      // You can also extract latitude and longitude if needed
+      console.log('Selected location details:', details);
+    }
   };
 
   return (
@@ -107,80 +140,72 @@ export default function UpdateRestaurantDetails() {
       ) : (
         <View style={styles.androidHeader} />
       )}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
-
-        <View style={styles.formContainer}>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              placeholder="Restaurant Name"
-              placeholderTextColor={'#ADA4A5'}
-              style={styles.textInput}
-              value={restaurantName}
-              onChangeText={setRestaurantName}
-            />
-          </View>
-          <View style={styles.locationInputContainer}>
-            <TextInput
-              placeholder="Restaurant Location"
-              placeholderTextColor={'#ADA4A5'}
-              style={styles.textInput}
-              value={restaurantLocation}
-              onChangeText={setRestaurantLocation}
-            />
-            <Location />
-          </View>
-
-          <TouchableOpacity
-            style={styles.imageUploadContainer}
-            onPress={() => openImageLibrary(setRestaurantPhoto)}>
-            {restaurantPhoto ? (
-              <Image
-                source={{ uri: restaurantPhoto.path }}
-                style={styles.image}
-                resizeMode='contain'
+      {restaurantDetails && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
+          <View style={styles.formContainer}>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                placeholder="Restaurant Name"
+                placeholderTextColor={'#ADA4A5'}
+                style={styles.textInput}
+                value={restaurantName}
+                onChangeText={setRestaurantName}
               />
-            ) : (
-              <>
+            </View>
+            <View>
+              <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handlePlaceSelected} />
+            </View>
+            <TouchableOpacity
+              style={styles.imageUploadContainer}
+              onPress={() => openImageLibrary(setRestaurantPhoto)}>
+              {restaurantPhoto ? (
                 <Image
-                  source={require('../../assets/croping/Upload3x.png')}
-                  style={styles.uploadIcon}
+                  source={{ uri: restaurantPhoto.path }}
+                  style={styles.image}
+                  resizeMode='contain'
                 />
-                <View style={styles.uploadTextContainer}>
-                  <Text style={styles.uploadText}>Add Photos</Text>
-                </View>
-              </>
-            )}
-          </TouchableOpacity>
+              ) : (
+                <>
+                  <Image
+                    source={require('../../assets/croping/Upload3x.png')}
+                    style={styles.uploadIcon}
+                  />
+                  <View style={styles.uploadTextContainer}>
+                    <Text style={styles.uploadText}>Add Photos</Text>
+                  </View>
+                </>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.imageUploadContainer}
+              onPress={() => openImageLibrary(setCertificate)}>
+              {certificate ? (
+                <Image
+                  source={{ uri: certificate.path }}
+                  style={styles.image}
+                  resizeMode='contain'
+                />
+              ) : (
+                <>
+                  <Image
+                    source={require('../../assets/croping/Upload3x.png')}
+                    style={styles.uploadIcon}
+                  />
+                  <View style={styles.uploadTextContainer}>
+                    <Text style={styles.uploadText}>Add Certificate</Text>
+                  </View>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
-            style={styles.imageUploadContainer}
-            onPress={() => openImageLibrary(setCertificate)}>
-            {certificate ? (
-              <Image
-                source={{ uri: certificate.path }}
-                style={styles.image}
-                resizeMode='contain'
-              />
-            ) : (
-              <>
-                <Image
-                  source={require('../../assets/croping/Upload3x.png')}
-                  style={styles.uploadIcon}
-                />
-                <View style={styles.uploadTextContainer}>
-                  <Text style={styles.uploadText}>Add Certificate</Text>
-                </View>
-              </>
-            )}
+            onPress={handleNext}
+            style={[styles.tabBtn, { bottom: 10, marginTop: hp(10) }]}>
+            <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          onPress={handleNext}
-          style={[styles.tabBtn, { bottom: 10, marginTop: hp(10) }]}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -212,16 +237,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     width: '90%',
     color: '#000',
-  },
-  locationInputContainer: {
-    backgroundColor: '#F7F8F8',
-    paddingHorizontal: 15,
-    marginTop: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 66,
-    borderRadius: 40,
-    alignItems: 'center',
   },
   imageUploadContainer: {
     backgroundColor: '#F7F8F8',

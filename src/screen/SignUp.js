@@ -151,7 +151,7 @@ export default function SignUp() {
               placeholder={'Full Name'}
               onChangeText={handleNameText}
               firstLogo={true}
-              type={'number-pad'}
+              
               img={require('../assets/croping/Profile3x.png')}
             />
             <TextInputField

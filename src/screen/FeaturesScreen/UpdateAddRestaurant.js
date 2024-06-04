@@ -33,9 +33,7 @@ export default function UpdateAddRestaurantDetails() {
   const [selectedDayForTime, setSelectedDayForTime] = useState('');
   const [isSettingOpenTime, setIsSettingOpenTime] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
-console.log('==============AddrestaurantDetails======================');
-console.log(restaurantDetails);
-console.log('====================================');
+
   useEffect(() => {
     if (restaurantDetails) {
       setSelectedDays(
@@ -154,12 +152,12 @@ console.log('====================================');
       setValidationErrors({});
       const params = {
         res_id: restaurantDetails.res_id,
-        res_name: restaurantDetails.res_name,
-        res_address: restaurantDetails.res_address,
-        res_latitude: restaurantDetails.res_latitude,
-        res_longitude: restaurantDetails.res_longitude,
-        res_image: restaurantDetails.res_image,
-        res_certificate: restaurantDetails.res_certificate,
+        res_name: item.res_name,
+        res_address: item.res_address,
+        res_latitude: item.res_latitude,
+        res_longitude: item.res_longitude,
+        res_image: item.res_image,
+        res_certificate: item.res_certificate,
         res_weekly_closed: selectedDays.join(','),
         res_monday_open: openTimes.Monday,
         res_tuesday_open: openTimes.Tuesday,
@@ -178,6 +176,8 @@ console.log('====================================');
         res_users_restaurants_id: user?.user_data?.useres_id,
         navigation: navigation,
       };
+
+     
       dispatch(update_restaurant_details(params));
     }
   };

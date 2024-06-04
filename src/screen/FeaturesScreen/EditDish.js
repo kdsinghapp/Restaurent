@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../../configs/Loader';
 import ProfileHeader from './ProfileHeader';
-import { update_restaurant_dish } from '../../redux/feature/featuresSlice';
+import { get_restaurant_dish, update_restaurant_dish } from '../../redux/feature/featuresSlice';
 
 export default function EditDish() {
   const route = useRoute();
@@ -29,7 +29,7 @@ export default function EditDish() {
   const [dishOffer, setDishOffer] = useState(item.restaurant_dish_offer);
   const [prepareTime, setPrepareTime] = useState(item.restaurant_dish_preapare_time);
   const [description, setDescription] = useState(item.restaurant_dish_description);
-
+const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
 
@@ -59,8 +59,9 @@ export default function EditDish() {
   const isDishNameValid = dishName.trim() !== '';
 
   const Update_Dish = async () => {
-    const id = await AsyncStorage.getItem('Restaurant');
-    const res = JSON.parse(id);
+   console.log('==========Update_Dish==========================');
+   console.log();
+   console.log('====================================');
     const params = {
        
       restaurant_dish_id: item.restaurant_dish_id,
@@ -81,9 +82,20 @@ export default function EditDish() {
       navigation: navigation,
     };
 
-    dispatch(update_restaurant_dish(params));
+     
+
+    dispatch(update_restaurant_dish(params)).then(res => {
+    get_Mydishes()
+    });
   };
 
+
+  const get_Mydishes = async () => {
+    const params = {
+      user_id: user.user_data?.restaurant_id,
+    };
+    await dispatch(get_restaurant_dish(params));
+  };
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}

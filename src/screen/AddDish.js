@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,17 @@ import {
   Platform,
   TextInput,
   StyleSheet,
+  PermissionsAndroid,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
-import ScreenNameEnum from '../routes/screenName.enum';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { add_restaurant_dish } from '../redux/feature/featuresSlice';
+import { add_restaurant_dish, update_restaurant_dish } from '../redux/feature/featuresSlice';
 import Loading from '../configs/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { errorToast } from '../configs/customToast';
 
 export default function AddDish() {
   const navigation = useNavigation();
@@ -29,27 +30,65 @@ export default function AddDish() {
   const [description, setDescription] = useState('');
 
   const isLoading = useSelector(state => state.feature.isLoading);
+  const user = useSelector(state => state.auth.userData);
   const dispatch = useDispatch();
+  
 
-  const openImageLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then((image) => {
-      setImage(image);
-    }).catch((err) => {
-      console.log(err);
-    });
+  console.log('====================================');
+  console.log(user.user_data?.restaurant_id);
+  console.log('====================================');
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
+  const requestPermissions = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      ]);
+
+      if (
+        granted[PermissionsAndroid.PERMISSIONS.CAMERA] !== PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log('Camera or storage permission denied');
+        
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const openImageLibrary = async () => {
+    const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+    const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+    const readPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+
+    // if (cameraPermission && storagePermission && readPermission) {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      }).then((image) => {
+        setImage(image);
+      }).catch((err) => {
+        console.log('ImagePicker error:', err);
+      });
+    // } else {
+    //   requestPermissions();
+    // }
   };
 
   const isDishNameValid = dishName.trim() !== '';
 
   const Add_Dish = async () => {
-    const id = await AsyncStorage.getItem('Restaurant');
-    const res = JSON.parse(id);
+
+    try{
     const params = {
-      restaurant_dish_restaurant_id: res.res_id,
+      restaurant_dish_restaurant_id:user.user_data?.restaurant_id,
       restaurant_dish_name: dishName,
       restaurant_dish_price: dishPrice,
       restaurant_dish_offer: dishOffer,
@@ -63,7 +102,15 @@ export default function AddDish() {
       navigation: navigation,
     };
 
-    dispatch(update_restaurant_dish(params));
+    dispatch(add_restaurant_dish(params)).then(res=>{
+      get_Mydishes();
+    })
+  }
+  catch(err){
+    console.log('====================================');
+    console.log(err);
+    console.log('====================================');
+  }
   };
 
   return (
@@ -147,7 +194,7 @@ export default function AddDish() {
             if (isDishNameValid) {
               Add_Dish();
             } else {
-              alert('Please fill in all required fields.');
+         errorToast('Please fill in all required fields.');
             }
           }}
           style={[styles.tabBtn, { marginTop: hp(5) }]}>
@@ -155,6 +202,8 @@ export default function AddDish() {
             Add Dish
           </Text>
         </TouchableOpacity>
+
+        <View style={{height:20}} />
       </ScrollView>
     </View>
   );
@@ -173,7 +222,6 @@ const styles = StyleSheet.create({
     height: 5,
   },
   uploadButton: {
-    
     backgroundColor: '#F7F8F8',
     height: hp(20),
     marginTop: 20,
@@ -182,9 +230,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   uploadImage: {
-    height:'90%',
-    width:'90%',
-    borderRadius:15
+    height: '90%',
+    width: '90%',
+    borderRadius: 15,
   },
   uploadTextContainer: {
     marginTop: 15,
@@ -219,7 +267,7 @@ const styles = StyleSheet.create({
     width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf:'center',
+    alignSelf: 'center',
     borderRadius: 10,
   },
   nextButtonText: {

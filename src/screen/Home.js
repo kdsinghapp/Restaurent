@@ -18,17 +18,19 @@ import {styles} from '../configs/Styles';
 import {BottomTabView} from '@react-navigation/bottom-tabs';
 import Arrow from '../assets/sgv/2arrow.svg';
 import {useDispatch, useSelector} from 'react-redux';
-import {get_order_data_by_id} from '../redux/feature/featuresSlice';
+import {change_order_status, dashboard_data, get_Profile, get_order_data_by_id} from '../redux/feature/featuresSlice';
 import Loading from '../configs/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ScreenNameEnum from '../routes/screenName.enum';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
   const isLoading = useSelector(state => state.feature.isLoading);
+  const TotalList = useSelector(state => state.feature.TotalList);
   const navigation = useNavigation();
   const isFocuse = useIsFocused();
-
-
+const [isExpanded,setisExpanded] = useState(true)
+const getProfile = useSelector(state => state.feature.getProfile);
   const dispatch = useDispatch();
   const GetoderID = async timestamp => {
     // Extracting components from the timestamp
@@ -43,9 +45,50 @@ export default function Home() {
 
   useEffect(() => {
     get_order();
+    getTotalOrder()
+    const params = {
+      token: user.token,
+    };
+    dispatch(get_Profile(params));
   }, [user, isFocuse]);
+
+
+  const getTotalOrder = async () => {
+    
+    const params = {
+    
+        restaurant_id: user.user_data?.restaurant_id,
+       
+     
+      token: user?.token,
+    };
+    dispatch(dashboard_data(params));
+  };
+  const OderStatus = async (item,status) => {
+    console.log('====================================');
+    console.log(status);
+  try{
+    const params = {
+      order_id:item.resord_id,
+      status:status,
+      token: user?.token,
+    };
+
+    console.log('=================params===================',params);
+
+
+   dispatch(change_order_status(params).then(res=>{
+    get_order()
+   }));
+  }
+  catch(err){
+    console.log('=================params===================',err);
+
+  }
+  
+  };
   const get_order = async () => {
-    const id = await AsyncStorage.getItem('restaurant');
+   
     const params = {
       data: {
         restaurant_id: user.user_data?.restaurant_id,
@@ -56,11 +99,11 @@ export default function Home() {
 
     dispatch(get_order_data_by_id(params));
   };
-  const PopularDishes = ({item}) => (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate(ScreenNameEnum.DISH_INFORMATION);
-      }}
+  const RestaurantOder = ({item}) => (
+    <View
+      // onPress={() => {
+      //   navigation.navigate(ScreenNameEnum.DISH_INFORMATION);
+      // }}
       style={[
         styles.shadow,
 
@@ -101,7 +144,10 @@ export default function Home() {
           lineHeight: 15,
           color: '#9E9E9E',
         }}>
-        {item.count} Orders
+        {item.id == '1'&& TotalList?.total_order}
+        {item.id == '2' && TotalList?.complete_order} 
+        {item.id == '3' && TotalList?.total_revenue} 
+        {item.id == '4' &&TotalList?.cancle_order} 
       </Text>
       <Text
         style={{
@@ -110,9 +156,11 @@ export default function Home() {
           lineHeight: 30,
           color: '#E79B3F',
         }}>
-        {item.Price}
+        
       </Text>
-    </TouchableOpacity>
+
+   
+    </View>
   );
 
   const Order_List = ({item}) => (
@@ -137,7 +185,7 @@ export default function Home() {
         }}>
         <View>
           <Image
-            source={item.img}
+            source={{uri:item.user_data.useres_images}}
             style={{height: 50, width: 50, borderRadius: 25}}
           />
         </View>
@@ -149,7 +197,7 @@ export default function Home() {
               fontWeight: '500',
               lineHeight: 18,
             }}>
-            ID: 
+            ID: {item.resord_id}
           </Text>
           <Text
             style={{
@@ -182,19 +230,11 @@ export default function Home() {
           flexDirection: 'row',
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text>1 x </Text>
-          <Text
-            style={{
-              color: '#352C48',
-              fontSize: 14,
-              fontWeight: '700',
-              lineHeight: 21,
-            }}>
-            {item.dish}
-          </Text>
+          <Text>Total Amount </Text>
+        
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text>2 x </Text>
+         
           <Text
             style={{
               color: '#352C48',
@@ -202,7 +242,7 @@ export default function Home() {
               fontWeight: '700',
               lineHeight: 21,
             }}>
-            {item.extraItem}
+          $ {item.total_price}
           </Text>
         </View>
       </View>
@@ -272,6 +312,9 @@ export default function Home() {
           height: hp(8),
         }}>
         <TouchableOpacity
+        onPress={()=>{
+          OderStatus(item,'Complete')
+        }}
           style={{
             backgroundColor: '#15BE77',
             alignItems: 'center',
@@ -291,6 +334,9 @@ export default function Home() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+            onPress={()=>{
+              OderStatus(item,'Cancel')
+            }}
           style={{
             backgroundColor: '#FF0000',
             alignItems: 'center',
@@ -310,8 +356,7 @@ export default function Home() {
             Decline
           </Text>
         </TouchableOpacity>
-      </View>
-      <View
+        <View
         style={{
           height: 35,
           width: 35,
@@ -320,12 +365,42 @@ export default function Home() {
           borderRadius: 17.5,
           backgroundColor: '#FFF',
           position: 'absolute',
-          bottom: 20,
-          left: '45.5%',
+          bottom:15,
+          left: '43.5%',
           alignSelf: 'center',
         }}>
         <Arrow />
       </View>
+      </View>
+     
+      {isExpanded && (
+          <View
+            style={{
+              paddingHorizontal: 15,
+              paddingTop: 10,
+            }}>
+            <Text
+              style={{
+                color: '#352C48',
+                fontSize: 14,
+                fontWeight: '700',
+                lineHeight: 21,
+              }}>
+              Order Details:
+            </Text>
+            {item.order_details?.map(detail => (
+              <View key={detail.id} style={{marginTop: 5,flexDirection:'row',justifyContent:'space-between'}}>
+                <Text style={{fontSize:14,color:'#000',fontWeight:'600'}} >{detail.dish_name} X  {detail.quantity}</Text>
+              
+<Text>-</Text>
+<View>
+                <Text style={{fontSize:14,color:'#000',fontWeight:'600'}} >Total : $ {(detail.price_per_unit * detail.quantity)}</Text>
+                <Text style={{fontSize:12}}>(Price per unit: ${detail.price_per_unit})</Text>
+              </View>
+              </View>
+            ))}
+          </View>
+        )}
     </View>
   );
 
@@ -359,13 +434,25 @@ export default function Home() {
                 lineHeight: 21,
               }}>
               {' '}
-              Johan Smiths
+              {getProfile?.useres_full_name}
             </Text>
           </View>
 
-          <View>
-            <Logo />
-          </View>
+          <TouchableOpacity
+          
+          onPress={()=>{
+            navigation.navigate(ScreenNameEnum.EDIT_PROFILE)
+          }}
+          >
+            {getProfile?.useres_images ?<Image 
+            source={{uri:getProfile.useres_images}}
+            style={{height:40,width:40,borderRadius:20}}
+            resizeMode='cover'
+            />: <Logo />
+
+            }
+           
+          </TouchableOpacity>
         </View>
 
         <View
@@ -374,10 +461,10 @@ export default function Home() {
             paddingVertical: 30,
           }}>
           <FlatList
-            data={PopularDish}
+            data={restaurantOrders}
             showsHorizontalScrollIndicator={false}
             horizontal={true}
-            renderItem={PopularDishes}
+            renderItem={RestaurantOder}
             keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false}
           />
@@ -398,7 +485,7 @@ export default function Home() {
           style={{
             flex: 1,
           }}>
-          {OrderDetails ? (
+          {OrderDetails?.length > 0 ? (
             <FlatList
               data={OrderDetails}
               renderItem={Order_List}
@@ -417,7 +504,7 @@ export default function Home() {
   );
 }
 
-const PopularDish = [
+const restaurantOrders = [
   {
     id: '1',
     name: 'Total',
@@ -427,7 +514,7 @@ const PopularDish = [
   },
   {
     id: '2',
-    name: 'New',
+    name: 'Complete',
     subtitile: 'Orders',
 
     count: '25',
@@ -448,28 +535,3 @@ const PopularDish = [
   },
 ];
 
-const OrderList = [
-  {
-    Orderid: '546414 4002',
-    name: 'Jaylon Lipshutz',
-    subtitile: 'Orders',
-    img: require('../assets/images/dp.jpeg'),
-
-    price: '$149',
-    dish: 'Butter Chicken',
-    extraItem: 'Garlic Naan',
-    count: '5245',
-    time: '20',
-  },
-  {
-    Orderid: '546414 4003',
-    name: 'Jaylon Lipshutz',
-    subtitile: 'Orders',
-    img: require('../assets/images/dp.jpeg'),
-    price: '$149',
-    dish: 'Butter Chicken',
-    extraItem: 'Garlic Naan',
-    count: '5245',
-    time: '20',
-  },
-];

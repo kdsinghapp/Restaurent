@@ -13,6 +13,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useNavigation} from '@react-navigation/native';
 import Loading from '../../configs/Loader';
 import ScreenNameEnum from '../../routes/screenName.enum';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/feature/authSlice';
 
 
 
@@ -20,8 +22,17 @@ export default function Profile() {
 
   const [isVisible, setIsVisible] = useState(false);
 const navigation = useNavigation()
-
-  
+const user = useSelector(state => state.auth.userData);
+  const dispatch = useDispatch()
+  const isLoading = useSelector(state => state.auth.isLoading);
+  const userLogout =()=>{
+    const params = {
+      token:user.token,
+      navigation:navigation
+    }
+    dispatch(logout(params))
+    setIsVisible(false)
+  }
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
@@ -56,7 +67,7 @@ const navigation = useNavigation()
   };
   return (
     <View style={{flex: 1, backgroundColor: '#fff', paddingHorizontal: 20}}>
-      {false ? <Loading /> : null}
+      {isLoading ? <Loading /> : null}
 
       {Platform.OS === 'ios' ? (
         <View style={{height: 68}} />
@@ -202,8 +213,8 @@ const navigation = useNavigation()
             </View>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate(ScreenNameEnum.LOGIN_SCREEN)
-              setIsVisible(false)
+               userLogout()
+             
               }}
               style={{
                 width: 225,

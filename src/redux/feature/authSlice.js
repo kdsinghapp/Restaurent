@@ -229,9 +229,9 @@ export const CreateNewPassword = createAsyncThunk(
 
 export const logout = createAsyncThunk('logout', async (params, thunkApi) => {
   try {
-    const response = await API.post('/log_out', params.data, {
+    const response = await API.post('/restaurant/auth/logout', null, {
       headers: {
-        Authorization: `Bearer ${params.authToken}`,
+        Authorization: `Bearer ${params.token}`,
       },
     });
 
@@ -240,47 +240,16 @@ export const logout = createAsyncThunk('logout', async (params, thunkApi) => {
       response.data,
     );
 
-    if (response.data.status) {
-      Alert.alert(
-        'LogOut',
-        response.data.message,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              AsyncStorage.clear();
-            },
-          },
-        ],
-        {cancelable: false},
-      );
+    if (response.data.status == '1') {
+      successToast('User LogOut Successfuly');
+      params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN)
     } else {
-      Alert.alert(
-        'LogOut',
-        response.data.message,
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK Pressed'),
-          },
-        ],
-        {cancelable: false},
-      );
+      errorToast('User LogOut Faild');
     }
 
     params.navigation.navigate('Login');
   } catch (error) {
-    Alert.alert(
-      'Network error',
-      'server not responding please try later',
-      [
-        {
-          text: 'OK',
-          onPress: () => console.log('OK Pressed'),
-        },
-      ],
-      {cancelable: false},
-    );
+    errorToast('Network error');
     console.log('🚀 ~ file: AuthSlice.js:32 ~ logout ~ error:', error);
     return thunkApi.rejectWithValue(error);
   }

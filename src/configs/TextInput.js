@@ -16,26 +16,28 @@ export default function TextInputField({...props}) {
     }
   };
   return (
-    <View style={{height: hp(8), justifyContent: 'center', marginVertical: 5,marginTop:10}}>
+    <View style={{height: hp(8), justifyContent: 'center', marginVertical: 5}}>
       <View
         style={{
           flexDirection: 'row',
           borderWidth: 2,
           borderColor: props.isFocus ? '#6D6EEC' : '#F7F8F8',
           height: 60,
-          borderRadius:40,
+          borderRadius: 40,
           alignItems: 'center',
-          backgroundColor:'#F7F8F8',
+          backgroundColor: '#F7F8F8',
           justifyContent: 'space-between',
         }}>
+       
         {props.firstLogo && (
           <View
             style={{
-              marginLeft: 10,
+              marginLeft: props.County ? 0 : 10,
               justifyContent: 'center',
               alignItems: 'center',
               width: '10%',
               
+              marginLeft:props.County?2:0
             }}>
             <Image
               source={props.img}
@@ -43,26 +45,37 @@ export default function TextInputField({...props}) {
             />
           </View>
         )}
+         {props.County && (
+          <TouchableOpacity
+            onPress={props.PickCountry}
+            style={{
+    
+             justifyContent:'center',
+          
+           
+            }}>
+            <Text style={{fontSize: 14, fontWeight: '700',color:'blue',lineHeight:18}}>
+              {props.countryCode==''?'Code':props.countryCode+'-'}
+            </Text>
+          </TouchableOpacity>
+        )}
         <View
           style={{
             overflow: 'hidden',
-            width: props.showEye ? '75%' : '90%',
-            marginLeft: props.firstLogo ? 0 : 15,
+            width: props.showEye ? '72%' :props.County?'85%': '90%',
+            marginLeft: props.firstLogo ? 0 :  15,
+           
 
             height: 50,
           }}>
-        
-
-          <View style={{width: '80%',}}>
+          <View style={{width: '80%',paddingTop:1}}>
             <TextInput
-            
               placeholderTextColor="#ADA4A5"
-            
               style={{
                 color: '#000000',
-                fontWeight: '400',
+                fontWeight: '700',
                 fontSize: 14,
-                lineHeight:18
+                lineHeight: 18,
               }}
               onChangeText={onChangeText}
               value={text}

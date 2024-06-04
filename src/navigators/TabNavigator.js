@@ -1,5 +1,5 @@
-import {View, Text, Image} from 'react-native';
-import React from 'react';
+import {View, Text, Image, Keyboard, Platform} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import _routes from '../routes/routes';
 import Home from '../screen/Home';
@@ -11,6 +11,28 @@ import AddDishBottomTab from '../screen/FeaturesScreen/AddBottomTabDish';
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    // Clean up listeners
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -19,6 +41,7 @@ export default function TabNavigator() {
 
         tabBarStyle: {
           height: 65,
+          display: isKeyboardVisible ? 'none' : 'flex', 
         },
       }}>
       <Tab.Screen
@@ -44,7 +67,7 @@ export default function TabNavigator() {
 
       <Tab.Screen
         name={'AddDish'}
-        component={AddDishBottomTab}
+        component={AddDish}
         options={{
           tabBarIconStyle:{
 

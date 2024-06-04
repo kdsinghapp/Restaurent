@@ -18,7 +18,8 @@ const initialState = {
   getProfile:null,
   FavoriteList:null,
   ResturantDetails:null,
-  OrderDetails:null
+  OrderDetails:null,
+  TotalList:null
  
 };
 
@@ -151,8 +152,63 @@ export const update_restaurant_details = createAsyncThunk(
 
       // Handle successful response
       if (responseData.success) {
-        successToast(responseData.message);
+        successToast('Update Restaurant Details Successfuly');
         params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+      } else {
+        errorToast(responseData.message); 
+       
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const change_order_status = createAsyncThunk(
+  'change_order_status',
+  async (params, thunkApi) => {
+    console.log('=============change_order_status=======================',params);
+    try {
+
+      
+      
+      // Create form data with identity and otp
+      const formdata = new FormData();
+      formdata.append("order_id", params.order_id);
+      formdata.append("status", params.status);
+      
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/change-order-status`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response restaurant/change-order-status=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+        successToast(responseData.message);
+       
       } else {
         errorToast(responseData.message); 
        
@@ -173,7 +229,9 @@ export const get_order_data_by_id = createAsyncThunk(
   async (params, thunkApi) => {
     try {
       // Create form data with identity and otp
-
+console.log('============get_order_data_by_id========================');
+console.log(params.data);
+console.log('====================================');
       const formdata = new FormData();
 
       formdata.append("restaurant_id", params.data.restaurant_id);
@@ -246,7 +304,7 @@ export const delete_restaurant_dish = createAsyncThunk(
 
       // Make POST request to verify OTP
       const response = await fetch(
-        `${base_url.url}/restaurant/details/delete-restaurant-dish`,
+        `${base_url.url}/restaurant/details/products/dishes/delete-restaurant-dish`,
         requestOptions,
       );
 
@@ -257,7 +315,7 @@ export const delete_restaurant_dish = createAsyncThunk(
 
       // Handle successful response
       if (responseData.success) {
-        successToast(responseData.message);
+        successToast('Dish Deleted Successfuly');
        
        
         params.navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE);
@@ -272,7 +330,8 @@ export const delete_restaurant_dish = createAsyncThunk(
       // Return response data
       return responseData.data;
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:',error );
+      return error;
       errorToast('Network error');
       // Reject with error
       throw error;
@@ -401,6 +460,67 @@ export const update_restaurant_dish = createAsyncThunk(
     }
   },
 );
+export const update_profile = createAsyncThunk(
+  'update_profile',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      console.log('==========update_profile==========================',params);
+   
+      const data = new FormData();
+      data.append('user_id', params.user_id);
+      data.append('useres_full_name', params.useres_full_name);
+      data.append('useres_email', params.useres_email);
+      data.append('useres_address', params.useres_address);
+      data.append('useres_mobile_number', params.useres_mobile_number);
+      data.append('useres_images', params.useres_images);
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: data,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/auth/update-profile`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response update_profile=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+       successToast(responseData.message);
+       
+       
+      } else {
+        errorToast(responseData.message); 
+        console.log('==============update_profile======================');
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
 
 
   
@@ -433,7 +553,7 @@ export const get_Profile = createAsyncThunk(
 
     console.log(params);
     try {
-      const response = await API.post('/auth/get-profile',null,{ headers: {
+      const response = await API.post('/restaurant/auth/get-profile',null,{ headers: {
         Authorization: `Bearer ${params.token}`,
       }
     },);
@@ -447,6 +567,45 @@ export const get_Profile = createAsyncThunk(
       console.log('🚀 ~ :auth/get-profile error:', error);
 
       return thunkApi.rejectWithValue(error);
+    }
+  },
+);
+export const dashboard_data = createAsyncThunk(
+  'dashboard_data',
+  async (params, thunkApi) => {
+    const formdata = new FormData();
+    formdata.append('restaurant_id', params.restaurant_id);
+
+    try {
+      const response = await API.post('/restaurant/dashboard-data', formdata, {
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 5000, // Optional: specify timeout in ms
+      });
+
+      if (response.data.success) {
+        console.log('User /restaurant/dashboard-data Successfully');
+      }
+      return response.data.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error message:', error.message);
+        if (error.response) {
+          // Server responded with a status other than 2xx
+          console.error('Axios error response:', error.response.data);
+        } else if (error.request) {
+          // Request was made but no response received
+          console.error('Axios error request:', error.request);
+        }
+      } else {
+        // Other error
+        console.error('Unexpected error:', error);
+      }
+
+      return thunkApi.rejectWithValue(error.message);
     }
   },
 );
@@ -520,6 +679,34 @@ const FeatureSlice = createSlice({
     builder.addCase(get_restaurant_dish.pending, state => {
       state.isLoading = true;
     });
+    builder.addCase(change_order_status.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.DashboardList = action.payload;
+    });
+    builder.addCase(change_order_status.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(update_profile.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(update_profile.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+
+    });
+    builder.addCase(update_profile.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(change_order_status.pending, state => {
+      state.isLoading = true;
+    });
     builder.addCase(get_restaurant_dish.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
@@ -583,6 +770,20 @@ const FeatureSlice = createSlice({
       state.getProfile = action.payload;
     });
     builder.addCase(get_Profile.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(dashboard_data.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(dashboard_data.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.TotalList = action.payload;
+    });
+    builder.addCase(dashboard_data.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;

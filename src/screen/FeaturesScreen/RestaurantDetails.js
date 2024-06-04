@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Platform,
   TextInput,
   StyleSheet,
+  PermissionsAndroid,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -19,7 +20,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { useSelector } from 'react-redux';
 
 export default function RestaurantDetails() {
-  const isLoading = useSelector(state=>state.feature.isLoading)
+  const isLoading = useSelector(state => state.feature.isLoading);
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
@@ -27,16 +28,47 @@ export default function RestaurantDetails() {
 
   const navigation = useNavigation();
 
-  const openImageLibrary = (setImage) => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then((image) => {
-      setImage(image);
-    }).catch((err) => {
-      console.log(err);
-    });
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
+  const requestPermissions = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ]);
+
+      if (
+        granted[PermissionsAndroid.PERMISSIONS.CAMERA] !== PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log('Camera or storage permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const openImageLibrary = async (setImage) => {
+    const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+    const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+
+    if (cameraPermission && storagePermission) {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      })
+        .then((image) => {
+          setImage(image);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      requestPermissions();
+    }
   };
 
   const handleNext = () => {
@@ -46,18 +78,18 @@ export default function RestaurantDetails() {
       res_latitude: 22.12,
       res_longitude: 77.75,
       res_certificate: {
-        uri: Platform.OS === 'android' ? certificate?.path : certificate?.path?.replace("file://", ""),
+        uri: Platform.OS === 'android' ? certificate?.path : certificate?.path?.replace('file://', ''),
         type: certificate?.mime,
-        name: `${Date.now()}.png`
+        name: `${Date.now()}.png`,
       },
       res_image: {
-        uri: Platform.OS === 'android' ? restaurantPhoto?.path : restaurantPhoto?.path?.replace("file://", ""),
+        uri: Platform.OS === 'android' ? restaurantPhoto?.path : restaurantPhoto?.path?.replace('file://', ''),
         type: restaurantPhoto?.mime,
-        name: `${Date.now()}.png`
+        name: `${Date.now()}.png`,
       },
     };
 
-    navigation.navigate(ScreenNameEnum.ADD_RESTAURANT_DETAILS,{item:restaurantDetails})
+    navigation.navigate(ScreenNameEnum.ADD_RESTAURANT_DETAILS, { item: restaurantDetails });
     // Make the API call here with restaurantDetails
   };
 
@@ -82,7 +114,7 @@ export default function RestaurantDetails() {
               onChangeText={setRestaurantName}
             />
           </View>
-          <View style={styles.locationInputContainer}>
+          {/* <View style={styles.locationInputContainer}>
             <TextInput
               placeholder="Restaurant Location"
               placeholderTextColor={'#ADA4A5'}
@@ -91,8 +123,11 @@ export default function RestaurantDetails() {
               onChangeText={setRestaurantLocation}
             />
             <Location />
-          </View>
-
+          </View> */}
+          <View style={{}}>
+            <GooglePlacesInput  />
+          
+            </View>
           <TouchableOpacity
             style={styles.imageUploadContainer}
             onPress={() => openImageLibrary(setRestaurantPhoto)}>
@@ -100,7 +135,7 @@ export default function RestaurantDetails() {
               <Image
                 source={{ uri: restaurantPhoto.path }}
                 style={styles.image}
-                resizeMode='contain'
+                resizeMode="contain"
               />
             ) : (
               <>
@@ -121,7 +156,7 @@ export default function RestaurantDetails() {
               <Image
                 source={{ uri: certificate.path }}
                 style={styles.image}
-                resizeMode='contain'
+                resizeMode="contain"
               />
             ) : (
               <>
@@ -137,11 +172,11 @@ export default function RestaurantDetails() {
           </TouchableOpacity>
         </View>
 
-      <TouchableOpacity
-        onPress={handleNext}
-        style={[styles.tabBtn, { bottom: 10,marginTop:hp(10) }]}>
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleNext}
+          style={[styles.tabBtn, { bottom: 10, marginTop: hp(10) }]}>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -172,7 +207,7 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 14,
     fontWeight: '400',
-    width:'90%',
+    width: '90%',
     color: '#000',
   },
   locationInputContainer: {
@@ -188,14 +223,14 @@ const styles = StyleSheet.create({
   imageUploadContainer: {
     backgroundColor: '#F7F8F8',
     height: hp(30),
-    padding:10,
+    padding: 10,
     marginTop: 20,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   image: {
-    height:'100%',
+    height: '100%',
     width: '100%',
   },
   uploadIcon: {
