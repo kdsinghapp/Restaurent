@@ -15,8 +15,8 @@ import {
   import {useNavigation} from '@react-navigation/native';
   import ScreenNameEnum from '../routes/screenName.enum';
 
-import DishListComponent from '../configs/DishListComponent';
-import ProfileHeader from './FeaturesScreen/ProfileHeader';
+  import DishListComponent from '../configs/DishListComponent';
+  import ProfileHeader from './FeaturesScreen/ProfileHeader';
   
   export default function DishList() {
     const navigation = useNavigation();

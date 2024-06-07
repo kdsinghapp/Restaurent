@@ -17,7 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../../configs/Loader';
 import ProfileHeader from './ProfileHeader';
-import { get_restaurant_dish, update_restaurant_dish } from '../../redux/feature/featuresSlice';
+import { Food_categories, get_restaurant_dish, update_restaurant_dish } from '../../redux/feature/featuresSlice';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default function EditDish() {
   const route = useRoute();
@@ -29,6 +30,13 @@ export default function EditDish() {
   const [dishOffer, setDishOffer] = useState(item.restaurant_dish_offer);
   const [prepareTime, setPrepareTime] = useState(item.restaurant_dish_preapare_time);
   const [description, setDescription] = useState(item.restaurant_dish_description);
+  const [category, setCategory] = useState(item.restaurant_dish_category); // State to hold the selected category
+  const FoodCategory = useSelector(state => state.feature.FoodCategory);
+
+  useEffect(() => {
+    Get_Category();
+  }, [user]);
+
 const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
@@ -40,6 +48,7 @@ const user = useSelector(state => state.auth.userData);
     setPrepareTime(item.restaurant_dish_preapare_time);
     setDescription(item.restaurant_dish_description);
     setImage({path:item.restaurant_dish_image});
+    setCategory(item.restaurant_dish_category)
   }, [item]);
 
 
@@ -59,9 +68,7 @@ const user = useSelector(state => state.auth.userData);
   const isDishNameValid = dishName.trim() !== '';
 
   const Update_Dish = async () => {
-   console.log('==========Update_Dish==========================');
-   console.log();
-   console.log('====================================');
+
     const params = {
        
       restaurant_dish_id: item.restaurant_dish_id,
@@ -70,6 +77,7 @@ const user = useSelector(state => state.auth.userData);
       restaurant_dish_offer: dishOffer,
       restaurant_dish_preapare_time: prepareTime,
       restaurant_dish_description: description,
+      restaurant_dish_category:category,
       restaurant_dish_image:image.uri?{
         uri: Platform.OS === 'android' ? image?.path : image?.path?.replace("file://", ""),
         type: image?.mime,
@@ -89,7 +97,12 @@ const user = useSelector(state => state.auth.userData);
     });
   };
 
-
+  const Get_Category = () => {
+    const params = {
+      token: user?.token,
+    };
+    dispatch(Food_categories(params));
+  };
   const get_Mydishes = async () => {
     const params = {
       user_id: user.user_data?.restaurant_id,
@@ -129,6 +142,23 @@ const user = useSelector(state => state.auth.userData);
             </>
           )}
         </TouchableOpacity>
+        { FoodCategory &&    <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
+        <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={FoodCategory}
+            maxHeight={300}
+            labelField="rescat_name"
+            valueField="rescat_id"
+            placeholder="Select Category"
+            value={category}
+            onChange={item => setCategory(item.rescat_id)}
+          />
+        </View>
+        }
         <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
           <TextInput
             placeholder="Dish Name"

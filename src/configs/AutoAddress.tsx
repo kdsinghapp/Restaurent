@@ -49,8 +49,14 @@ const GooglePlacesInput = ({placeholder}) => {
     onNotFound={() => console.log('no results')}
     onPress={(data, details = null) => {
         // 'details' is provided when fetchDetails = true
+        try{
         console.log(data, details);
         onPlaceSelected(details);
+        }
+        catch(err){
+          console.log('map',err);
+          
+        }
       }}
     styles={{
         description: {

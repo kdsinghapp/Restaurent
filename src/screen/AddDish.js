@@ -15,10 +15,11 @@ import { useNavigation } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { add_restaurant_dish, update_restaurant_dish } from '../redux/feature/featuresSlice';
+import { Food_categories, add_restaurant_dish } from '../redux/feature/featuresSlice';
 import Loading from '../configs/Loader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { errorToast } from '../configs/customToast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default function AddDish() {
   const navigation = useNavigation();
@@ -28,18 +29,16 @@ export default function AddDish() {
   const [dishOffer, setDishOffer] = useState('');
   const [prepareTime, setPrepareTime] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState(null); // State to hold the selected category
 
   const isLoading = useSelector(state => state.feature.isLoading);
+  const FoodCategory = useSelector(state => state.feature.FoodCategory);
   const user = useSelector(state => state.auth.userData);
   const dispatch = useDispatch();
-  
 
-  console.log('====================================');
-  console.log(user.user_data?.restaurant_id);
-  console.log('====================================');
   useEffect(() => {
-    requestPermissions();
-  }, []);
+    Get_Category();
+  }, [user]);
 
   const requestPermissions = async () => {
     try {
@@ -55,62 +54,68 @@ export default function AddDish() {
         granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
       ) {
         console.log('Camera or storage permission denied');
-        
       }
     } catch (err) {
       console.warn(err);
     }
   };
 
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const openImageLibrary = async () => {
     const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
     const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
     const readPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 
-    // if (cameraPermission && storagePermission && readPermission) {
-      ImagePicker.openPicker({
-        width: 300,
-        height: 400,
-        cropping: true,
-      }).then((image) => {
-        setImage(image);
-      }).catch((err) => {
-        console.log('ImagePicker error:', err);
-      });
-    // } else {
-    //   requestPermissions();
-    // }
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then((image) => {
+      setImage(image);
+    }).catch((err) => {
+      console.log('ImagePicker error:', err);
+    });
   };
 
   const isDishNameValid = dishName.trim() !== '';
 
   const Add_Dish = async () => {
+    try {
+      const params = {
+        restaurant_dish_restaurant_id: user.user_data?.restaurant_id,
+        restaurant_dish_name: dishName,
+        restaurant_dish_price: dishPrice,
+        restaurant_dish_offer: dishOffer,
+        restaurant_dish_preapare_time: prepareTime,
+        restaurant_dish_description: description,
+        restaurant_dish_category:category,
+        restaurant_dish_image: {
+          uri: Platform.OS === 'android' ? image?.path : image?.path?.replace("file://", ""),
+          type: image?.mime,
+          name: `${Date.now()}.png`,
+        },
+        restaurant_dish_category_id: category,
+        navigation: navigation,
+      };
 
-    try{
+      dispatch(add_restaurant_dish(params)).then(res => {
+        get_Mydishes();
+      });
+    } catch (err) {
+      console.log('====================================');
+      console.log(err);
+      console.log('====================================');
+    }
+  };
+
+  const Get_Category = () => {
     const params = {
-      restaurant_dish_restaurant_id:user.user_data?.restaurant_id,
-      restaurant_dish_name: dishName,
-      restaurant_dish_price: dishPrice,
-      restaurant_dish_offer: dishOffer,
-      restaurant_dish_preapare_time: prepareTime,
-      restaurant_dish_description: description,
-      restaurant_dish_image: {
-        uri: Platform.OS === 'android' ? image?.path : image?.path?.replace("file://", ""),
-        type: image?.mime,
-        name: `${Date.now()}.png`
-      },
-      navigation: navigation,
+      token: user?.token,
     };
-
-    dispatch(add_restaurant_dish(params)).then(res=>{
-      get_Mydishes();
-    })
-  }
-  catch(err){
-    console.log('====================================');
-    console.log(err);
-    console.log('====================================');
-  }
+    dispatch(Food_categories(params));
   };
 
   return (
@@ -130,7 +135,7 @@ export default function AddDish() {
             <Image
               source={{ uri: image.path }}
               style={styles.uploadImage}
-              resizeMode='contain'
+              resizeMode="contain"
             />
           ) : (
             <>
@@ -146,6 +151,23 @@ export default function AddDish() {
             </>
           )}
         </TouchableOpacity>
+  { FoodCategory &&    <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
+        <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={FoodCategory}
+            maxHeight={300}
+            labelField="rescat_name"
+            valueField="rescat_id"
+            placeholder="Select Category"
+            value={category}
+            onChange={item => setCategory(item.rescat_id)}
+          />
+        </View>
+        }
         <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
           <TextInput
             placeholder="Dish Name"
@@ -189,12 +211,13 @@ export default function AddDish() {
             onChangeText={text => setDescription(text)}
           />
         </View>
+       
         <TouchableOpacity
           onPress={() => {
             if (isDishNameValid) {
               Add_Dish();
             } else {
-         errorToast('Please fill in all required fields.');
+              errorToast('Please fill in all required fields.');
             }
           }}
           style={[styles.tabBtn, { marginTop: hp(5) }]}>
@@ -202,8 +225,7 @@ export default function AddDish() {
             Add Dish
           </Text>
         </TouchableOpacity>
-
-        <View style={{height:20}} />
+        <View style={{ height: 20 }} />
       </ScrollView>
     </View>
   );
@@ -246,7 +268,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: '#F7F8F8',
     paddingHorizontal: 15,
-    height: 66,
+    height:60,
     borderRadius: 40,
     justifyContent: 'center',
     marginTop: 20,
@@ -260,6 +282,23 @@ const styles = StyleSheet.create({
   },
   invalidInput: {
     borderColor: 'red', // Red border color for invalid input
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+   
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
   },
   tabBtn: {
     backgroundColor: '#007AFF',
@@ -278,3 +317,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+

@@ -19,7 +19,8 @@ const initialState = {
   FavoriteList:null,
   ResturantDetails:null,
   OrderDetails:null,
-  TotalList:null
+  TotalList:null,
+  FoodCategory:null,
  
 };
 
@@ -169,6 +170,58 @@ export const update_restaurant_details = createAsyncThunk(
     }
   },
 );
+export const Food_categories = createAsyncThunk(
+  'Food_categories',
+  async (params, thunkApi) => {
+    console.log('=============Food_categories=======================',params);
+    try {
+
+      
+      
+      // Create form data with identity and otp
+    
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: null,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/get-restaurant-categories`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response restaurant/get-restaurant-categories=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+        //successToast(responseData.message);
+       
+      } else {
+       // errorToast(responseData.message); 
+       
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
 export const change_order_status = createAsyncThunk(
   'change_order_status',
   async (params, thunkApi) => {
@@ -181,6 +234,7 @@ export const change_order_status = createAsyncThunk(
       const formdata = new FormData();
       formdata.append("order_id", params.order_id);
       formdata.append("status", params.status);
+      formdata.append("order_preapare_time", params.order_preapare_time);
       
       // Configure request headers
       const myHeaders = new Headers();
@@ -353,6 +407,7 @@ export const add_restaurant_dish = createAsyncThunk(
       formdata.append("restaurant_dish_preapare_time", params.restaurant_dish_preapare_time);
       formdata.append("restaurant_dish_description",params.restaurant_dish_description);
       formdata.append("restaurant_dish_image",params.restaurant_dish_image);
+      formdata.append("restaurant_dish_category",params.restaurant_dish_category);
 
       // Configure request headers
       const myHeaders = new Headers();
@@ -408,6 +463,7 @@ export const update_restaurant_dish = createAsyncThunk(
    
       const formdata = new FormData();
       formdata.append("restaurant_dish_id",params.restaurant_dish_id);
+      formdata.append("restaurant_dish_category",params.restaurant_dish_category);
       formdata.append("restaurant_dish_name", params.restaurant_dish_name);
       formdata.append("restaurant_dish_price",params.restaurant_dish_price);
       formdata.append("restaurant_dish_offer", params.restaurant_dish_offer);
@@ -675,6 +731,21 @@ const FeatureSlice = createSlice({
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;
+    });
+    builder.addCase(Food_categories.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(Food_categories.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.FoodCategory = action.payload;
+    });
+    builder.addCase(Food_categories.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+     
     });
     builder.addCase(get_restaurant_dish.pending, state => {
       state.isLoading = true;

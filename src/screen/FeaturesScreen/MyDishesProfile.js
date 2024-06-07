@@ -5,33 +5,28 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
-  TextInput,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {useNavigation} from '@react-navigation/native';
-import {styles} from '../../configs/Styles';
-import {BottomTabView} from '@react-navigation/bottom-tabs';
-import Arrow from '../../assets/sgv/2arrow.svg';
+import { useNavigation } from '@react-navigation/native';
+import { styles } from '../../configs/Styles';
 import ProfileHeader from './ProfileHeader';
 import ScreenNameEnum from '../../routes/screenName.enum';
-import {FlipInXDown} from 'react-native-reanimated';
-import {useDispatch, useSelector} from 'react-redux';
-import {delete_restaurant_dish, get_restaurant_dish} from '../../redux/feature/featuresSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { delete_restaurant_dish, get_restaurant_dish } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MyDishesProfile() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isLoading = useSelector(state => state.feature.isLoading);
-  const ResturantDish = useSelector(state => state.feature.ResturantDish);
+  const ResturantDish = useSelector(state => state.feature.ResturantDish) || [];
   const user = useSelector(state => state.auth.userData);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     get_Mydishes();
   }, []);
@@ -42,35 +37,31 @@ export default function MyDishesProfile() {
     };
     await dispatch(get_restaurant_dish(params));
   };
+
   const delete_dish = async (id) => {
-    console.log('====================================',id);
-try{
-
-
-    const params = {
-      restaurant_dish_id: id,
-    };
-    await dispatch(delete_restaurant_dish(params)).then(res=>{
-      get_Mydishes()
-    });
-
-  }
-  catch(err){
-   
-    console.log(err);
-    console.log('====================================');
-  }
+    console.log('Deleting dish with ID:', id);
+    try {
+      const params = {
+        restaurant_dish_id: id,
+      };
+      await dispatch(delete_restaurant_dish(params)).then(res => {
+        get_Mydishes();
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
+  const groupedDishes = ResturantDish.reduce((groups, dish) => {
+    const category = dish.restaurant_dish_category_name;
+    if (!groups[category]) {
+      groups[category] = [];
+    }
+    groups[category].push(dish);
+    return groups;
+  }, {});
 
-
-
-  const Order_List = ({item}) => {
-   
-
-    return(
-
-  
+  const renderDish = ({ item }) => (
     <View
       style={[
         styles.shadow,
@@ -82,31 +73,30 @@ try{
           padding: 10,
           marginBottom: hp(1),
           width: '45%',
-
           justifyContent: 'center',
         },
       ]}>
       <View>
-      {loading && (
-            <ActivityIndicator
-              size="large"
-              color="#0000ff"
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                zIndex: 1,
-                transform: [{ translateX: -25 }, { translateY: -25 }],
-              }}
-            />
-          )}
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              zIndex: 1,
+              transform: [{ translateX: -25 }, { translateY: -25 }],
+            }}
+          />
+        )}
         <Image
-          source={{uri: item.restaurant_dish_image}}
-          style={{height: 120, width: 150, borderRadius: 5}}
+          source={{ uri: item.restaurant_dish_image }}
+          style={{ height: 120, width: 150, borderRadius: 5 }}
           onLoad={() => setLoading(false)}
         />
       </View>
-      <View style={{marginTop: 10}}>
+      <View style={{ marginTop: 10 }}>
         <Text
           style={{
             color: '#352C48',
@@ -117,7 +107,7 @@ try{
           {item.restaurant_dish_name}
         </Text>
       </View>
-      <View style={{marginTop: 5}}>
+      <View style={{ marginTop: 5 }}>
         <Text
           style={{
             color: '#E79B3F',
@@ -141,7 +131,7 @@ try{
 
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate(ScreenNameEnum.EditDish, {item: item});
+          navigation.navigate(ScreenNameEnum.EditDish, { item: item });
         }}
         style={{
           backgroundColor: '#7756FC',
@@ -164,7 +154,7 @@ try{
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-         delete_dish(item.restaurant_dish_id)
+          delete_dish(item.restaurant_dish_id);
         }}
         style={{
           backgroundColor: '#fa7d87',
@@ -187,13 +177,34 @@ try{
       </TouchableOpacity>
     </View>
   );
-        }
+
+  const renderCategory = ({ item: [categoryName, dishes] }) => (
+    <View key={categoryName}>
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: 'bold',
+          marginVertical: 10,
+          marginLeft: 10,
+          color:'#000'
+        }}>
+        {categoryName}
+      </Text>
+      <FlatList
+        data={dishes}
+        numColumns={2}
+        renderItem={renderDish}
+        keyExtractor={(item) => item.restaurant_dish_id.toString()}
+      />
+    </View>
+  );
+
   return (
-    <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10}}>
+    <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {isLoading ? <Loading /> : null}
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{width: '90%'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ width: '90%' }}>
             <ProfileHeader name={'My Dishes'} />
           </View>
 
@@ -201,31 +212,23 @@ try{
             onPress={() => {
               navigation.navigate(ScreenNameEnum.Add_DISH);
             }}
-            style={{justifyContent: 'center', marginTop: 8}}>
+            style={{ justifyContent: 'center', marginTop: 8 }}>
             <Image
               source={require('../../assets/croping/IconPlus3x.png')}
-              style={{height: 32, width: 32}}
+              style={{ height: 32, width: 32 }}
             />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            marginTop: hp(3),
-            flex: 1,
-          }}>
-          {ResturantDish && (
+        <View style={{ marginTop: hp(3), flex: 1 }}>
+          {Object.entries(groupedDishes).length > 0 ? (
             <FlatList
-              data={ResturantDish}
-              numColumns={2}
-              renderItem={Order_List}
-              keyExtractor={item => item.id}
-              showsVerticalScrollIndicator={false} // Optional: hide horizontal scroll indicator
+              data={Object.entries(groupedDishes)}
+              renderItem={renderCategory}
+              keyExtractor={(item) => item[0]}
             />
-          )}
-          {ResturantDish?.length == 0 && (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: '#777777', fontSize: 12, fontWeight: '500'}}>
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ color: '#777777', fontSize: 12, fontWeight: '500' }}>
                 No Dish Found
               </Text>
             </View>
@@ -235,4 +238,3 @@ try{
     </View>
   );
 }
-

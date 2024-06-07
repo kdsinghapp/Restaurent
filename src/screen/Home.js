@@ -8,17 +8,22 @@ import {
   FlatList,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {styles} from '../configs/Styles';
-import {BottomTabView} from '@react-navigation/bottom-tabs';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { styles } from '../configs/Styles';
+import { BottomTabView } from '@react-navigation/bottom-tabs';
 import Arrow from '../assets/sgv/2arrow.svg';
-import {useDispatch, useSelector} from 'react-redux';
-import {change_order_status, dashboard_data, get_Profile, get_order_data_by_id} from '../redux/feature/featuresSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  change_order_status,
+  dashboard_data,
+  get_Profile,
+  get_order_data_by_id,
+} from '../redux/feature/featuresSlice';
 import Loading from '../configs/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenNameEnum from '../routes/screenName.enum';
@@ -29,9 +34,11 @@ export default function Home() {
   const TotalList = useSelector(state => state.feature.TotalList);
   const navigation = useNavigation();
   const isFocuse = useIsFocused();
-const [isExpanded,setisExpanded] = useState(true)
-const getProfile = useSelector(state => state.feature.getProfile);
+  const [isExpanded, setisExpanded] = useState(true);
+  const getProfile = useSelector(state => state.feature.getProfile);
   const dispatch = useDispatch();
+  const [prepTime, setPrepTime] = useState(0);
+
   const GetoderID = async timestamp => {
     // Extracting components from the timestamp
     const [date, time] = timestamp.split(' ');
@@ -43,52 +50,45 @@ const getProfile = useSelector(state => state.feature.getProfile);
     return orderId;
   };
 
+
+
   useEffect(() => {
     get_order();
-    getTotalOrder()
+    getTotalOrder();
     const params = {
       token: user.token,
     };
     dispatch(get_Profile(params));
   }, [user, isFocuse]);
 
-
   const getTotalOrder = async () => {
-    
     const params = {
-    
-        restaurant_id: user.user_data?.restaurant_id,
-       
-     
+      restaurant_id: user.user_data?.restaurant_id,
+
       token: user?.token,
     };
     dispatch(dashboard_data(params));
   };
-  const OderStatus = async (item,status) => {
-    console.log('====================================');
-    console.log(status);
-  try{
-    const params = {
-      order_id:item.resord_id,
-      status:status,
-      token: user?.token,
-    };
+  const OderStatus = async (item, status) => {
 
-    console.log('=================params===================',params);
+    try {
+      const params = {
+        order_id: item.resord_id,
+        status: status,
+        token: user?.token,
+        order_preapare_time: prepTime
+      };
 
+      console.log('=================params===================', params);
 
-   dispatch(change_order_status(params).then(res=>{
-    get_order()
-   }));
-  }
-  catch(err){
-    console.log('=================params===================',err);
-
-  }
-  
+      dispatch(change_order_status(params)).then(res => {
+        get_order();
+      });
+    } catch (err) {
+      console.log('=================params===================', err);
+    }
   };
   const get_order = async () => {
-   
     const params = {
       data: {
         restaurant_id: user.user_data?.restaurant_id,
@@ -99,7 +99,7 @@ const getProfile = useSelector(state => state.feature.getProfile);
 
     dispatch(get_order_data_by_id(params));
   };
-  const RestaurantOder = ({item}) => (
+  const RestaurantOder = ({ item }) => (
     <View
       // onPress={() => {
       //   navigation.navigate(ScreenNameEnum.DISH_INFORMATION);
@@ -144,10 +144,10 @@ const getProfile = useSelector(state => state.feature.getProfile);
           lineHeight: 15,
           color: '#9E9E9E',
         }}>
-        {item.id == '1'&& TotalList?.total_order}
-        {item.id == '2' && TotalList?.complete_order} 
-        {item.id == '3' && TotalList?.total_revenue} 
-        {item.id == '4' &&TotalList?.cancle_order} 
+        {item.id == '1' && TotalList?.total_order}
+        {item.id == '2' && TotalList?.complete_order}
+        {item.id == '3' && TotalList?.total_revenue}
+        {item.id == '4' && TotalList?.cancle_order}
       </Text>
       <Text
         style={{
@@ -155,225 +155,230 @@ const getProfile = useSelector(state => state.feature.getProfile);
           fontWeight: '700',
           lineHeight: 30,
           color: '#E79B3F',
-        }}>
-        
-      </Text>
-
-   
+        }}></Text>
     </View>
   );
 
-  const Order_List = ({item}) => (
-    <View
-      style={[
-        styles.shadow,
-        {
-          borderRadius: 10,
-          marginTop: 20,
-          backgroundColor: '#FFF',
-          marginHorizontal: 5,
-          padding: 10,
-        },
-      ]}>
+  const Order_List = ({ item }) => {
+    const initialPrepTime = parseInt(item.order_preapare_time?.substring(0, 2)) || 0;
+    setPrepTime(initialPrepTime)
+    return (
       <View
-        style={{
-          paddingHorizontal: 15,
-          height: hp(8),
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}>
-        <View>
-          <Image
-            source={{uri:item.user_data.useres_images}}
-            style={{height: 50, width: 50, borderRadius: 25}}
-          />
+        style={[
+          styles.shadow,
+          {
+            borderRadius: 10,
+            marginTop: 20,
+            backgroundColor: '#FFF',
+            marginHorizontal: 5,
+            padding: 10,
+          },
+        ]}>
+        <View
+          style={{
+            paddingHorizontal: 15,
+            height: hp(8),
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <View>
+            <Image
+              source={{ uri: item.user_data.useres_images }}
+              style={{ height: 50, width: 50, borderRadius: 25 }}
+            />
+          </View>
+          <View style={{ width: '65%' }}>
+            <Text
+              style={{
+                color: '#9E9E9E',
+                fontSize: 12,
+                fontWeight: '500',
+                lineHeight: 18,
+              }}>
+              ID: {item.resord_id}
+            </Text>
+            <Text
+              style={{
+                color: '#352C48',
+                fontSize: 16,
+                fontWeight: '600',
+                lineHeight: 24,
+              }}>
+              {item.user_data.useres_full_name}
+            </Text>
+          </View>
+          <View>
+            <Text
+              style={{
+                color: '#7756FC',
+                fontSize: 18,
+                fontWeight: '700',
+                lineHeight: 24,
+              }}>
+              {item.price}
+            </Text>
+          </View>
         </View>
-        <View style={{width: '65%'}}>
-          <Text
+        <View
+          style={{
+            paddingHorizontal: 15,
+            height: hp(5),
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: '#000', fontWeight: '600', fontSize: 14 }}>
+              Total Bill : ${item.total_price}{' '}
+            </Text>
+            <View
+              style={{
+                borderWidth: 2,
+                borderColor:
+                  item.payment_status == 'Paid' ? '#15BE77' : '#bf3d3d',
+                borderRadius: 5,
+                marginLeft: 5,
+                paddingHorizontal: 10,
+              }}>
+              <Text
+                style={{
+                  color: item.payment_status == 'Paid' ? '#15BE77' : '#bf3d3d',
+                  fontWeight: '600',
+                  fontSize: 14,
+                }}>
+                {item.payment_status}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            paddingHorizontal: 15,
+            height: hp(5),
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <View
             style={{
-              color: '#9E9E9E',
-              fontSize: 12,
-              fontWeight: '500',
-              lineHeight: 18,
+              flexDirection: 'row',
+              borderRadius: 5,
+
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#E7E8E5',
+              borderWidth: 1,
+              width: '100%',
             }}>
-            ID: {item.resord_id}
-          </Text>
-          <Text
-            style={{
-              color: '#352C48',
-              fontSize: 16,
-              fontWeight: '600',
-              lineHeight: 24,
-            }}>
-            {item.user_data.useres_full_name}
-          </Text>
+            <TouchableOpacity
+            //  onPress={()=>{
+            //    decrementPrepTime}}
+              style={{
+                borderRightWidth: 1,
+                width: '20%',
+
+                alignItems: 'center',
+              }}>
+              <Text style={{ fontSize: 24, color: '#000', fontWeight: '500' }}>
+                -
+              </Text>
+            </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 12,
+                marginHorizontal: 5,
+                fontWeight: '500',
+                color: '#000',
+                marginHorizontal: 10,
+                paddingVertical: 5,
+              }}>
+              {prepTime} Min
+            </Text>
+            <TouchableOpacity
+            // onPress={incrementPrepTime}
+              style={{
+                width: '20%',
+                borderLeftWidth: 1,
+                alignItems: 'center',
+              }}>
+              <Text style={{ fontSize: 24, color: '#000', fontWeight: '500' }}>
+                +
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View>
-          <Text
-            style={{
-              color: '#7756FC',
-              fontSize: 18,
-              fontWeight: '700',
-              lineHeight: 24,
-            }}>
-            {item.price}
-          </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          paddingHorizontal: 15,
-          height: hp(5),
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text>Total Amount </Text>
-        
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-         
-          <Text
-            style={{
-              color: '#352C48',
-              fontSize: 14,
-              fontWeight: '700',
-              lineHeight: 21,
-            }}>
-          $ {item.total_price}
-          </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          paddingHorizontal: 15,
-          height: hp(5),
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}>
+
         <View
           style={{
             flexDirection: 'row',
-            borderRadius: 5,
-            padding: 2,
             alignItems: 'center',
-            backgroundColor: '#E7E8E5',
-          }}>
-          <Text
-            style={{
-              fontSize: 16,
-              marginHorizontal: 5,
-              fontWeight: '500',
-              color: '#000',
-            }}>
-            +
-          </Text>
-          <Text
-            style={{
-              fontSize: 12,
-              marginHorizontal: 5,
-              fontWeight: '500',
-              color: '#000',
-            }}>
-            20 Mins
-          </Text>
-          <Text
-            style={{
-              fontSize: 18,
-              marginHorizontal: 5,
-              fontWeight: '500',
-              color: '#000',
-            }}>
-            -
-          </Text>
-        </View>
-        <View style={{justifyContent: 'center'}}>
-          <Text
-            style={{
-              color: '#7756FC',
-              fontSize: 12,
-              fontWeight: '700',
-
-              lineHeight: 21,
-            }}>
-            This is Special Delivery
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: hp(8),
-        }}>
-        <TouchableOpacity
-        onPress={()=>{
-          OderStatus(item,'Complete')
-        }}
-          style={{
-            backgroundColor: '#15BE77',
-            alignItems: 'center',
-            height: 45,
-            borderRadius: 30,
             justifyContent: 'center',
-            width: '40%',
+            height: hp(8),
           }}>
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: '500',
-              lineHeight: 22,
-              color: '#FFFFFF',
-            }}>
-            Accept
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            onPress={()=>{
-              OderStatus(item,'Cancel')
+          <TouchableOpacity
+            onPress={() => {
+              OderStatus(item, 'Accepted');
             }}
-          style={{
-            backgroundColor: '#FF0000',
-            alignItems: 'center',
-            height: 45,
-            borderRadius: 30,
-            marginLeft: -35,
-            justifyContent: 'center',
-            width: '40%',
-          }}>
-          <Text
             style={{
-              fontSize: 15,
-              fontWeight: '500',
-              lineHeight: 22,
-              color: '#FFFFFF',
+              backgroundColor: '#15BE77',
+              alignItems: 'center',
+              height: 45,
+              borderRadius: 30,
+              justifyContent: 'center',
+              width: '40%',
             }}>
-            Decline
-          </Text>
-        </TouchableOpacity>
-        <View
-        style={{
-          height: 35,
-          width: 35,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 17.5,
-          backgroundColor: '#FFF',
-          position: 'absolute',
-          bottom:15,
-          left: '43.5%',
-          alignSelf: 'center',
-        }}>
-        <Arrow />
-      </View>
-      </View>
-     
-      {isExpanded && (
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '500',
+                lineHeight: 22,
+                color: '#FFFFFF',
+              }}>
+              Accept
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              OderStatus(item, 'Cancel');
+            }}
+            style={{
+              backgroundColor: '#FF0000',
+              alignItems: 'center',
+              height: 45,
+              borderRadius: 30,
+              marginLeft: -35,
+              justifyContent: 'center',
+              width: '40%',
+            }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '500',
+                lineHeight: 22,
+                color: '#FFFFFF',
+              }}>
+              Decline
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              height: 35,
+              width: 35,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 17.5,
+              backgroundColor: '#FFF',
+              position: 'absolute',
+              bottom: 15,
+              left: '43.5%',
+              alignSelf: 'center',
+            }}>
+            <Arrow />
+          </View>
+        </View>
+
+        {isExpanded && (
           <View
             style={{
               paddingHorizontal: 15,
@@ -389,23 +394,37 @@ const getProfile = useSelector(state => state.feature.getProfile);
               Order Details:
             </Text>
             {item.order_details?.map(detail => (
-              <View key={detail.id} style={{marginTop: 5,flexDirection:'row',justifyContent:'space-between'}}>
-                <Text style={{fontSize:14,color:'#000',fontWeight:'600'}} >{detail.dish_name} X  {detail.quantity}</Text>
-              
-<Text>-</Text>
-<View>
-                <Text style={{fontSize:14,color:'#000',fontWeight:'600'}} >Total : $ {(detail.price_per_unit * detail.quantity)}</Text>
-                <Text style={{fontSize:12}}>(Price per unit: ${detail.price_per_unit})</Text>
-              </View>
+              <View
+                key={detail.id}
+                style={{
+                  marginTop: 5,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>
+                  {detail.dish_name} X {detail.quantity}
+                </Text>
+
+                <Text>-</Text>
+                <View>
+                  <Text
+                    style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>
+                    Total : $ {detail.price_per_unit * detail.quantity}
+                  </Text>
+                  <Text style={{ fontSize: 12 }}>
+                    (Price per unit: ${detail.price_per_unit})
+                  </Text>
+                </View>
               </View>
             ))}
           </View>
         )}
-    </View>
-  );
+      </View>
+    );
+  };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10}}>
+    <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
       {isLoading ? <Loading /> : null}
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -439,19 +458,18 @@ const getProfile = useSelector(state => state.feature.getProfile);
           </View>
 
           <TouchableOpacity
-          
-          onPress={()=>{
-            navigation.navigate(ScreenNameEnum.EDIT_PROFILE)
-          }}
-          >
-            {getProfile?.useres_images ?<Image 
-            source={{uri:getProfile.useres_images}}
-            style={{height:40,width:40,borderRadius:20}}
-            resizeMode='cover'
-            />: <Logo />
-
-            }
-           
+            onPress={() => {
+              navigation.navigate(ScreenNameEnum.EDIT_PROFILE);
+            }}>
+            {getProfile?.useres_images ? (
+              <Image
+                source={{ uri: getProfile.useres_images }}
+                style={{ height: 40, width: 40, borderRadius: 20 }}
+                resizeMode="cover"
+              />
+            ) : (
+              <Logo />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -490,11 +508,11 @@ const getProfile = useSelector(state => state.feature.getProfile);
               data={OrderDetails}
               renderItem={Order_List}
               keyExtractor={item => item.id}
-              ListFooterComponent={<View style={{height: hp(2)}} />}
+              ListFooterComponent={<View style={{ height: hp(2) }} />}
               showsVerticalScrollIndicator={false} // Optional: hide horizontal scroll indicator
             />
           ) : (
-            <Text style={{fontSize: 18, fontWeight: '500', color: '#000'}}>
+            <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
               No Order Found
             </Text>
           )}
@@ -510,28 +528,27 @@ const restaurantOrders = [
     name: 'Total',
     subtitile: 'Orders',
 
-    count: '5245',
+
   },
   {
     id: '2',
     name: 'Complete',
     subtitile: 'Orders',
 
-    count: '25',
+
   },
   {
     id: '3',
     name: 'Total ',
     subtitile: 'Revenue',
 
-    count: '40',
+
   },
   {
     id: '4',
     name: 'Returning',
     subtitile: 'Customers',
 
-    count: '10',
+
   },
 ];
-

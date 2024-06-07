@@ -119,7 +119,7 @@ errorToast(
 
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1,backgroundColor:'#fff'}}>
       {isLoading ? <Loading /> : null}
       <ScrollView  showsVerticalScrollIndicator={false}>
       <Image
@@ -248,7 +248,7 @@ errorToast(
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={{marginVertical: 10, justifyContent: 'center'}}>
+          {/* <View style={{marginVertical: 10, justifyContent: 'center'}}>
             <Text
               style={{
                 fontSize: 16,
@@ -258,9 +258,9 @@ errorToast(
               }}>
               OR
             </Text>
-          </View>
+          </View> */}
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {}}
           style={{
           
@@ -297,7 +297,7 @@ errorToast(
             }}>
             Login with Google
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       </ScrollView>
     </View>

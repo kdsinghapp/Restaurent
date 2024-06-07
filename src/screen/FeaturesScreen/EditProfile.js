@@ -69,8 +69,6 @@ export default function EditProfile() {
       });
   };
 
-
-
   const handleSave = () => {
     const params = {
       user_id: user?.user_data.useres_id,
