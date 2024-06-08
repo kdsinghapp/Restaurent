@@ -8,20 +8,20 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Star from '../../assets/sgv/star.svg';
 import BlackPin from '../../assets/sgv/BlackPin2.svg';
 import Edit from '../../assets/sgv/Edit.svg';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import ProfileHeader from './ProfileHeader';
-import {get_Profile, update_profile} from '../../redux/feature/featuresSlice';
+import { get_Profile, update_profile } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
 import ImagePicker from 'react-native-image-crop-picker';
 export default function EditProfile() {
@@ -70,28 +70,31 @@ export default function EditProfile() {
   };
 
   const handleSave = () => {
-    const params = {
-      user_id: user?.user_data.useres_id,
-      useres_full_name: name,
-      useres_email: email,
-      useres_address: address,
-      useres_mobile_number: mobile,
 
-      useres_images: profile?.path
-        ? {
-            uri:
-              Platform.OS === 'android'
-                ? profile.path
-                : profile?.path?.replace('file://', ''),
-            type: profile.mime,
-            name: `image${user?.user_data.useres_id}.png`,
-          }
-        : {
-            uri: imageUrl,
-            type: 'image/jpeg',
-            name: `image${user?.user_data.useres_id}.png`,
-          },
+    const data = new FormData();
+    data.append('user_id', user?.user_data.useres_id,);
+    data.append('useres_full_name', name);
+    data.append('useres_email', email);
+    data.append('useres_address', address);
+    data.append('useres_mobile_number', mobile);
+    data.append('useres_images', profile?.path
+      ? {
+        uri:
+          Platform.OS === 'android'
+            ? profile.path
+            : profile?.path?.replace('file://', ''),
+        type: profile.mime,
+        name: `image${user?.user_data.useres_id}.png`,
+      }
+      : {
+        uri: imageUrl,
+        type: 'image/jpeg',
+        name: `image${user?.user_data.useres_id}.png`,
+      },);
+    const params = {
+      data: data,
       token: user?.token,
+      Notification:false
     };
     dispatch(update_profile(params)).then(err => {
       const params = {
@@ -110,11 +113,11 @@ export default function EditProfile() {
           onPress={() => {
             openImageLibrary();
           }}
-          style={[styles.profileImageContainer, {borderWidth: 2}]}>
+          style={[styles.profileImageContainer, { borderWidth: 2 }]}>
           {imageUrl ? (
-            <Image source={{uri: imageUrl}} style={styles.profileImage} />
+            <Image source={{ uri: imageUrl }} style={styles.profileImage} />
           ) : (
-            <Text style={{fontSize: 20, color: '#000', fontWeight: '600'}}>
+            <Text style={{ fontSize: 20, color: '#000', fontWeight: '600' }}>
               {name[0]?.toUpperCase()}
             </Text>
           )}

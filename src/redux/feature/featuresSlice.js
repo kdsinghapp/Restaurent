@@ -521,15 +521,9 @@ export const update_profile = createAsyncThunk(
   async (params, thunkApi) => {
     try {
       // Create form data with identity and otp
-      console.log('==========update_profile==========================',params);
+      console.log('==========update_profile==========================',params.data);
    
-      const data = new FormData();
-      data.append('user_id', params.user_id);
-      data.append('useres_full_name', params.useres_full_name);
-      data.append('useres_email', params.useres_email);
-      data.append('useres_address', params.useres_address);
-      data.append('useres_mobile_number', params.useres_mobile_number);
-      data.append('useres_images', params.useres_images);
+  
       // Configure request headers
       const myHeaders = new Headers();
       myHeaders.append('Accept', 'application/json');
@@ -540,7 +534,7 @@ export const update_profile = createAsyncThunk(
       const requestOptions = {
         method: 'POST',
         headers: myHeaders,
-        body: data,
+        body: params.data,
         redirect: 'follow',
       };
 
@@ -557,7 +551,10 @@ export const update_profile = createAsyncThunk(
 
       // Handle successful response
       if (responseData.success) {
-       successToast(responseData.message);
+        if(!params.Notification){
+
+          successToast(responseData.message);
+        }
        
        
       } else {
@@ -578,7 +575,67 @@ export const update_profile = createAsyncThunk(
   },
 );
 
+export const create_new_password = createAsyncThunk(
+  'create_new_password',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+ 
+   
+      const data = new FormData();
+    
+      data.append('password', params.password);
+      data.append('c_password', params.c_password);
+      data.append('old_password', params.old_password);
+      data.append('user_id', params.user_id);
+     
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
 
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: data,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/auth/create-new-password`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response create_new_password=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+       successToast(responseData.message);
+       
+       
+      } else {
+        errorToast(responseData.message); 
+        console.log('==============create_new_password======================');
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.log('==========create_new_password==========================',error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
   
 
 export const get_terms_conditions = createAsyncThunk(
@@ -717,6 +774,20 @@ const FeatureSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: builder => {
+    builder.addCase(create_new_password.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(create_new_password.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+     
+    });
+    builder.addCase(create_new_password.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
     // DashboardSlice cases
     builder.addCase(get_HomeDashBoard.pending, state => {
       state.isLoading = true;

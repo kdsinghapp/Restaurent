@@ -1,24 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Switch, FlatList, StyleSheet} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Switch, FlatList, StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
 import ProfileHeader from '../../configs/ProfileHeader';
+import { get_Profile, update_profile } from '../../redux/feature/featuresSlice';
 
 interface User {
   id: string;
+  token: string;
 }
 
 interface RootState {
   auth: {
     userData: User;
     Update_user: {
-      booking_updates: 'ON' | 'OFF';
-      tours_activities_attra: 'ON' | 'OFF';
-      reviews: 'ON' | 'OFF';
+      booking_updates: '1' | '0';
+      tours_activities_attra: '1' | '0';
+      reviews: '1' | '0';
     };
+  };
+  feature: {
+    getProfile: {
+      booking_updates: '1' | '0';
+      activities_and_attractions: '1' | '0';
+      reviews: '1' | '0';
+    };
+    isLoading: boolean;
   };
 }
 
@@ -46,87 +53,95 @@ const data: NotificationItem[] = [
     id: '3',
     name: 'Activities & Attractions',
     Details: 'Receive important messages and updates from your tour operator',
-    key: 'tours_activities_attra',
+    key: 'activities_and_attractions',
   },
 ];
 
 const Notification: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
-  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
-  const getProfile = useSelector(state => state.feature.getProfile);
-
+  const getProfile = useSelector((state: RootState) => state.feature.getProfile);
+  const isLoading = useSelector((state: RootState) => state.feature.isLoading);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    get_userprofile();
-  }, [user]);
+    if (user) {
+      const params = { token: user.token };
+      dispatch(get_Profile(params));
+    }
+  }, [user, dispatch]);
 
-  const get_userprofile = () => {
-    const params = {
-      user_id: user.id,
-    };
-    //dispatch(get_profile(params));
-  };
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: boolean }>({});
 
-  const [switchStates, setSwitchStates] = useState<{[key: string]: boolean}>(
-    {},
-  );
 
+
+  
   useEffect(() => {
-    setSwitchStates({
-      booking_updates: getProfile?.booking_updates === '0',
-      tours_activities_attra: getProfile?.tours_activities_attra === '0',
-      reviews: getProfile?.reviews === '0',
-    });
+    if (getProfile) {
+      setSwitchStates({
+        booking_updates: getProfile.booking_updates === '1',
+        activities_and_attractions: getProfile.activities_and_attractions === '1',
+        reviews: getProfile.reviews === '1',
+      });
+    }
   }, [getProfile]);
 
   const toggleSwitch = (key: keyof RootState['auth']['Update_user']) => {
+    const newValue = !switchStates[key];
     setSwitchStates(prevStates => ({
       ...prevStates,
-      [key]: !prevStates[key],
+      [key]: newValue,
     }));
 
     // Call the API to update notification settings
-    updateNotificationSettings(key, !switchStates[key]);
+    updateNotificationSettings(key, newValue);
   };
+
   const updateNotificationSettings = async (
     key: keyof RootState['auth']['Update_user'],
     newValue: boolean,
   ) => {
+    console.log(key, newValue ? '1' : '0');
+    
+    const data = new FormData();
+    data.append('user_id', user?.user_data?.useres_id);
+    data.append(key, newValue ? '1' : '0');
     const params = {
-      user_id: user.id,
-      [key]: newValue ? '0' : '1',
+      token: user.token,
+      data,
+      Notification: true,
     };
 
-   // dispatch((params));
+    dispatch(update_profile(params)).then(res=>{
+      const params = { token: user.token };
+      dispatch(get_Profile(params));
+    })
   };
-  const renderItem = ({item}: {item: NotificationItem}) => (
+
+  const renderItem = ({ item }: { item: NotificationItem }) => (
     <View style={styles.itemContainer}>
-      {isLoading ? null : (
+    
         <>
           <View style={styles.itemTextContainer}>
             <Text style={styles.itemName}>{item.name}</Text>
             <Text style={styles.itemDetails}>{item.Details}</Text>
           </View>
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
             thumbColor={switchStates[item.key] ? '#f5dd4b' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={() => toggleSwitch(item.key)}
-            value={!!switchStates[item.key]}
+            value={switchStates[item.key]}
           />
         </>
-      )}
+      
     </View>
   );
 
   return (
     <View style={styles.container}>
+      <ProfileHeader Dwidth={'35%'} name={'Notification'} />
      
-      <ProfileHeader
-      Dwidth={'35%'}
-      name={'Notification'}/>
       <View style={styles.listContainer}>
         <FlatList
           data={data}
