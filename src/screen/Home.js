@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -27,6 +29,7 @@ import {
 import Loading from '../configs/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenNameEnum from '../routes/screenName.enum';
+import Geolocation from '@react-native-community/geolocation';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
@@ -55,6 +58,7 @@ export default function Home() {
   useEffect(() => {
     get_order();
     getTotalOrder();
+    requestLocationPermission()
     const params = {
       token: user.token,
     };
@@ -159,7 +163,32 @@ export default function Home() {
         }}></Text>
     </View>
   );
-
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+        Geolocation.requestAuthorization('whenInUse');
+    } else {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Location Permission',
+                    message: 'This app needs access to your location to show you directions.',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                }
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              
+              console.log('granted');
+            } else {
+                console.log('Location permission denied');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+};
   const Order_List = ({ item }) => {
     const initialPrepTime = parseInt(item.order_preapare_time?.substring(0, 2)) || 0;
     setPrepTime(initialPrepTime)

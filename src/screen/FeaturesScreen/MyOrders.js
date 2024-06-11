@@ -183,7 +183,7 @@ const navigation = useNavigation()
             </Text>
            
           </View>
-
+       
      
         </View>
         }
@@ -247,6 +247,8 @@ const navigation = useNavigation()
               </Text>
              
             </View>
+
+            
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 10 }]}>
               <Text style={styles.totalPriceText}>Tax Amount :</Text>
               <Text style={{ width: '20%' }}>-</Text>
@@ -342,7 +344,7 @@ const navigation = useNavigation()
         </>
         )}
 
-        {item.status === 'Driver' && (
+        {item.status === 'Accepted' && (
           <View
             style={{
               flexDirection: 'row',
