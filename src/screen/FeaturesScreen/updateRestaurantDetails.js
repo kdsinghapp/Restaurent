@@ -83,10 +83,11 @@ export default function UpdateRestaurantDetails() {
     await dispatch(get_restaurant_details(params));
   };
 
+
   const openImageLibrary = (setImage) => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 400,
+      width: 1600,
+      height: 900,
       cropping: true,
     }).then((image) => {
       setImage(image);
@@ -94,6 +95,7 @@ export default function UpdateRestaurantDetails() {
       console.log(err);
     });
   };
+  
 
   const handleNext = () => {
     const updatedRestaurantDetails = {

@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { Food_categories, add_restaurant_dish } from '../redux/feature/featuresSlice';
+import { Food_categories, add_restaurant_dish, get_restaurant_dish } from '../redux/feature/featuresSlice';
 import Loading from '../configs/Loader';
 import { errorToast } from '../configs/customToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -81,6 +81,12 @@ export default function AddDish() {
   };
 
   const isDishNameValid = dishName.trim() !== '';
+  const get_Mydishes = async () => {
+    const params = {
+      user_id: user.user_data?.restaurant_id,
+    };
+    await dispatch(get_restaurant_dish(params));
+  };
 
   const Add_Dish = async () => {
     try {

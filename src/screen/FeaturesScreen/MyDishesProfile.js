@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../configs/Styles';
 import ProfileHeader from './ProfileHeader';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +26,7 @@ export default function MyDishesProfile() {
   const ResturantDish = useSelector(state => state.feature.ResturantDish) || [];
   const user = useSelector(state => state.auth.userData);
   const [loading, setLoading] = useState(true);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   useEffect(() => {
     get_Mydishes();
@@ -62,66 +63,29 @@ export default function MyDishesProfile() {
   }, {});
 
   const renderDish = ({ item }) => (
-    <View
-      style={[
-        styles.shadow,
-        {
-          marginTop: 5,
-          borderRadius: 10,
-          backgroundColor: '#FFF',
-          marginHorizontal: 5,
-          padding: 10,
-          marginBottom: hp(1),
-          width: '45%',
-          justifyContent: 'center',
-        },
-      ]}>
+    <View style={[styles.dishContainer, styles.shadow]}>
       <View>
         {loading && (
           <ActivityIndicator
             size="large"
             color="#0000ff"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              zIndex: 1,
-              transform: [{ translateX: -25 }, { translateY: -25 }],
-            }}
+            style={styles.activityIndicator}
           />
         )}
         <Image
           source={{ uri: item.restaurant_dish_image }}
-          style={{ height: 120, width: 150, borderRadius: 5 }}
+          style={styles.dishImage}
           onLoad={() => setLoading(false)}
         />
       </View>
-      <View style={{ marginTop: 10 }}>
-        <Text
-          style={{
-            color: '#352C48',
-            fontSize: 18,
-            fontWeight: '700',
-            lineHeight: 28,
-          }}>
+      <View style={styles.dishNameContainer}>
+        <Text style={styles.dishName}>
           {item.restaurant_dish_name}
         </Text>
       </View>
-      <View style={{ marginTop: 5 }}>
-        <Text
-          style={{
-            color: '#E79B3F',
-            fontSize: 16,
-            fontWeight: '700',
-            lineHeight: 24,
-          }}>
-          <Text
-            style={{
-              color: '#000',
-              fontSize: 14,
-              fontWeight: '700',
-              lineHeight: 20,
-            }}>
+      <View style={styles.dishPriceContainer}>
+        <Text style={styles.dishPrice}>
+          <Text style={styles.dishPriceLabel}>
             {' '}
             Price:-
           </Text>{' '}
@@ -133,22 +97,8 @@ export default function MyDishesProfile() {
         onPress={() => {
           navigation.navigate(ScreenNameEnum.EditDish, { item: item });
         }}
-        style={{
-          backgroundColor: '#7756FC',
-          borderRadius: 20,
-          paddingHorizontal: 30,
-          paddingVertical: 5,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}>
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: '500',
-            lineHeight: 15,
-            color: '#FFF',
-          }}>
+        style={styles.editButton}>
+        <Text style={styles.buttonText}>
           Edit
         </Text>
       </TouchableOpacity>
@@ -156,55 +106,50 @@ export default function MyDishesProfile() {
         onPress={() => {
           delete_dish(item.restaurant_dish_id);
         }}
-        style={{
-          backgroundColor: '#fa7d87',
-          borderRadius: 20,
-          paddingHorizontal: 30,
-          paddingVertical: 5,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}>
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: '500',
-            lineHeight: 15,
-            color: '#FFF',
-          }}>
+        style={styles.deleteButton}>
+        <Text style={styles.buttonText}>
           Delete
         </Text>
       </TouchableOpacity>
     </View>
   );
 
-  const renderCategory = ({ item: [categoryName, dishes] }) => (
-    <View key={categoryName}>
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          marginVertical: 10,
-          marginLeft: 10,
-          color:'#000'
-        }}>
-        {categoryName}
-      </Text>
-      <FlatList
-        data={dishes}
-        numColumns={2}
-        renderItem={renderDish}
-        keyExtractor={(item) => item.restaurant_dish_id.toString()}
-      />
-    </View>
-  );
+  const renderCategory = ({ item: [categoryName, dishes] }) => {
+    const isExpanded = expandedCategory === categoryName;
+    const itemsToShow = isExpanded ? dishes : dishes.slice(0, 4);
+
+    return (
+      <View key={categoryName}>
+        <View style={styles.categoryHeader}>
+          <Text style={styles.categoryName}>
+            {categoryName}
+          </Text>
+          {dishes.length > 4 && (
+            <TouchableOpacity
+              onPress={() => setExpandedCategory(isExpanded ? null : categoryName)}
+              style={styles.seeAllButton}>
+              <Text style={styles.seeAllText}>
+                {isExpanded ? 'Show Less' : 'See All'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <FlatList
+          data={itemsToShow}
+          numColumns={2}
+          renderItem={renderDish}
+          keyExtractor={(item) => item.restaurant_dish_id.toString()}
+        />
+      </View>
+    );
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
+    <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {isLoading ? <Loading /> : null}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: '90%' }}>
+        <View style={styles.header}>
+          <View style={styles.headerTitle}>
             <ProfileHeader name={'My Dishes'} />
           </View>
 
@@ -212,23 +157,33 @@ export default function MyDishesProfile() {
             onPress={() => {
               navigation.navigate(ScreenNameEnum.Add_DISH);
             }}
-            style={{ justifyContent: 'center', marginTop: 8 }}>
+            style={styles.addButton}>
             <Image
               source={require('../../assets/croping/IconPlus3x.png')}
-              style={{ height: 32, width: 32 }}
+              style={styles.addIcon}
             />
           </TouchableOpacity>
         </View>
-        <View style={{ marginTop: hp(3), flex: 1 }}>
+        <View style={styles.dishesContainer}>
           {Object.entries(groupedDishes).length > 0 ? (
-            <FlatList
-              data={Object.entries(groupedDishes)}
-              renderItem={renderCategory}
-              keyExtractor={(item) => item[0]}
-            />
+            expandedCategory ? (
+              // Show only the expanded category
+              <FlatList
+                data={Object.entries(groupedDishes).filter(([categoryName]) => categoryName === expandedCategory)}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item[0]}
+              />
+            ) : (
+              // Show all categories
+              <FlatList
+                data={Object.entries(groupedDishes)}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item[0]}
+              />
+            )
           ) : (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color: '#777777', fontSize: 12, fontWeight: '500' }}>
+            <View style={styles.noDishFound}>
+              <Text style={styles.noDishText}>
                 No Dish Found
               </Text>
             </View>
@@ -238,3 +193,133 @@ export default function MyDishesProfile() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    paddingHorizontal: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    width: '90%',
+  },
+  addButton: {
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  addIcon: {
+    height: 32,
+    width: 32,
+  },
+  dishesContainer: {
+    marginTop: hp(3),
+    flex: 1,
+  },
+  noDishFound: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDishText: {
+    color: '#777777',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  dishContainer: {
+    marginTop: 5,
+    borderRadius: 10,
+    backgroundColor: '#FFF',
+    marginHorizontal: 5,
+    padding: 10,
+    marginBottom: hp(1),
+    width: '45%',
+    justifyContent: 'center',
+  },
+  shadow: {
+    // Add your shadow styles here
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    zIndex: 1,
+    transform: [{ translateX: -25 }, { translateY: -25 }],
+  },
+  dishImage: {
+    height: 120,
+    width: 150,
+    borderRadius: 5,
+  },
+  dishNameContainer: {
+    marginTop: 10,
+  },
+  dishName: {
+    color: '#352C48',
+    fontSize: 18,
+    fontWeight: '700',
+    lineHeight: 28,
+  },
+  dishPriceContainer: {
+    marginTop: 5,
+  },
+  dishPrice: {
+    color: '#E79B3F',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  dishPriceLabel: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 20,
+  },
+  editButton: {
+    backgroundColor: '#7756FC',
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  deleteButton: {
+    backgroundColor: '#fa7d87',
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 15,
+    color: '#FFF',
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  categoryName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    marginLeft: 10,
+    color: '#000',
+  },
+  seeAllButton: {
+    marginRight: 10,
+  },
+  seeAllText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#007bff',
+  },
+});

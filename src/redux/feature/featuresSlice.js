@@ -261,7 +261,8 @@ export const change_order_status = createAsyncThunk(
 
       // Handle successful response
       if (responseData.success) {
-        successToast(responseData.message);
+        successToast("Order Is Accepted ");
+        params.navigation.navigate(ScreenNameEnum.MyOrder)
        
       } else {
         errorToast(responseData.message); 

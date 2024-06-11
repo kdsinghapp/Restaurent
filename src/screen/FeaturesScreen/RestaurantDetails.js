@@ -56,8 +56,8 @@ export default function RestaurantDetails() {
 
     if (cameraPermission && storagePermission) {
       ImagePicker.openPicker({
-        width: 300,
-        height: 400,
+        width: 1600,
+        height: 900,
         cropping: true,
       })
         .then((image) => {
@@ -70,6 +70,9 @@ export default function RestaurantDetails() {
       requestPermissions();
     }
   };
+
+
+  
 
   const handleNext = () => {
     const restaurantDetails = {

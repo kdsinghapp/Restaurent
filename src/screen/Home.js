@@ -76,7 +76,8 @@ export default function Home() {
         order_id: item.resord_id,
         status: status,
         token: user?.token,
-        order_preapare_time: prepTime
+        order_preapare_time: prepTime,
+        navigation:navigation
       };
 
       console.log('=================params===================', params);
