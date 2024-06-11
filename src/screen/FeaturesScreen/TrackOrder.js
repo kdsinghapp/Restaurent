@@ -8,6 +8,7 @@ import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import { get_Profile } from '../../redux/feature/featuresSlice';
 import { useNavigation } from '@react-navigation/native';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const restaurantLocation = {
   latitude: 22.714501,
@@ -40,68 +41,68 @@ const TrackOrder = () => {
   const [Pickupaddress, setPickupaddress] = useState("Our Restaurant");
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const fetchDeliveryDetails = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${driverLocation.latitude},${driverLocation.longitude}&destinations=${deliveryLocation.latitude},${deliveryLocation.longitude}&key=AIzaSyADzwSBu_YTmqWZj7ys5kp5UcFDG9FQPVY`
-  //       );
+  useEffect(() => {
+    const fetchDeliveryDetails = async () => {
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${driverLocation.latitude},${driverLocation.longitude}&destinations=${deliveryLocation.latitude},${deliveryLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`
+        );
 
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch delivery details');
-  //       }
+        if (!response.ok) {
+          throw new Error('Failed to fetch delivery details');
+        }
 
-  //       const data = await response.json();
-  //       const { status, rows } = data;
+        const data = await response.json();
+        const { status, rows } = data;
 
-  //       if (status === 'OK') {
-  //         const distance = rows[0].elements[0].distance.text;
-  //         const duration = rows[0].elements[0].duration.text;
+        if (status === 'OK') {
+          const distance = rows[0].elements[0].distance.text;
+          const duration = rows[0].elements[0].duration.text;
 
-  //         setDeliveryDetails({
-  //           distance,
-  //           duration,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching delivery details: ', error);
-  //     }
-  //   };
+          setDeliveryDetails({
+            distance,
+            duration,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching delivery details: ', error);
+      }
+    };
 
-  //   fetchDeliveryDetails();
-  // }, [driverLocation]);
+    fetchDeliveryDetails();
+  }, [driverLocation]);
 
-  // useEffect(() => {
-  //   const requestLocationPermission = async () => {
-  //     try {
-  //       let result;
-  //       if (Platform.OS === 'android') {
-  //         result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-  //       } else if (Platform.OS === 'ios') {
-  //         result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-  //       }
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      try {
+        let result;
+        if (Platform.OS === 'android') {
+          result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+        } else if (Platform.OS === 'ios') {
+          result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        }
 
-  //       if (result === RESULTS.GRANTED) {
-  //         Geolocation.watchPosition(
-  //           position => {
-  //             setDriverLocation({
-  //               latitude: position.coords.latitude,
-  //               longitude: position.coords.longitude,
-  //             });
-  //           },
-  //           error => console.log('Error watching position: ', error),
-  //           { enableHighAccuracy: true, distanceFilter: 10, interval: 5000 }
-  //         );
-  //       } else {
-  //         console.log('Location permission denied');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error requesting location permission: ', error);
-  //     }
-  //   };
+        if (result === RESULTS.GRANTED) {
+          Geolocation.watchPosition(
+            position => {
+              setDriverLocation({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+            },
+            error => console.log('Error watching position: ', error),
+            { enableHighAccuracy: true, distanceFilter: 10, interval: 5000 }
+          );
+        } else {
+          console.log('Location permission denied');
+        }
+      } catch (error) {
+        console.error('Error requesting location permission: ', error);
+      }
+    };
 
-  //   requestLocationPermission();
-  // }, []);
+    requestLocationPermission();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -136,7 +137,7 @@ const TrackOrder = () => {
           <MapViewDirections
             origin={driverLocation}
             destination={restaurantLocation}
-            apikey="AIzaSyADzwSBu_YTmqWZj7ys5kp5UcFDG9FQPVY"
+            apikey={GOOGLE_MAPS_API_KEY}
             strokeWidth={4}
             strokeColor="hotpink"
             optimizeWaypoints={true}
