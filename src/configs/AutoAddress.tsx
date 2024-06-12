@@ -83,7 +83,7 @@ const GooglePlacesInput = ({placeholder}) => {
         placeholderTextColor: "#000"
     }}
     query={{
-        key: 'AIzaSyBQDSvBppnW59UJ0ALOlGV5aMiJl6bgk70',
+        key: 'AIzaSyADzwSBu_YTmqWZj7ys5kp5UcFDG9FQPVY',
         language: 'en',
     }}
     // currentLocation={true}
