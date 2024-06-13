@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,12 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {get_order_data_by_id} from '../../redux/feature/featuresSlice';
+import { get_order_data_by_id } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
 import { useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
@@ -24,7 +24,7 @@ export default function MyOrders() {
   const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
-const navigation = useNavigation()
+  const navigation = useNavigation()
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedIndex, setIsExpandedIndex] = useState(null);
 
@@ -56,7 +56,7 @@ const navigation = useNavigation()
         ? require('../../assets/croping/Complete2x.png')
         : item.status === 'Cancel'
           ? require('../../assets/croping/Close2x.png')
-          :require('../../assets/croping/pending.png');
+          : require('../../assets/croping/pending.png');
 
     const statusColor =
       item.status === 'Complete'
@@ -173,18 +173,18 @@ const navigation = useNavigation()
               }}
             >
               {item.status === 'Complete' && 'Yeay, you have completed it!'}
-{item.status === 'Cancel' && 
-  (item.user_order_status === 'Cancel By User' 
-    ? 'This order was canceled by the User!'
-    : 'You canceled this booking!' )}
-{item.status === 'Pending' && 'Your booking is pending!'}
-{item.status === 'Accepted' && 'this order is Accepted!'}
+              {item.status === 'Cancel' &&
+                (item.user_order_status === 'Cancel By User'
+                  ? 'This order was canceled by the User!'
+                  : 'You canceled this booking!')}
+              {item.status === 'Pending' && 'Your booking is pending!'}
+              {item.status === 'Accepted' && 'this order is Accepted!'}
 
             </Text>
-           
+
           </View>
-       
-     
+
+
         </View>
         }
 
@@ -236,19 +236,19 @@ const navigation = useNavigation()
                 }}
               >
                 {item.status === 'Complete' && 'Yeay, you have completed it!'}
-{item.status === 'Cancel' && 
-  (item.user_order_status === 'Cancel By User' 
-    ? 'You canceled this booking!' 
-    : 'Your order was canceled by the restaurant!')}
-{item.status === 'Pending' && 'Your booking is pending!'}
-{item.status === 'Accepted' && 'this order is Accepted!'}
+                {item.status === 'Cancel' &&
+                  (item.user_order_status === 'Cancel By User'
+                    ? 'You canceled this booking!'
+                    : 'Your order was canceled by the restaurant!')}
+                {item.status === 'Pending' && 'Your booking is pending!'}
+                {item.status === 'Accepted' && 'this order is Accepted!'}
 
 
               </Text>
-             
+
             </View>
 
-            
+
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 10 }]}>
               <Text style={styles.totalPriceText}>Tax Amount :</Text>
               <Text style={{ width: '20%' }}>-</Text>
@@ -298,7 +298,7 @@ const navigation = useNavigation()
                 {item.total_price.toFixed(2)}
               </Text>
             </View>
-            
+
 
           </View>
           {/* {item.status === 'Accepted' && isExpand && (
@@ -344,7 +344,7 @@ const navigation = useNavigation()
         </>
         )}
 
-        {item.status === 'Accepted' && (
+        {item.delivery_status !== 'Pending' && (
           <View
             style={{
               flexDirection: 'row',
@@ -360,7 +360,15 @@ const navigation = useNavigation()
             />
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate(ScreenNameEnum.TRACK_ORDER);
+
+                if(item.delivery_status == 'Pickuped'){
+
+                  navigation.navigate(ScreenNameEnum.TrackResToUser, { OrderId: item.resord_id });
+              
+              }
+              else{
+                navigation.navigate(ScreenNameEnum.TRACK_ORDER, { OrderId:item.resord_id });
+              }
               }}
               style={{
                 backgroundColor: '#352C48',
@@ -389,10 +397,10 @@ const navigation = useNavigation()
   };
 
   return (
-    <View style={{paddingHorizontal: 15, flex: 1, backgroundColor: '#FFFFFF'}}>
+    <View style={{ paddingHorizontal: 15, flex: 1, backgroundColor: '#FFFFFF' }}>
       {isLoading && <Loading />}
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{marginTop: 20}}>
+        <View style={{ marginTop: 20 }}>
           <Text
             style={{
               fontWeight: '700',
@@ -474,10 +482,10 @@ const navigation = useNavigation()
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{marginTop: 20}}>
+        <View style={{ marginTop: 20 }}>
           {OrderDetails?.length === 0 ? (
-            <View style={{alignItems: 'center', marginTop: 20}}>
-              <Text style={{fontSize: 18, color: '#888'}}>Order not found</Text>
+            <View style={{ alignItems: 'center', marginTop: 20 }}>
+              <Text style={{ fontSize: 18, color: '#888' }}>Order not found</Text>
             </View>
           ) : (
             <FlatList

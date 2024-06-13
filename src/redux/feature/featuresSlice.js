@@ -21,9 +21,60 @@ const initialState = {
   OrderDetails:null,
   TotalList:null,
   FoodCategory:null,
- 
+  Orderlocations: []
 };
+export const get_order_locations = createAsyncThunk(
+  'get_order_locations',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
 
+      console.log('get_order_locations=>>>>', params);
+
+
+
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: params.data,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/driver/get-locations`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('get_order_locations =>>>>>>>>>>>>> :', responseData.data);
+
+
+      if (responseData.success) {
+        console.log('get_order_locations ', responseData.message);
+        // successToast("Your order has been successfully canceled.")
+      } else {
+        //errorToast(responseData.message); 
+        console.log('get_order_locations ', responseData.message);
+      }
+
+
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      //  errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
 export const get_HomeDashBoard = createAsyncThunk(
   'get_HomeDashBoard',
   async (params, thunkApi) => {
@@ -775,6 +826,21 @@ const FeatureSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: builder => {
+
+    builder.addCase(get_order_locations.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(get_order_locations.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.Orderlocations = action.payload;
+    });
+    builder.addCase(get_order_locations.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
     builder.addCase(create_new_password.pending, state => {
       state.isLoading = true;
     });

@@ -23,6 +23,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   UpdateRestaurantDetails='UpdateRestaurantDetails',
   UpdateAddRestaurantDetails ='UpdateAddRestaurantDetails',
   MyOrder='MyOrder',
+  TrackResToUser='TrackResToUser',
 
 //Features screen
 
