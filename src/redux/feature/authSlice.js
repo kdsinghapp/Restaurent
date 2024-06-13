@@ -247,7 +247,7 @@ export const logout = createAsyncThunk('logout', async (params, thunkApi) => {
       errorToast('User LogOut Faild');
     }
 
-    params.navigation.navigate('Login');
+  
   } catch (error) {
     errorToast('Network error');
     console.log('🚀 ~ file: AuthSlice.js:32 ~ logout ~ error:', error);
