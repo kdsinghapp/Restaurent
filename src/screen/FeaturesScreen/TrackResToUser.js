@@ -1,21 +1,19 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet, Alert } from 'react-native';
+
+  import React, { useEffect, useRef } from 'react';
+import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { change_assign_order, get_order_locations } from '../../redux/feature/featuresSlice';
-import ScreenNameEnum from '../../routes/screenName.enum';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get_order_locations } from '../../redux/feature/featuresSlice';
 
 const TrackResToUser = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.userData);
 
-  const { OrderId } = route.params || {};
+  const { OrderId } = route.params;
   const mapRef = useRef(null);
+  const dispatch = useDispatch();
 
   const Orderlocations = useSelector(state => state.feature.Orderlocations);
 
@@ -28,42 +26,40 @@ const TrackResToUser = () => {
 
   const driverLocation = Orderlocations?.driver_data
     ? {
-      latitude: parseFloat(Orderlocations.driver_data.driver_lat),
-      longitude: parseFloat(Orderlocations.driver_data.driver_long),
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    }
+        latitude: parseFloat(Orderlocations.driver_data.driver_lat),
+        longitude: parseFloat(Orderlocations.driver_data.driver_long),
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }
     : null;
 
   const dropLocation = Orderlocations?.user_data
     ? {
-      latitude: parseFloat(Orderlocations.user_data.lat),
-      longitude: parseFloat(Orderlocations.user_data.long),
-    }
+        latitude: parseFloat(Orderlocations.user_data.lat),
+        longitude: parseFloat(Orderlocations.user_data.long),
+      }
     : null;
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       getOrderLocation();
-    }, 4000);
+    }, 4000); // 4000 milliseconds = 4 seconds
 
+    // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
-  const getOrderLocation = async () => {
-    try {
-      let data = new FormData();
-      data.append('order_id', OrderId);
+  const getOrderLocation = () => {
+    let data = new FormData();
+    data.append('order_id', OrderId);
 
-      const params = {
-        data: data,
-      };
+    const params = {
+      data: data,
+    };
 
-      await dispatch(get_order_locations(params));
-    } catch (error) {
-      console.error('Error fetching order locations:', error);
-      Alert.alert('Error', 'Failed to fetch order locations. Please try again.');
-    }
+    dispatch(get_order_locations(params)).then(res => {
+     
+    });
   };
 
   useEffect(() => {
@@ -74,36 +70,6 @@ const TrackResToUser = () => {
       });
     }
   }, [driverLocation]);
-
-  const assign_order_Status = async () => {
-    try {
-      await AsyncStorage.setItem('delivery_status', 'Delivered');
-      await AsyncStorage.setItem('running_orderId', '');
-
-      let data = new FormData();
-      data.append('delivery_status', 'Delivered');
-      data.append('order_id', OrderId);
-
-      const params = {
-        data: data,
-        token: user.token
-      };
-
-      await dispatch(change_assign_order(params));
-      navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
-    } catch (error) {
-      console.error('Error changing order status:', error);
-      Alert.alert('Error', 'Failed to update order status. Please try again.');
-    }
-  };
-
-  if (!dropLocation || !driverLocation) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading locations...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -136,7 +102,7 @@ const TrackResToUser = () => {
             <MapViewDirections
               origin={driverLocation}
               destination={dropLocation}
-              apikey={process.env.GOOGLE_MAPS_API_KEY}
+              apikey={process.env.GOOGLE_PLACES_API_KEY}
               strokeWidth={5}
               strokeColor="hotpink"
               optimizeWaypoints={true}
@@ -150,12 +116,6 @@ const TrackResToUser = () => {
 
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={assign_order_Status}
-          style={styles.pickupButton}
-        >
-          <Text style={styles.pickupButtonText}>Order Delivered</Text>
         </TouchableOpacity>
       </ImageBackground>
     </View>
@@ -180,27 +140,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     paddingHorizontal: 15,
-    elevation: 5,
+    elevation: 5, // To create a shadow effect
   },
   backButtonText: {
     fontSize: 16,
     color: '#000',
-  },
-  pickupButton: {
-    position: 'absolute',
-    bottom: 10,
-    width: '90%',
-    backgroundColor: '#4CAF50',
-    alignSelf: 'center',
-    height: 55,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pickupButtonText: {
-    fontSize: 17,
-    color: '#fff',
-    fontWeight: '700',
   },
 });
 
