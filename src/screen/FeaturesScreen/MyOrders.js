@@ -77,27 +77,32 @@ export default function MyOrders() {
       0,
     );
     const formatTime = (dateTimeString) => {
+
+      console.log(dateTimeString);
       const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
       const date = new Date(dateTimeString);
-
-      // Get day of the week, month, and year
+      
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+    
       const dayOfWeek = daysOfWeek[date.getDay()];
       const month = monthsOfYear[date.getMonth()];
+      const day = date.getDate();
       const year = date.getFullYear();
-
-      // Get hours and minutes
+    
       let hours = date.getHours();
       const minutes = ('0' + date.getMinutes()).slice(-2);
-
-      // Convert hours to 12-hour format
       const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-
-      return `${dayOfWeek} ${month} ${date.getDate()}, ${year} ${hours}:${minutes} ${ampm}`;
+    
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+    
+      return `${dayOfWeek} ${month} ${day}, ${year} `;
     };
-
-
+    
 
 
     return (

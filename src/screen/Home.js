@@ -43,17 +43,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const [prepTime, setPrepTime] = useState(0);
 
-  const GetoderID = async timestamp => {
-    // Extracting components from the timestamp
-    const [date, time] = timestamp.split(' ');
-    const [year, month, day] = date.split('-');
-    const [hour, minute, second] = time.split(':');
-
-    // Creating the order ID
-    const orderId = `${year}${month}${day}${hour}${minute}${second}`;
-    return orderId;
-  };
-
+  
 
 
   useEffect(() => {

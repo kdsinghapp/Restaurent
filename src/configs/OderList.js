@@ -6,12 +6,25 @@ import {
     widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 import { change_order_status, get_order_data_by_id } from '../redux/feature/featuresSlice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 const Order_List = ({ item }) => {
   const initialPrepTime = parseInt(item.order_preapare_time?.substring(0, 2)) || 0;
   const [prepTime, setPrepTime] = useState(initialPrepTime);
   const [isExpanded, setIsExpanded] = useState(true);
   const user = useSelector(state => state.auth.userData);
+const dispatch = useDispatch()
+  const GetoderID = async timestamp => {
+    // Extracting components from the timestamp
+    const [date, time] = timestamp.split(' ');
+    const [year, month, day] = date.split('-');
+    const [hour, minute, second] = time.split(':');
+
+    // Creating the order ID
+    const orderId = `${year}${month}${day}${hour}${minute}${second}`;
+    return orderId;
+  };
+const navigation = useNavigation()
   useEffect(() => {
     setPrepTime(initialPrepTime);
   }, [initialPrepTime]);
@@ -48,7 +61,7 @@ const Order_List = ({ item }) => {
         navigation:navigation
       };
 
-      console.log('=================params===================', params);
+      console.log('=================params===================', params.data);
 
       dispatch(change_order_status(params)).then(res => {
         get_order();
