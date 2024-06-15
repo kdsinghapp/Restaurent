@@ -363,7 +363,7 @@ export default function MyOrders() {
 
                 if(item.delivery_status == 'Pickuped'){
 
-                  navigation.navigate(ScreenNameEnum.TrackResToUser, { OrderId: item.resord_id });
+                  navigation.navigate(ScreenNameEnum.TrackResToUser, { OrderId:item.resord_id });
               
               }
               else{

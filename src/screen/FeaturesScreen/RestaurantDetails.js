@@ -117,7 +117,7 @@ export default function RestaurantDetails() {
               onChangeText={setRestaurantName}
             />
           </View>
-          {/* <View style={styles.locationInputContainer}>
+          <View style={styles.locationInputContainer}>
             <TextInput
               placeholder="Restaurant Location"
               placeholderTextColor={'#ADA4A5'}
@@ -126,11 +126,11 @@ export default function RestaurantDetails() {
               onChangeText={setRestaurantLocation}
             />
             <Location />
-          </View> */}
-          <View style={{}}>
+          </View>
+          {/* <View style={{}}>
             <GooglePlacesInput  />
           
-            </View>
+            </View> */}
           <TouchableOpacity
             style={styles.imageUploadContainer}
             onPress={() => openImageLibrary(setRestaurantPhoto)}>

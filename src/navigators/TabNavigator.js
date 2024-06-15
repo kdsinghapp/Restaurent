@@ -7,10 +7,18 @@ import AddDish from '../screen/AddDish';
 import Profile from '../screen/FeaturesScreen/Profile';
 import PlusBlue from '../assets/sgv/PlusBlue.svg';
 import AddDishBottomTab from '../screen/FeaturesScreen/AddBottomTabDish';
+import { useSelector } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+
+
+
+  const user = useSelector(state => state.auth.userData);
+
+
+
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(

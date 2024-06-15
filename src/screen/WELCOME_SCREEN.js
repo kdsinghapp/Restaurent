@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 export default function WELCOME_SCREEN() {
   const navigation = useNavigation();
-
+  const user = useSelector(state => state.auth.userData);
   const isLogOut = useSelector(state => state.auth.isLogOut);
   const isLogin = useSelector(state => state.auth.isLogin);
 
@@ -19,9 +19,12 @@ export default function WELCOME_SCREEN() {
       navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
     }
     if (!isLogOut && isLogin) {
-      console.log('================HomeTab====================');
+      if(user?.restaurant_register){
 
-      navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+        navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+      }else{
+        navigation.navigate(ScreenNameEnum.ADD_RESTAURANT_DETAILS);
+      }
     }
   };
   useEffect(() => {

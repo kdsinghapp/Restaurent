@@ -7,6 +7,7 @@ import {
   Modal,
   Platform,
   Settings,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -68,7 +69,7 @@ const user = useSelector(state => state.auth.userData);
   return (
     <View style={{flex: 1, backgroundColor: '#fff', paddingHorizontal: 20}}>
       {isLoading ? <Loading /> : null}
-
+<ScrollView>
       {Platform.OS === 'ios' ? (
         <View style={{height: 68}} />
       ) : (
@@ -260,6 +261,7 @@ const user = useSelector(state => state.auth.userData);
           Log Out
         </Text>
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }

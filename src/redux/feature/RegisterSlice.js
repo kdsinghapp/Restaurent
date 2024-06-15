@@ -2,7 +2,7 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {API, base_url} from '../Api';
 import {Alert} from 'react-native';
 import ScreenNameEnum from '../../routes/screenName.enum';
-import { errorToast } from '../../configs/customToast';
+import { errorToast, successToast } from '../../configs/customToast';
 import { SuccessToast } from 'react-native-toast-message';
 const initialState = {
   isLoading: false,
@@ -42,7 +42,7 @@ export const register = createAsyncThunk(
     console.log(response);      
       if (response.success) {
         params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
-     SuccessToast(
+     successToast(
           'User Registered Successfully'
         
         );
