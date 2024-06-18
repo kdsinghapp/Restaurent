@@ -8,8 +8,15 @@ import Toast from 'react-native-toast-message';
 import { persistor, store } from '../redux/Store';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import { notificationListener, requestUserPermission } from '../screen/FeaturesScreen/NotificationComponent';
 
 export default function AppNavigator() {
+  React.useEffect(() => {
+    notificationListener();
+    requestUserPermission();
+  }, []);
+
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <Provider store={store}>

@@ -807,7 +807,7 @@ export const get_privacy_policy = createAsyncThunk(
         },
       });
 
-      console.log('🚀 ~ get_privacy_policy ~ response:', response);
+      //console.log('🚀 ~ get_privacy_policy ~ response:', response);
 
       if (response.data.success) {
         console.log('User get_privacy_policy Succesfuly');

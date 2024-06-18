@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,8 +14,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import Loading from '../configs/Loader';
 import { useDispatch, useSelector } from 'react-redux';
-import { update_restaurant_details } from '../redux/feature/featuresSlice';
-
+import { update_profile, update_restaurant_details } from '../redux/feature/featuresSlice';
+import messaging from '@react-native-firebase/messaging';
 export default function AddRestaurantDetails() {
   const route = useRoute();
   const { item } = route.params;
@@ -98,6 +98,43 @@ export default function AddRestaurantDetails() {
       </Text>
     </TouchableOpacity>
   );
+  useEffect(()=>{
+    getToken()
+  },[user])
+
+  const getToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      console.log('FCM token=>>>>>>>>>>>>>>:', token);
+     send_token(token)
+    } catch (error) {
+      console.error('Error getting FCM token:', error);
+    }
+  };
+
+  const send_token = async (token) => {
+
+    try{
+    const formData = new FormData();
+    formData.append('user_id', user?.user_data.useres_id,);
+    formData.append('device_token', token);
+
+
+    const params = {
+
+      data: formData,
+      token: user?.token,
+      msg:false
+    };
+
+
+
+    await dispatch(update_profile(params))
+  }
+  catch(err){
+    console.log('token ',err);
+  }
+  }
 
 
 

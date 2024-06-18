@@ -48,6 +48,7 @@ export default function Home() {
 
   useEffect(() => {
     get_order();
+    checkApplicationPermission();
     getTotalOrder();
     requestLocationPermission()
     const params = {
@@ -161,7 +162,16 @@ export default function Home() {
         }
     }
 };
- 
+const checkApplicationPermission = async () => {
+  if (Platform.OS === 'android') {
+    try {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+    } catch (error) {
+    }
+  }
+};
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>

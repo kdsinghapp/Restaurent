@@ -5,9 +5,9 @@ import { useIsFocused, useNavigation } from '@react-navigation/native'
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import Loading from '../configs/Loader';
 import { WebView } from 'react-native-webview';
-import { get_privacy_policy } from '../redux/feature/featuresSlice';
+import { get_privacy_policy, update_profile } from '../redux/feature/featuresSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
+import messaging from '@react-native-firebase/messaging';
 export default function PrivacyPolicy() {
   const Privacypolicy = useSelector(state => state.feature?.Privacypolicy);
   const isLoading = useSelector(state => state.feature.isLoading);

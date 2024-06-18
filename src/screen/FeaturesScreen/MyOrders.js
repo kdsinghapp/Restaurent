@@ -17,6 +17,7 @@ import { get_order_data_by_id } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
 import { useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
+import ProfileHeader from './ProfileHeader';
 
 export default function MyOrders() {
   const [status, setStatus] = useState('Accepted');
@@ -405,17 +406,7 @@ export default function MyOrders() {
     <View style={{ paddingHorizontal: 15, flex: 1, backgroundColor: '#FFFFFF' }}>
       {isLoading && <Loading />}
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ marginTop: 20 }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 20,
-              lineHeight: 30,
-              color: '#000',
-            }}>
-            My Order
-          </Text>
-        </View>
+      <ProfileHeader name={'My Orders'} />
         <View
           style={{
             height: hp(10),
