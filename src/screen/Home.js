@@ -207,20 +207,20 @@ const checkApplicationPermission = async () => {
             </Text>
           </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate(ScreenNameEnum.EDIT_PROFILE);
-            }}>
-            {getProfile?.useres_images ? (
-              <Image
-                source={{ uri: getProfile.useres_images }}
-                style={{ height: 40, width: 40, borderRadius: 20 }}
-                resizeMode="cover"
-              />
-            ) : (
-              <Logo />
-            )}
-          </TouchableOpacity>
+          <View>
+                <TouchableOpacity
+                  onPress={() => {
+                   // navigation.navigate(ScreenNameEnum.MsgNotification)
+                    // requestUserPermission()
+                  }}
+                >
+                  <Image
+                    source={require('../assets/croping/Notification3x.png')}
+                    resizeMode="contain"
+                    style={{ height: 45, width: 45 }}
+                  />
+                </TouchableOpacity>
+              </View>
         </View>
 
         <View

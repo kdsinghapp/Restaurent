@@ -35,6 +35,7 @@ import UpdateAddRestaurantDetails from "../screen/FeaturesScreen/UpdateAddRestau
 import MyOrder from "../screen/FeaturesScreen/MyOrder";
 import MyOrders from "../screen/FeaturesScreen/MyOrders";
 import TrackResToUser from "../screen/FeaturesScreen/TrackResToUser";
+import MsgNotification from "../screen/MsgNotification";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -136,6 +137,11 @@ const _routes = {
     {
       name: ScreenNameEnum.TrackResToUser,
       Component:TrackResToUser ,
+    },
+   
+    {
+      name: ScreenNameEnum.MsgNotification,
+      Component:MsgNotification ,
     },
    
    
