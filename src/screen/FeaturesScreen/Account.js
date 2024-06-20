@@ -141,16 +141,16 @@ export default function Account() {
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Holder Name :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.account_name}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Sort Code :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.sort_code}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Type :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_type}</Text></Text>
-                                <TouchableOpacity
+                               {getProfile?.account_id != details?.account_id  &&<TouchableOpacity
                                     onPress={() => Remove_account(details.account_id)}
                                     style={[styles.deleteButton]}>
                                     <Text style={styles.deleteButtonText}>Delete Account</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity>}
                             </View>
                             <View>
                                 <RadioButton
                                     value={index}
-                                    status={getProfile?.account_id === details?.account_id ? 'checked' : 'unchecked'}
+                                    status={getProfile?.account_id == details?.account_id ? 'checked' : 'unchecked'}
                                     onPress={() => {
                                         updateAccount(details?.account_id)
                                       
