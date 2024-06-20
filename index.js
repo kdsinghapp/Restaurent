@@ -24,6 +24,7 @@ const showLocalNotification = (value) => {
         soundName: 'default',
         importance: 4,
         vibrate: true,
+        
     });
 
     PushNotification.localNotification({

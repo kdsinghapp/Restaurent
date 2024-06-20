@@ -25,6 +25,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   MyOrder='MyOrder',
   TrackResToUser='TrackResToUser',
   MsgNotification='MsgNotification',
+  Account='Account',
 
 //Features screen
 

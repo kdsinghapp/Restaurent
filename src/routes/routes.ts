@@ -36,6 +36,7 @@ import MyOrder from "../screen/FeaturesScreen/MyOrder";
 import MyOrders from "../screen/FeaturesScreen/MyOrders";
 import TrackResToUser from "../screen/FeaturesScreen/TrackResToUser";
 import MsgNotification from "../screen/MsgNotification";
+import Account from "../screen/FeaturesScreen/Account";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -142,6 +143,10 @@ const _routes = {
     {
       name: ScreenNameEnum.MsgNotification,
       Component:MsgNotification ,
+    },
+    {
+      name: ScreenNameEnum.Account,
+      Component:Account ,
     },
    
    

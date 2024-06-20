@@ -287,6 +287,11 @@ const Account = [
    
     screen: ScreenNameEnum.MY_DISHES_PROFILE
   },
+  {
+    name: 'Bank Account',
+   
+    screen: ScreenNameEnum.Account
+  },
 
   {
     name: 'Change Password',

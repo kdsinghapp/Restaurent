@@ -21,7 +21,8 @@ const initialState = {
   OrderDetails:null,
   TotalList:null,
   FoodCategory:null,
-  Orderlocations: []
+  Orderlocations: [],
+  BankAccountList:[],
 };
 export const get_order_locations = createAsyncThunk(
   'get_order_locations',
@@ -444,6 +445,49 @@ export const delete_restaurant_dish = createAsyncThunk(
     }
   },
 );
+export const delete_account = createAsyncThunk(
+  'delete_account',
+  async (params, thunkApi) => {
+    try {
+      const formdata = new FormData();
+      formdata.append("account_id", params.account_id);
+
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`); // Add token to headers
+
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      const response = await fetch(
+        `${base_url.url}/restaurant/delete-account`,
+        requestOptions,
+      );
+
+      const responseData = await response.json();
+
+      console.log('Response delete_account=>>>>>>>>>>>>> :', responseData.success);
+
+      if (responseData.success) {
+        successToast('Account Deleted Successfully');
+      } else {
+        errorToast(responseData.message); 
+        console.log(responseData.message);
+      }
+
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      return thunkApi.rejectWithValue(error); // Use rejectWithValue to pass error
+    }
+  },
+);
+
 export const add_restaurant_dish = createAsyncThunk(
   'add_restaurant_dish',
   async (params, thunkApi) => {
@@ -626,6 +670,64 @@ export const update_profile = createAsyncThunk(
     }
   },
 );
+export const add_account_restaurant = createAsyncThunk(
+  'add_account_restaurant',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+      console.log('==========add_account_restaurant==========================',params.data);
+   
+  
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: params.data,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/add-account-restaurant`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('Response add_account_restaurant=>>>>>>>>>>>>> :', responseData.success);
+
+      // Handle successful response
+      if (responseData.success) {
+        if(!params.Notification){
+
+          successToast(responseData.message);
+        }
+       
+       
+      } else {
+        errorToast(responseData.message); 
+        console.log('==============add_account_restaurant======================');
+        console.log(responseData.message);
+        console.log('====================================');
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
 
 export const create_new_password = createAsyncThunk(
   'create_new_password',
@@ -735,6 +837,28 @@ export const get_Profile = createAsyncThunk(
     }
   },
 );
+export const get_account_restaurant = createAsyncThunk(
+  'get-get_account_restaurant',
+  async (params, thunkApi) => {
+
+    try {
+      const response = await API.post('/restaurant/get-account-restaurant',null,{ headers: {
+        Authorization: `Bearer ${params.token}`,
+      }
+    },);
+
+  
+      if (response.data.success) {
+        console.log('User get_account_restaurant Succesfuly');
+      }
+      return response.data.data;
+    } catch (error) {
+      console.log('🚀 ~ :get_account_restaurant:', error);
+
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);
 export const dashboard_data = createAsyncThunk(
   'dashboard_data',
   async (params, thunkApi) => {
@@ -837,6 +961,49 @@ const FeatureSlice = createSlice({
       state.Orderlocations = action.payload;
     });
     builder.addCase(get_order_locations.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(delete_account.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(delete_account.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+
+    });
+    builder.addCase(delete_account.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+    builder.addCase(get_account_restaurant.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(get_account_restaurant.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.BankAccountList = action.payload;
+    });
+    builder.addCase(get_account_restaurant.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+    });
+
+    builder.addCase(add_account_restaurant.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(add_account_restaurant.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+
+    });
+    builder.addCase(add_account_restaurant.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;
