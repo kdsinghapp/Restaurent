@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity
 import { RadioButton } from 'react-native-paper';
 import ProfileHeader from './ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { add_account_restaurant, delete_account, get_account_restaurant, update_profile } from '../../redux/feature/featuresSlice';
+import { add_account_restaurant, delete_account, get_Profile, get_account_restaurant, update_profile } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
 import { errorToast } from '../../configs/customToast';
 import { useIsFocused } from '@react-navigation/native';
@@ -22,9 +22,10 @@ export default function Account() {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
     const slideAnim = useState(new Animated.Value(-300))[0];  // Initial position
-
+    const getProfile = useSelector(state => state.feature.getProfile);
     useEffect(() => {
         getBankAccount();
+        get_Profile_data()
     }, [user, isFocused]);
 
     const getBankAccount = () => {
@@ -87,7 +88,8 @@ export default function Account() {
 
 
         dispatch(update_profile(params)).then(res => {
-            getBankAccount()
+            getBankAccount(),
+            get_Profile_data()
         })
     };
 
@@ -113,7 +115,13 @@ export default function Account() {
             useNativeDriver: true,
         }).start();
     };
-
+   const get_Profile_data =() => {
+        const params = {
+          token: user.token,
+        };
+        dispatch(get_Profile(params));
+      }
+    
     return (
         <View style={{ flex: 1, padding: 20 }}>
             {isLoading && <Loading />}
@@ -121,7 +129,12 @@ export default function Account() {
             <ScrollView>
                 {accountList?.length > 0 ? (
                     accountList.map((details, index) => (
-                        <View key={index} style={styles.accountCard}>
+                        <TouchableOpacity 
+                        onPress={() => {
+                            updateAccount(details?.account_id)
+                          
+                        }}
+                        key={index} style={styles.accountCard}>
                             <View style={{ width: '90%' }}>
                                 <Text style={styles.cardTitle}>Account Details {index + 1}</Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Number :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_number}</Text></Text>
@@ -137,14 +150,14 @@ export default function Account() {
                             <View>
                                 <RadioButton
                                     value={index}
-                                    status={selectedAccount === index ? 'checked' : 'unchecked'}
+                                    status={getProfile?.account_id === details?.account_id ? 'checked' : 'unchecked'}
                                     onPress={() => {
                                         updateAccount(details?.account_id)
-                                        setSelectedAccount(index)
+                                      
                                     }}
                                 />
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))
                 ) : <Text style={styles.noAccountText}>No Account Added</Text>}
 

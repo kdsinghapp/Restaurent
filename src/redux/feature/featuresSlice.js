@@ -838,7 +838,7 @@ export const get_Profile = createAsyncThunk(
   },
 );
 export const get_account_restaurant = createAsyncThunk(
-  'get-get_account_restaurant',
+  'get_account_restaurant',
   async (params, thunkApi) => {
 
     try {
