@@ -103,7 +103,7 @@ elevation: 5,
         }}>
         <View>
           <Image
-            source={{ uri: item.user_data.useres_images }}
+            source={{ uri: item.user_data.images}}
             style={{ height: 50, width: 50, borderRadius: 25 }}
           />
         </View>
@@ -124,7 +124,7 @@ elevation: 5,
               fontWeight: '600',
               lineHeight: 24,
             }}>
-            {item.user_data.useres_full_name}
+            {item.user_data.full_name}
           </Text>
         </View>
         <View>

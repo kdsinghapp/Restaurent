@@ -128,7 +128,7 @@ export default function MyOrders() {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: item.user_data?.useres_images }}
+              source={{ uri: item.user_data?.images }}
               style={{
                 height: '90%',
                 width: '90%',
@@ -139,8 +139,8 @@ export default function MyOrders() {
             />
           </View>
           <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 14, color: "#000", fontWeight: '600' }}>{item.user_data?.useres_full_name}</Text>
-            <Text style={{ fontSize: 12, color: "#777777", fontWeight: '600' }}>{item.user_data?.useres_address}</Text>
+            <Text style={{ fontSize: 14, color: "#000", fontWeight: '600' }}>{item.user_data?.full_name}</Text>
+            <Text style={{ fontSize: 12, color: "#777777", fontWeight: '600' }}>Contact {item.user_data?.mobile_number}</Text>
           </View>
         </View>
         {!isExpand && <View style={{ marginTop: 20 }}>

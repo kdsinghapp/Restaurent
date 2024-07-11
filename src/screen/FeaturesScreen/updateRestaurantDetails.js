@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,8 +18,9 @@ import ProfileHeader from './ProfileHeader';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { get_restaurant_details } from '../../redux/feature/featuresSlice';
-import GooglePlacesInput from '../../configs/AutoAddress';
+
 import Geolocation from '@react-native-community/geolocation';
+import GooglePlacesInput from '../../configs/AutoAddress copy';
 
 export default function UpdateRestaurantDetails() {
   const isLoading = useSelector(state => state.feature.isLoading);
@@ -27,10 +28,10 @@ export default function UpdateRestaurantDetails() {
   const user = useSelector(state => state.auth.userData);
 
   const [restaurantName, setRestaurantName] = useState('');
-  const [restaurantLocation, setRestaurantLocation] = useState('');
+  const [restaurantLocation, setRestaurantLocation] = useState('select address');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
   const [certificate, setCertificate] = useState(null);
-
+  const [Location, setLocation] = useState(null)
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -101,8 +102,8 @@ export default function UpdateRestaurantDetails() {
     const updatedRestaurantDetails = {
       res_name: restaurantName,
       res_address: restaurantLocation,
-      res_latitude: 22.12,
-      res_longitude: 77.75,
+      res_latitude: Location?.latitude,
+      res_longitude: Location?.longitude,
       res_certificate: certificate?.cropRect ? {
         uri: Platform.OS === 'android' ? certificate.path : certificate.path.replace("file://", ""),
         type: certificate.mime,
@@ -126,14 +127,50 @@ export default function UpdateRestaurantDetails() {
     navigation.navigate(ScreenNameEnum.UpdateAddRestaurantDetails, { item: updatedRestaurantDetails, restaurantDetails });
   };
 
-  const handlePlaceSelected = (details) => {
-    if (details) {
-      setRestaurantLocation(details.formatted_address);
-      // You can also extract latitude and longitude if needed
-      console.log('Selected location details:', details);
-    }
-  };
+  function formatAddress(addressData) {
+    const components = addressData.address_components;
+    const addressParts = [];
 
+    components.forEach(component => {
+      if (component.types.includes("premise")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("sublocality_level_1") || component.types.includes("sublocality")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("locality")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("administrative_area_level_1")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("country")) {
+        addressParts.push(component.long_name);
+      }
+    });
+
+    return addressParts.join(", ");
+  }
+  const handleSelectLocation = useCallback(
+    (details) => {
+        const { lat, lng } = details.geometry.location;
+        console.log({
+            latitude: lat,
+            longitude: lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+        });
+        setLocation({
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+  
+  
+        const formattedAddress = formatAddress(details);
+        console.log('details=>>>>>>>>>>>>>>>>>>>>>', formattedAddress);
+        setRestaurantLocation(formattedAddress)
+     
+    },
+    [navigation]
+);
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
@@ -142,9 +179,13 @@ export default function UpdateRestaurantDetails() {
       ) : (
         <View style={styles.androidHeader} />
       )}
-      {restaurantDetails && (
+      {restaurantDetails && (<>
+        <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
+         <View >
+         <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handleSelectLocation} />
+       </View>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
+         
           <View style={styles.formContainer}>
             <View style={styles.textInputContainer}>
               <TextInput
@@ -155,9 +196,7 @@ export default function UpdateRestaurantDetails() {
                 onChangeText={setRestaurantName}
               />
             </View>
-            <View>
-              <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handlePlaceSelected} />
-            </View>
+           
             <TouchableOpacity
               style={styles.imageUploadContainer}
               onPress={() => openImageLibrary(setRestaurantPhoto)}>
@@ -206,7 +245,10 @@ export default function UpdateRestaurantDetails() {
             style={[styles.tabBtn, { bottom: 10, marginTop: hp(10) }]}>
             <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
+
+          <View style={{ height: hp(10) }} />
         </ScrollView>
+        </>
       )}
     </View>
   );

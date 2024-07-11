@@ -44,7 +44,7 @@ export default function Home() {
   const [prepTime, setPrepTime] = useState(0);
 
   
-
+console.log(OrderDetails);
 
   useEffect(() => {
     get_order();

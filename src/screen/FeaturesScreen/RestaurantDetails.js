@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,14 +18,15 @@ import Location from '../../assets/sgv/Location.svg';
 import ProfileHeader from './ProfileHeader';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useSelector } from 'react-redux';
+import GooglePlacesInput from '../../configs/AutoAddress copy';
 
 export default function RestaurantDetails() {
   const isLoading = useSelector(state => state.feature.isLoading);
   const [restaurantName, setRestaurantName] = useState('');
-  const [restaurantLocation, setRestaurantLocation] = useState('');
+  const [restaurantLocation, setRestaurantLocation] = useState('select address');
   const [restaurantPhoto, setRestaurantPhoto] = useState(null);
   const [certificate, setCertificate] = useState(null);
-
+  const [Location, setLocation] = useState(null)
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -72,14 +73,49 @@ export default function RestaurantDetails() {
   };
 
 
-  
+  const handleSelectLocation = useCallback(
+    (details) => {
+      const { lat, lng } = details.geometry.location;
+      setLocation({
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
 
+
+      const formattedAddress = formatAddress(details);
+      console.log('details=>>>>>>>>>>>>>>>>>>>>>', formattedAddress);
+      setRestaurantLocation(formattedAddress)
+    },
+    [navigation]
+  );
+  function formatAddress(addressData) {
+    const components = addressData.address_components;
+    const addressParts = [];
+
+    components.forEach(component => {
+      if (component.types.includes("premise")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("sublocality_level_1") || component.types.includes("sublocality")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("locality")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("administrative_area_level_1")) {
+        addressParts.push(component.long_name);
+      } else if (component.types.includes("country")) {
+        addressParts.push(component.long_name);
+      }
+    });
+
+    return addressParts.join(", ");
+  }
   const handleNext = () => {
     const restaurantDetails = {
       res_name: restaurantName,
       res_address: restaurantLocation,
-      res_latitude: 22.12,
-      res_longitude: 77.75,
+      res_latitude: Location?.latitude,
+      res_longitude: Location?.longitude,
       res_certificate: {
         uri: Platform.OS === 'android' ? certificate?.path : certificate?.path?.replace('file://', ''),
         type: certificate?.mime,
@@ -104,8 +140,11 @@ export default function RestaurantDetails() {
       ) : (
         <View style={styles.androidHeader} />
       )}
+      <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
+      <View >
+        <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handleSelectLocation} />
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
 
         <View style={styles.formContainer}>
           <View style={styles.textInputContainer}>
@@ -117,16 +156,7 @@ export default function RestaurantDetails() {
               onChangeText={setRestaurantName}
             />
           </View>
-          <View style={styles.locationInputContainer}>
-            <TextInput
-              placeholder="Restaurant Location"
-              placeholderTextColor={'#ADA4A5'}
-              style={styles.textInput}
-              value={restaurantLocation}
-              onChangeText={setRestaurantLocation}
-            />
-            <Location />
-          </View>
+
           {/* <View style={{}}>
             <GooglePlacesInput  />
           
