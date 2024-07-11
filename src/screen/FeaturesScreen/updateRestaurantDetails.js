@@ -98,6 +98,8 @@ export default function UpdateRestaurantDetails() {
   };
   
 
+
+  
   const handleNext = () => {
     const updatedRestaurantDetails = {
       res_name: restaurantName,

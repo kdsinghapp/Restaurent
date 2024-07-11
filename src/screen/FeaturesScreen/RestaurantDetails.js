@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import Location from '../../assets/sgv/Location.svg';
 import ProfileHeader from './ProfileHeader';
@@ -28,21 +28,23 @@ export default function RestaurantDetails() {
   const [certificate, setCertificate] = useState(null);
   const [Location, setLocation] = useState(null)
   const navigation = useNavigation();
-
+const isFocuse = useIsFocused()
   useEffect(() => {
     requestPermissions();
-  }, []);
+  }, [isFocuse,openImageLibrary]);
 
   const requestPermissions = async () => {
     try {
       const granted = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.CAMERA,
+
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       ]);
 
       if (
-        granted[PermissionsAndroid.PERMISSIONS.CAMERA] !== PermissionsAndroid.RESULTS.GRANTED ||
-        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
+      
+        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
       ) {
         console.log('Camera or storage permission denied');
       }
@@ -50,28 +52,48 @@ export default function RestaurantDetails() {
       console.warn(err);
     }
   };
+  // const openImageLibrary = async (setImage) => {
+  //   const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+  //   const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+  //   const readStoragePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 
-  const openImageLibrary = async (setImage) => {
-    const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
-    const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+  //   if (cameraPermission && storagePermission &&readStoragePermission) {
+  //     ImagePicker.openPicker({
+  //       width: 1600,
+  //       height: 900,
+  //       cropping: true,
+  //     })
+  //       .then((image) => {
+  //         setImage(image);
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   } else {
+  //     requestPermissions();
+  //   }
+  // };
+  const openImageLibrary = (setImage) => {
 
-    if (cameraPermission && storagePermission) {
-      ImagePicker.openPicker({
-        width: 1600,
-        height: 900,
-        cropping: true,
+
+    ImagePicker.openPicker({
+      width: 1600,
+      height: 900,
+      cropping: true,
+
+      maxFiles: 1
+    })
+      .then(images => {
+        setImage(images);
+
+
+
       })
-        .then((image) => {
-          setImage(image);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      requestPermissions();
-    }
+      .catch(err => {
+        console.log(err);
+        errorToast('Please reselect image');
+      });
   };
-
 
   const handleSelectLocation = useCallback(
     (details) => {
@@ -90,6 +112,8 @@ export default function RestaurantDetails() {
     },
     [navigation]
   );
+
+
   function formatAddress(addressData) {
     const components = addressData.address_components;
     const addressParts = [];

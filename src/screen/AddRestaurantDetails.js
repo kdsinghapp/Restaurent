@@ -124,7 +124,8 @@ export default function AddRestaurantDetails() {
 
       data: formData,
       token: user?.token,
-      msg:false
+      msg:false,
+      Notification:true
     };
 
 

@@ -23,7 +23,7 @@ export default function WELCOME_SCREEN() {
 
         navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
       }else{
-        navigation.navigate(ScreenNameEnum.ADD_RESTAURANT_DETAILS);
+        navigation.navigate(ScreenNameEnum.RESTAURANT_DETAILS);
       }
     }
   };
