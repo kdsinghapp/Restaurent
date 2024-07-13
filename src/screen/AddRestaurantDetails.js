@@ -190,7 +190,7 @@ export default function AddRestaurantDetails() {
       dispatch(update_restaurant_details(params));
     }
   };
-
+console.log(user?.user_data?.useres_id,);
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}

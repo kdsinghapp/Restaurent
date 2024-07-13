@@ -180,7 +180,7 @@ export const update_restaurant_details = createAsyncThunk(
       formdata.append("res_sunday_close", params.res_sunday_close);
       formdata.append("res_users_restaurants_id", params.res_users_restaurants_id);
 
-console.log('formdata',formdata);
+
       const myHeaders = new Headers();
       myHeaders.append('Accept', 'application/json');
 

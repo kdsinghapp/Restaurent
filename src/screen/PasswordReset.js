@@ -152,7 +152,7 @@ export default function PasswordRest() {
                 lineHeight:21
               }}   
               placeholder='Enter Mobile'
-
+placeholderTextColor={'#000'}
               onChangeText={(txt)=>setMobile(txt)}
               value={mobile}
               />
@@ -208,6 +208,7 @@ export default function PasswordRest() {
                 color: '#000',
                 lineHeight:21
               }}   
+              placeholderTextColor={'#000'}
               placeholder='Enter email'
 
               onChangeText={(txt)=>setEmail(txt)}

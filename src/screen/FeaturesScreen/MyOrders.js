@@ -18,7 +18,7 @@ import Loading from '../../configs/Loader';
 import { useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import ProfileHeader from './ProfileHeader';
-
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 export default function MyOrders() {
   const [status, setStatus] = useState('Accepted');
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
@@ -48,7 +48,10 @@ export default function MyOrders() {
     }
   };
 
-
+  const makePhoneCall = (Number) => {
+    console.log(Number);
+        RNImmediatePhoneCall.immediatePhoneCall(Number);
+      }
   const TopRateRestaurant = ({ item, index }) => {
 
     const isExpand = isExpanded && isExpandedIndex === index
@@ -105,7 +108,7 @@ export default function MyOrders() {
     };
     
 
-
+  
     return (
       <TouchableOpacity
         // disabled={item.status === 'Pending'}
@@ -116,10 +119,10 @@ export default function MyOrders() {
         }}
       >
         <View style={{ width: '88%', justifyContent: 'center', }}>
-          <Text style={{ fontSize: 12, fontWeight: '500' }}>
+          <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777' }}>
             Order ID- {item.resord_id}
           </Text>
-          <Text style={{ fontSize: 12, fontWeight: '500' }}>
+          <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777' }}>
             Order Time {formatTime(item.created_at)}
           </Text>
         </View>
@@ -184,7 +187,10 @@ export default function MyOrders() {
                   ? 'This order was canceled by the User!'
                   : 'You canceled this booking!')}
               {item.status === 'Pending' && 'Your booking is pending!'}
-              {item.status === 'Accepted' && 'this order is Accepted!'}
+              {item.status === 'Accepted' &&item.delivery_status != 'Pickuped'&& 'this order is Accepted!'}
+    
+              {item.status === 'Accepted' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
+
 
             </Text>
 
@@ -247,7 +253,9 @@ export default function MyOrders() {
                     ? 'You canceled this booking!'
                     : 'Your order was canceled by the restaurant!')}
                 {item.status === 'Pending' && 'Your booking is pending!'}
-                {item.status === 'Accepted' && 'this order is Accepted!'}
+                {item.status === 'Accepted' &&item.delivery_status != 'Pickuped'&& 'this order is Accepted!'}
+    
+    {item.status === 'Accepted' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
 
 
               </Text>
@@ -350,7 +358,7 @@ export default function MyOrders() {
         </>
         )}
 
-        {item.delivery_status !== 'Pending' && (
+        {item.delivery_status !== 'Pending' && item.delivery_status !== 'Deliverd' && (
           <View
             style={{
               flexDirection: 'row',
@@ -360,10 +368,14 @@ export default function MyOrders() {
               marginTop: 20,
             }}
           >
+               <TouchableOpacity
+              onPress={() => makePhoneCall(item.driver_data.driver_mobile_number)}
+            >
             <Image
               source={require('../../assets/croping/Call3x.png')}
               style={{ height: 60, width: 60 }}
             />
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
 

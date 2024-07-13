@@ -79,7 +79,7 @@ export default function UpdateRestaurantDetails() {
 
   const get_MyRestaurant = async () => {
     const params = {
-      res_id: user.user_data?.restaurant_id,
+      res_id: user.user_data?.useres_id,
     };
     await dispatch(get_restaurant_details(params));
   };

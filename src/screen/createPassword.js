@@ -40,6 +40,8 @@ const {identity} = route.params
     return passwordRegex.test(password);
   };
 
+
+
   const createNewPassword =()=>{
 
     if(password === ConfirmPassword ){

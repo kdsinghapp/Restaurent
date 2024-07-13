@@ -140,8 +140,9 @@ export default function Account() {
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Number :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_number}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Holder Name :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.account_name}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Sort Code :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.sort_code}</Text></Text>
+                   
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Type :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_type}</Text></Text>
-                               {getProfile?.account_id != details?.account_id  &&<TouchableOpacity
+                                {getProfile?.account_id != details?.account_id &&  <TouchableOpacity
                                     onPress={() => Remove_account(details.account_id)}
                                     style={[styles.deleteButton]}>
                                     <Text style={styles.deleteButtonText}>Delete Account</Text>
@@ -174,7 +175,7 @@ export default function Account() {
                     onRequestClose={hideAddAccountForm}
                 >
                     <Animated.View style={[styles.modalContainer, { transform: [{ translateY: slideAnim }] }]}>
-                        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                        <KeyboardAvoidingView behavior={Platform.OS == 'android' ?  'height':'padding' }>
                             <ScrollView contentContainerStyle={styles.modalScrollContainer}>
                                 <View style={styles.modalContent}>
                                     <Text style={styles.label}>Account Holder Name:</Text>
@@ -183,6 +184,7 @@ export default function Account() {
                                         value={accountHolderName}
                                         onChangeText={setAccountHolderName}
                                         placeholder="Enter account holder name"
+                                        placeholderTextColor={'#000'}
                                     />
                                     <Text style={styles.label}>Account Number:</Text>
                                     <TextInput
@@ -190,6 +192,7 @@ export default function Account() {
                                         value={accountNumber}
                                         onChangeText={setAccountNumber}
                                         placeholder="Enter account number"
+                                        placeholderTextColor={'#000'}
                                     />
                                     <Text style={styles.label}>Sort Code:</Text>
                                     <TextInput
@@ -197,6 +200,7 @@ export default function Account() {
                                         value={sortCode}
                                         onChangeText={setSortCode}
                                         placeholder="Enter sort code"
+                                        placeholderTextColor={'#000'}
                                     />
                                     <Text style={styles.label}>Account Type:</Text>
                                     <TextInput
@@ -204,6 +208,7 @@ export default function Account() {
                                         value={accountType}
                                         onChangeText={setAccountType}
                                         placeholder="Enter account type"
+                                        placeholderTextColor={'#000'}
                                     />
                                     <TouchableOpacity
                                         onPress={handleAddAccount}
@@ -239,6 +244,9 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 5,
         marginBottom: 5,
+        paddingHorizontal:20,
+        color:'#000',
+        fontWeight:'500'
     },
     accountCard: {
         flexDirection: 'row',
@@ -253,6 +261,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+        color:'#000'
     },
     deleteButton: {
         marginTop: 15,
@@ -312,7 +321,7 @@ const styles = StyleSheet.create({
     modalContent: {
         width: widthPercentageToDP(100),
         padding: 20,
-        marginTop: heightPercentageToDP(25),
+        marginTop: heightPercentageToDP(35),
         height: heightPercentageToDP(75),
         backgroundColor: 'white',
         borderTopLeftRadius: 30,

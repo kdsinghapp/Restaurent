@@ -313,7 +313,7 @@ export default function SignUp() {
 
                 justifyContent: 'center',
               }}>
-              <Text style={{fontSize: 16, lineHeight: 24, color: '#0000000'}}>
+              <Text style={{fontSize: 16, lineHeight:18,color:'#000'}}>
                 Alrady have an account?
               </Text>
               <TouchableOpacity

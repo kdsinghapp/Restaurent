@@ -220,6 +220,7 @@ const user = useSelector(state => state.auth.userData);
             Update Dish
           </Text>
         </TouchableOpacity>
+        <View style={{height:hp(5)}} />
       </ScrollView>
     </View>
   );
@@ -278,13 +279,14 @@ const styles = StyleSheet.create({
     borderColor: 'red', // Red border color for invalid input
   },
   tabBtn: {
-    backgroundColor: '#007AFF',
+
     height: 50,
     width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf:'center',
-    borderRadius: 10,
+    borderRadius: 30,
+    backgroundColor: '#352C48',
   },
   nextButtonText: {
     fontWeight: '600',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -10,13 +10,15 @@ const TrackOrder = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
+
+
+
   const { OrderId } = route.params || {};
 
   const mapRef = useRef(null);
   const dispatch = useDispatch();
 
   const Orderlocations = useSelector(state => state.feature.Orderlocations);
-
 
 
   const driverLocation = Orderlocations?.driver_data
@@ -84,7 +86,7 @@ const TrackOrder = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading order locations...</Text>
+        <Text style={{color:'#000'}}>Loading order locations...</Text>
       </View>
     );
   }

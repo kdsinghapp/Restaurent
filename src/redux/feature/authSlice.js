@@ -153,13 +153,13 @@ export const validOtp = createAsyncThunk(
       // Parse response as JSON
       const responseData = await response.json();
 
-      console.log('Response:', responseData);
+      console.log('Response:', responseData.status);
 
       // Handle successful response
-      if (responseData.status === '1') {
+      if (responseData.status == '1') {
         successToast(responseData.message);
         // Assuming ScreenNameEnum.CREATE_PASSWORD is imported properly
-        params.navigation.navigate(ScreenNameEnum.CREATE_PASSWORD);
+        params.navigation.navigate(ScreenNameEnum.CREATE_PASSWORD,{identity:{identity:params.data.identity,otp:params.data.otp}});
       } else {
         errorToast(responseData.message);
       }
@@ -178,7 +178,7 @@ export const CreateNewPassword = createAsyncThunk(
   'create-new-password-without-login',
   async (params, thunkApi) => {
     const {identity, password, otp} = params.data;
-    console.log('identity, password, otp,', identity, password, otp);
+    console.log('create-new-password-without-login', identity, password, otp);
     try {
       const myHeaders = new Headers();
       myHeaders.append('Accept', 'application/json');
@@ -197,7 +197,7 @@ export const CreateNewPassword = createAsyncThunk(
       };
 
       const response = fetch(
-        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/create-new-password',
+        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/create-new-password-without-login',
         requestOptions,
       )
         .then(response => response.text())
