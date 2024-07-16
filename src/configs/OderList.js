@@ -71,6 +71,26 @@ const navigation = useNavigation()
     }
   };
 
+  const formatTime = (dateTimeString) => {
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const date = new Date(dateTimeString);
+
+    // Get day of the week, month, and year
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    const month = monthsOfYear[date.getMonth()];
+    const year = date.getFullYear();
+
+    // Get hours and minutes
+    let hours = date.getHours();
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+
+    // Convert hours to 12-hour format
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+
+    return `${dayOfWeek} ${month} ${date.getDate()}, ${year} ${hours}:${minutes} ${ampm}`;
+  };
 
   return (
     <TouchableOpacity
@@ -93,6 +113,9 @@ elevation: 5,
           padding: 10,
         },
       ]}>
+         <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777',alignSelf:'flex-end' }}>
+            {formatTime(item.created_at)}
+          </Text>
       <View
         style={{
           paddingHorizontal: 15,
@@ -107,6 +130,7 @@ elevation: 5,
             style={{ height: 50, width: 50, borderRadius: 25 }}
           />
         </View>
+        
         <View style={{ width: '65%' }}>
           <Text
             style={{
@@ -117,6 +141,7 @@ elevation: 5,
             }}>
             ID: {item.resord_id}
           </Text>
+         
           <Text
             style={{
               color: '#352C48',
@@ -170,6 +195,21 @@ elevation: 5,
           </View>
         </View>
       </View>
+    {item.instruction &&  <View
+        style={{
+          paddingHorizontal: 15,
+          height: hp(5),
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexDirection: 'row',
+        }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ color: '#777777', fontWeight: '600', fontSize: 14 }}>
+          Instruction :- {item.instruction}
+          </Text>
+        
+        </View>
+      </View>}
       <View
         style={{
           paddingHorizontal: 15,

@@ -24,28 +24,29 @@ export default function EditDish() {
   const route = useRoute();
   const navigation = useNavigation();
   const { item } = route.params;
-  const [image, setImage] = useState(item.restaurant_dish_image); // State to hold the selected image
-  const [dishName, setDishName] = useState(item.restaurant_dish_name);
-  const [dishPrice, setDishPrice] = useState(item.restaurant_dish_price);
-  const [dishOffer, setDishOffer] = useState(item.restaurant_dish_offer);
-  const [prepareTime, setPrepareTime] = useState(item.restaurant_dish_preapare_time);
-  const [description, setDescription] = useState(item.restaurant_dish_description);
-  const [category, setCategory] = useState(item.restaurant_dish_category); // State to hold the selected category
+  const [image, setImage] = useState(item?.restaurant_dish_image); // State to hold the selected image
+  const [dishName, setDishName] = useState('');
+  const [dishPrice, setDishPrice] = useState('');
+  const [dishOffer, setDishOffer] = useState('');
+  const [prepareTime, setPrepareTime] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] =useState('');; // State to hold the selected category
   const FoodCategory = useSelector(state => state.feature.FoodCategory);
 
   useEffect(() => {
     Get_Category();
   }, [user]);
 
+  console.log( typeof item.restaurant_dish_price.toString());
 const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setDishName(item.restaurant_dish_name);
-    setDishPrice(item.restaurant_dish_price.toString());
-    setDishOffer(item.restaurant_dish_offer.toString());
-    setPrepareTime(item.restaurant_dish_preapare_time);
+    setDishPrice(item.restaurant_dish_price?.toString());
+    setDishOffer(item.restaurant_dish_offer != null &&item.restaurant_dish_offer?.toString());
+    setPrepareTime(item.restaurant_dish_preapare_time != null &&item.restaurant_dish_preapare_time?.toString());
     setDescription(item.restaurant_dish_description);
     setImage({path:item.restaurant_dish_image});
     setCategory(item.restaurant_dish_category)
@@ -126,13 +127,13 @@ const user = useSelector(state => state.auth.userData);
             <Image
               source={{ uri: image.path }}
               style={styles.uploadImage}
-              resizeMode='contain'
+             
             />
           ) : (
             <>
               <Image
                 source={require('../../assets/croping/Upload3x.png')}
-                style={[styles.uploadImage, { height: 60, width: 60 }]}
+                style={[styles.uploadImage, { height: 60, width: 60 ,}]}
               />
               <View style={styles.uploadTextContainer}>
                 <Text style={styles.uploadText}>
@@ -142,11 +143,13 @@ const user = useSelector(state => state.auth.userData);
             </>
           )}
         </TouchableOpacity>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Category</Text>
         { FoodCategory &&    <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
+      
         <Dropdown
             style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
+            selectedTextStyle={[styles.selectedTextStyle,{color:'#000'}]}
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
             data={FoodCategory}
@@ -156,9 +159,11 @@ const user = useSelector(state => state.auth.userData);
             placeholder="Select Category"
             value={category}
             onChange={item => setCategory(item.rescat_id)}
+            itemTextStyle={{color:'#000',fontWeight:'500'}}
           />
         </View>
         }
+              <Text style={{color:'#000',marginLeft:10,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Name</Text>
         <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
           <TextInput
             placeholder="Dish Name"
@@ -168,6 +173,7 @@ const user = useSelector(state => state.auth.userData);
             value={dishName}
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Price</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Dish Price"
@@ -178,6 +184,7 @@ const user = useSelector(state => state.auth.userData);
             value={dishPrice}
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Offer %</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Dish Offer"
@@ -188,6 +195,7 @@ const user = useSelector(state => state.auth.userData);
             value={dishOffer}
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Prepare Time (in minutes)</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Prepare Time (in minutes)"
@@ -198,6 +206,7 @@ const user = useSelector(state => state.auth.userData);
             value={prepareTime}
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Description</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Add Description"
@@ -240,7 +249,7 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     backgroundColor: '#F7F8F8',
-    height: hp(20),
+    height: hp(25),
     marginTop: 20,
     borderRadius: 15,
     alignItems: 'center',
@@ -266,7 +275,7 @@ const styles = StyleSheet.create({
     height: 66,
     borderRadius: 40,
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop:5,
     borderWidth: 1,
     borderColor: '#ADA4A5',
   },

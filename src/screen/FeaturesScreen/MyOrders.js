@@ -15,7 +15,7 @@ import {
 } from 'react-native-responsive-screen';
 import { get_order_data_by_id } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import ProfileHeader from './ProfileHeader';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -28,6 +28,7 @@ export default function MyOrders() {
   const navigation = useNavigation()
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedIndex, setIsExpandedIndex] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     get_order(status);
@@ -47,6 +48,25 @@ export default function MyOrders() {
       console.error(err);
     }
   };
+
+
+  useEffect(() => {
+    let interval;
+
+    if (isFocused) {
+      get_order(status); // Call the function immediately when the component is focused
+      interval = setInterval(() => {
+        get_order(status);
+       return clearInterval(interval);
+      }, 3000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isFocused]);
 
   const makePhoneCall = (Number) => {
     console.log(Number);
@@ -156,7 +176,7 @@ export default function MyOrders() {
                 ...{ color: '#000', fontWeight: '600', marginRight: 20, },
               }}
             >
-              {item.total_price.toFixed(2)}
+              ${item.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -217,7 +237,7 @@ export default function MyOrders() {
                       </Text>
 
                       <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
-                        (Price per unit: {dish.price_per_unit.toFixed(2)})
+                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
                       </Text>
                     </View>
                   </View>
@@ -273,7 +293,7 @@ export default function MyOrders() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                {item.tax_amount}.00
+                ${item.tax_amount}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -285,7 +305,7 @@ export default function MyOrders() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                {item.delivery_charge}.00
+                ${item.delivery_charge}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -297,7 +317,7 @@ export default function MyOrders() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                {item.sub_total}.00
+                ${item.sub_total}.00
               </Text>
             </View>
             <View style={styles.detailsRow}>
@@ -309,7 +329,7 @@ export default function MyOrders() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                {item.total_price.toFixed(2)}
+                ${item.total_price.toFixed(2)}
               </Text>
             </View>
 

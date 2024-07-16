@@ -141,7 +141,7 @@ export default function AddDish() {
             <Image
               source={{ uri: image.path }}
               style={styles.uploadImage}
-              resizeMode="contain"
+ 
             />
           ) : (
             <>
@@ -157,12 +157,14 @@ export default function AddDish() {
             </>
           )}
         </TouchableOpacity>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Category</Text>
   { FoodCategory &&    <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
         <Dropdown
             style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
+            selectedTextStyle={[styles.selectedTextStyle,{color:'#000'}]}
             inputSearchStyle={styles.inputSearchStyle}
+            itemTextStyle={{color:'#000',fontWeight:'500'}}
             iconStyle={styles.iconStyle}
             data={FoodCategory}
             maxHeight={300}
@@ -174,6 +176,7 @@ export default function AddDish() {
           />
         </View>
         }
+             <Text style={{color:'#000',marginLeft:10,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Name</Text>
         <View style={[styles.inputContainer, !isDishNameValid && styles.invalidInput]}>
           <TextInput
             placeholder="Dish Name"
@@ -182,6 +185,7 @@ export default function AddDish() {
             onChangeText={text => setDishName(text)}
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Price</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Dish Price"
@@ -191,6 +195,7 @@ export default function AddDish() {
             keyboardType="numeric"
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Offer %</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Dish Offer"
@@ -200,6 +205,7 @@ export default function AddDish() {
             keyboardType="numeric"
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Prepare Time (in minutes)</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Prepare Time (in minutes)"
@@ -209,6 +215,7 @@ export default function AddDish() {
             keyboardType="numeric"
           />
         </View>
+        <Text style={{color:'#000',marginLeft:15,fontWeight:'600',fontSize:16,marginTop:10}}>Dish Description</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Add Description"
@@ -251,7 +258,7 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     backgroundColor: '#F7F8F8',
-    height: hp(20),
+    height: hp(25),
     marginTop: 20,
     borderRadius: 15,
     alignItems: 'center',
@@ -277,7 +284,7 @@ const styles = StyleSheet.create({
     height:60,
     borderRadius: 40,
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop:5,
     borderWidth: 1,
     borderColor: '#ADA4A5',
   },
@@ -292,12 +299,14 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     borderColor: 'gray',
+    color:'#000',
    
     borderRadius: 8,
     paddingHorizontal: 8,
   },
   placeholderStyle: {
     fontSize: 16,
+    color:'#000'
   },
   selectedTextStyle: {
     fontSize: 16,
@@ -307,13 +316,14 @@ const styles = StyleSheet.create({
     height: 20,
   },
   tabBtn: {
-    backgroundColor: '#007AFF',
+
     height: 50,
     width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
-    borderRadius: 10,
+    alignSelf:'center',
+    borderRadius: 30,
+    backgroundColor: '#352C48',
   },
   nextButtonText: {
     fontWeight: '600',

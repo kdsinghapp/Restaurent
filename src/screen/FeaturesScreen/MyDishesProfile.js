@@ -7,6 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -104,7 +105,23 @@ export default function MyDishesProfile() {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          delete_dish(item.restaurant_dish_id);
+          
+          Alert.alert(
+            'Delete Dish',
+            'Are you sure you want to delete this dish?',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              {
+                text: 'OK',
+                onPress: () => delete_dish(item.restaurant_dish_id),
+              },
+            ],
+            { cancelable: false }
+          );
         }}
         style={styles.deleteButton}>
         <Text style={styles.buttonText}>
@@ -117,7 +134,7 @@ export default function MyDishesProfile() {
   const renderCategory = ({ item: [categoryName, dishes] }) => {
     const isExpanded = expandedCategory === categoryName;
     const itemsToShow = isExpanded ? dishes : dishes.slice(0, 4);
-
+console.log('itemsToShow',itemsToShow);
     return (
       <View key={categoryName}>
         <View style={styles.categoryHeader}>

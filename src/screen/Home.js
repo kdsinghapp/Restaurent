@@ -43,8 +43,25 @@ export default function Home() {
   const dispatch = useDispatch();
   const [prepTime, setPrepTime] = useState(0);
 
-  
-console.log(OrderDetails);
+  const isFocused = useIsFocused();
+
+
+  useEffect(() => {
+    let interval;
+
+    if (isFocused) {
+      interval = setInterval(() => {
+        get_order();
+      }, 4000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isFocused]);
+
 
   useEffect(() => {
     get_order();
