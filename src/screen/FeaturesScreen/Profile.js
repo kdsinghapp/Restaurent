@@ -69,7 +69,7 @@ const user = useSelector(state => state.auth.userData);
   return (
     <View style={{flex: 1, backgroundColor: '#fff', paddingHorizontal: 20}}>
       {isLoading ? <Loading /> : null}
-<ScrollView>
+<ScrollView showsVerticalScrollIndicator={false}>
       {Platform.OS === 'ios' ? (
         <View style={{height: 68}} />
       ) : (

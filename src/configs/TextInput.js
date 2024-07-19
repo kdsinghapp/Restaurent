@@ -64,11 +64,11 @@ export default function TextInputField({...props}) {
             overflow: 'hidden',
             width: props.showEye ? '72%' :props.County?'85%': '90%',
             marginLeft: props.firstLogo ? 0 :  15,
-           
+            justifyContent:'center',
 
             height: 50,
           }}>
-          <View style={{width: '80%',paddingTop:1}}>
+          <View style={{width: '80%',paddingTop:1,justifyContent:'center'}}>
             <TextInput
               placeholderTextColor="#ADA4A5"
               style={{

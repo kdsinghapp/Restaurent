@@ -10,7 +10,7 @@ export default function ProfileHeader({name,Dwidth}) {
   return (
     <View >
          {Platform.OS === 'ios' ? (
-          <View style={{height: 68}} />
+          <View style={{height:40}} />
         ) : (
           <View style={{height:0}} />
         )}
@@ -33,7 +33,7 @@ export default function ProfileHeader({name,Dwidth}) {
           <View style={{justifyContent: 'center', width:Dwidth}}>
             <Text
               style={{
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: '700',
                 lineHeight: 27,
                 color: '#000',

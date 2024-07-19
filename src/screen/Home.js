@@ -29,7 +29,7 @@ import {
 import Loading from '../configs/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenNameEnum from '../routes/screenName.enum';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import Order_List from '../configs/OderList';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
@@ -155,9 +155,15 @@ export default function Home() {
   );
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
-        Geolocation.requestAuthorization('whenInUse');
+        try {
+            // Request location permission on iOS
+            Geolocation.requestAuthorization('whenInUse'); // or 'always'
+        } catch (error) {
+            console.warn('Authorization request error:', error);
+        }
     } else {
         try {
+            // Request location permission on Android
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
@@ -169,13 +175,12 @@ export default function Home() {
                 }
             );
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-              
-              console.log('granted');
+                console.log('Location permission granted');
             } else {
                 console.log('Location permission denied');
             }
-        } catch (err) {
-            console.warn(err);
+        } catch (error) {
+            console.warn('Permission request error:', error);
         }
     }
 };
@@ -193,7 +198,11 @@ const checkApplicationPermission = async () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
       {isLoading ? <Loading /> : null}
-
+      {Platform.OS === 'ios' ? (
+        <View style={{ height:20 }} />
+      ) : (
+        <View style={{ height: 0 }} />
+      )}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{

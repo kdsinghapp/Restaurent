@@ -48,7 +48,8 @@ export default function TabNavigator() {
         tabBarShowLabel: false,
 
         tabBarStyle: {
-          height: 65,
+          height:70,
+          paddingTop:20,
           display: isKeyboardVisible ? 'none' : 'flex', 
         },
       }}>

@@ -185,11 +185,7 @@ export default function UpdateAddRestaurantDetails() {
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={styles.iosHeader} />
-      ) : (
-        <View style={styles.androidHeader} />
-      )}
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
         <View style={styles.formContainer}>

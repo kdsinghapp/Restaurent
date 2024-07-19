@@ -1,4 +1,4 @@
-import {View, Text, TextInput, Image, TouchableOpacity} from 'react-native';
+import {View, Text, TextInput, Image, TouchableOpacity, Platform} from 'react-native';
 import React, {useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
@@ -61,7 +61,7 @@ export default function TextInputField({...props}) {
             </Text>
           </View>
 
-          <View style={{height: 38, width: '80%'}}>
+          <View style={{height: 38, width: '80%',marginLeft:Platform.OS == 'ios'?5:0}}>
             <TextInput
             
               placeholderTextColor="#000"

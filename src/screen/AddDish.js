@@ -128,12 +128,12 @@ export default function AddDish() {
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
       {Platform.OS === 'ios' ? (
-        <View style={styles.iosMargin} />
-      ) : (
-        <View style={styles.androidMargin} />
-      )}
+        <View style={{ height:-20 }} />
+        ) : (
+          <View style={{ height: 0 }} />
+          )}
+          <ProfileHeader name={'Add Dish'} Dwidth={'25%'} />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileHeader name={'Add Dish'} Dwidth={'25%'} />
         <TouchableOpacity
           onPress={openImageLibrary}
           style={styles.uploadButton}>
@@ -259,7 +259,6 @@ const styles = StyleSheet.create({
   uploadButton: {
     backgroundColor: '#F7F8F8',
     height: hp(25),
-    marginTop: 20,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',

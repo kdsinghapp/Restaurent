@@ -1,4 +1,4 @@
-package com.restaurent
+package com.LoveEatRestaurent
 
 import android.app.Application
 import com.facebook.react.PackageList
