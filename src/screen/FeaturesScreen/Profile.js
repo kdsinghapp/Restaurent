@@ -8,6 +8,7 @@ import {
   Platform,
   Settings,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -15,7 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 import Loading from '../../configs/Loader';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../redux/feature/authSlice';
+import { delete_acc, logout } from '../../redux/feature/authSlice';
 
 
 
@@ -34,11 +35,40 @@ const user = useSelector(state => state.auth.userData);
     dispatch(logout(params))
     setIsVisible(false)
   }
+  const Delete_Account =()=>{
+    Alert.alert(
+      "Are you sure?",
+      "This action will permanently delete your account.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => handleDeleteAccount(),
+          style: "destructive"
+        }
+      ]
+    );
+  }
+  
+  
+  const handleDeleteAccount =()=>{
+  
+    const params = {
+      token:user?.token,
+       navigation: navigation,
+     };
+    dispatch(delete_acc(params))
+  
+  }
+
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate(item.screen);
+          navigation.navigate(item.screen,{type:'Accepted'});
         }}
         style={{
       
@@ -261,6 +291,28 @@ const user = useSelector(state => state.auth.userData);
           Log Out
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+         Delete_Account()
+        }}
+        style={{
+         
+          height: 59,
+         
+          //backgroundColor: '#FAFAFA',
+         // alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            color: '#FF0000',
+            fontSize: 14,
+            lineHeight: 21,
+            fontWeight: '700',
+          }}>
+         Delete Account
+        </Text>
+      </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -285,7 +337,8 @@ const Account = [
   {
     name: 'My Dishes',
    
-    screen: ScreenNameEnum.MY_DISHES_PROFILE
+    screen: ScreenNameEnum.Category
+    // screen: ScreenNameEnum.MY_DISHES_PROFILE
   },
   {
     name: 'Bank Account',

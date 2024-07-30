@@ -30,7 +30,24 @@ export default function TermConditions() {
   }, [isFocuss]);
 
 
+  const generateHtmlContent = content => `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
+    <style>
+      body {
 
+        font-size:36px;
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    ${content}
+  </body>
+  </html>
+`;
   return (
     <View style={{flex: 1, backgroundColor: '#fff', paddingHorizontal: 15}}>
       {isLoading ? <Loading /> : null}
@@ -52,7 +69,7 @@ export default function TermConditions() {
         
         <View style={{flex:1}}>
     {termsConditions &&  <WebView 
-          source={{ html: termsConditions[0].tac_text }} 
+          source={{ html: generateHtmlContent(termsConditions[0].tac_text)}} 
         />
     }
         </View>

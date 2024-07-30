@@ -1,4 +1,10 @@
+
+ext {
+    nodePath = "/Users/technorizen/.nvm/versions/node/v20.12.1/bin/node"
+}
+
 buildscript {
+
     ext {
         buildToolsVersion = "34.0.0"
         minSdkVersion = 21
@@ -7,6 +13,7 @@ buildscript {
         ndkVersion = "25.1.8937393"
         kotlinVersion = "1.8.0"
            playServicesLocationVersion = "21.0.1"
+          
     }
     repositories {
         google()

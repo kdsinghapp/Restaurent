@@ -31,6 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenNameEnum from '../routes/screenName.enum';
 import Geolocation from 'react-native-geolocation-service';
 import Order_List from '../configs/OderList';
+import { notificationListener } from './FeaturesScreen/NotificationComponent';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
@@ -44,7 +45,10 @@ export default function Home() {
   const [prepTime, setPrepTime] = useState(0);
 
   const isFocused = useIsFocused();
-
+  React.useEffect(() => {
+    notificationListener();
+   
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -95,10 +99,10 @@ export default function Home() {
     dispatch(get_order_data_by_id(params));
   };
   const RestaurantOder = ({ item }) => (
-    <View
-      // onPress={() => {
-      //   navigation.navigate(ScreenNameEnum.DISH_INFORMATION);
-      // }}
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate(ScreenNameEnum.MyOrder,{type:item.name});
+      }}
       style={[
         styles.shadow,
 
@@ -140,9 +144,10 @@ export default function Home() {
           color: '#9E9E9E',
         }}>
         {item.id == '1' && TotalList?.total_order}
-        {item.id == '2' && TotalList?.complete_order}
-        {item.id == '3' && TotalList?.total_revenue}
+        {item.id == '3' && TotalList?.complete_order}
+        {item.id == '5' && TotalList?.total_revenue}
         {item.id == '4' && TotalList?.cancle_order}
+        {item.id == '2' && TotalList?.accepted_order}
       </Text>
       <Text
         style={{
@@ -151,7 +156,7 @@ export default function Home() {
           lineHeight: 30,
           color: '#E79B3F',
         }}></Text>
-    </View>
+    </TouchableOpacity>
   );
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
@@ -233,20 +238,7 @@ const checkApplicationPermission = async () => {
             </Text>
           </View>
 
-          <View>
-                <TouchableOpacity
-                  onPress={() => {
-                   // navigation.navigate(ScreenNameEnum.MsgNotification)
-                    // requestUserPermission()
-                  }}
-                >
-                  <Image
-                    source={require('../assets/croping/Notification3x.png')}
-                    resizeMode="contain"
-                    style={{ height: 45, width: 45 }}
-                  />
-                </TouchableOpacity>
-              </View>
+      
         </View>
 
         <View
@@ -308,23 +300,31 @@ const restaurantOrders = [
   },
   {
     id: '2',
-    name: 'Complete',
+    name: 'Accepted',
     subtitile: 'Orders',
 
 
   },
   {
     id: '3',
-    name: 'Total ',
-    subtitile: 'Revenue',
+    name: 'Complete',
+    subtitile: 'Orders',
 
 
   },
   {
     id: '4',
-    name: 'Returning',
-    subtitile: 'Customers',
+    name: 'Cancel ',
+    subtitile: 'Orders',
 
 
   },
+  {
+    id: '5',
+    name: 'Total ',
+    subtitile: 'Revenue',
+
+
+  },
+  
 ];

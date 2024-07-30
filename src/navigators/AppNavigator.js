@@ -11,10 +11,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import { notificationListener, requestUserPermission } from '../screen/FeaturesScreen/NotificationComponent';
 
 export default function AppNavigator() {
-  React.useEffect(() => {
-    notificationListener();
-    requestUserPermission();
-  }, []);
+
 
 
   return (

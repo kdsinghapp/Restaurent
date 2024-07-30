@@ -36,7 +36,7 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
 
     // Make POST request to verify OTP
     const response = await fetch(
-      'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/login',
+      'https://loveeatsdb.com/loveeat/api/restaurant/auth/login',
       requestOptions,
     );
 
@@ -53,11 +53,9 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
 
       const restaurantRegister = responseData.data.restaurant_register;
 
-      if (restaurantRegister) {
-        params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
-      } else {
-        params.navigation.navigate(ScreenNameEnum.RESTAURANT_DETAILS);
-      }
+
+        params.navigation.navigate(ScreenNameEnum.AskLocation);
+     
     } else {
       errorToast(responseData.message);
     }
@@ -146,7 +144,7 @@ export const validOtp = createAsyncThunk(
 
       // Make POST request to verify OTP
       const response = await fetch(
-        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/verify-otp',
+        'https://loveeatsdb.com/loveeat/api//restaurant/auth/verify-otp',
         requestOptions,
       );
 
@@ -197,7 +195,7 @@ export const CreateNewPassword = createAsyncThunk(
       };
 
       const response = fetch(
-        'https://server-php-8-3.technorizen.com/loveeat/api/restaurant/auth/create-new-password-without-login',
+        'https://loveeatsdb.com/loveeat/api//restaurant/auth/create-new-password-without-login',
         requestOptions,
       )
         .then(response => response.text())
@@ -254,7 +252,32 @@ export const logout = createAsyncThunk('logout', async (params, thunkApi) => {
     return thunkApi.rejectWithValue(error);
   }
 });
+export const delete_acc = createAsyncThunk('delete_acc', async (params, thunkApi) => {
+  try {
+    const response = await API.get('/restaurant/auth/delete-acc', null, {
+      headers: {
+        Authorization: `Bearer ${params.token}`,
+      },
+    });
 
+    console.log(
+      '🚀 ~ file: delete_acc.js:29 ~ delete_acc ~ response:',
+      response.data,
+    );
+
+    if (response.data.status == '1') {
+      successToast('User Account Successfuly');
+      params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN)
+    } else {
+      errorToast('User LogOut Faild');
+    }
+
+  } catch (error) {
+    errorToast('Network error');
+    console.log('🚀 ~ file: delete_acc.js:32 ~ delete_acc ~ error:', error);
+    return thunkApi.rejectWithValue(error);
+  }
+});
 const AuthSlice = createSlice({
   name: 'authSlice',
   initialState,
@@ -303,6 +326,22 @@ const AuthSlice = createSlice({
       state.isLogin = true;
     });
     builder.addCase(sendOtpRestPass.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(delete_acc.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = false;
+      state.isLogin = false;
+      state.isLogOut = false;
+    });
+    builder.addCase(delete_acc.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+      state.isLogin = true;
+    });
+    builder.addCase(delete_acc.pending, state => {
       state.isLoading = true;
     });
     builder.addCase(sendOtpRestPass.fulfilled, (state, action) => {

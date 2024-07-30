@@ -25,7 +25,24 @@ export default function PrivacyPolicy() {
 
 
 
+  const generateHtmlContent = content => `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
+    <style>
+      body {
 
+        font-size:36px;
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    ${content}
+  </body>
+  </html>
+`;
 
 
   return (
@@ -39,7 +56,7 @@ export default function PrivacyPolicy() {
   
     <View style={{flex:1}}>
     {Privacypolicy &&  <WebView 
-          source={{ html: Privacypolicy[0].pp_text }} 
+          source={{ html:generateHtmlContent(Privacypolicy[0].pp_text) }} 
         />
     }
         </View>

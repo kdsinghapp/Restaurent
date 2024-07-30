@@ -70,8 +70,8 @@ export default function AddDish() {
     const readPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 
     ImagePicker.openPicker({
-      width: 300,
-      height: 400,
+      width: 500,
+      height: 500,
       cropping: true,
     }).then((image) => {
       setImage(image);
@@ -87,7 +87,7 @@ export default function AddDish() {
     };
     await dispatch(get_restaurant_dish(params));
   };
-
+console.log('category',category);
   const Add_Dish = async () => {
     try {
       const params = {
@@ -109,6 +109,7 @@ export default function AddDish() {
 
       dispatch(add_restaurant_dish(params)).then(res => {
         get_Mydishes();
+      
       });
     } catch (err) {
       console.log('====================================');

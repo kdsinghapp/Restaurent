@@ -93,7 +93,7 @@ const navigation = useNavigation()
   };
 
   return (
-    <TouchableOpacity
+    <View
       style={[
        
         {
@@ -112,7 +112,10 @@ elevation: 5,
           marginHorizontal: 5,
           padding: 10,
         },
-      ]}>
+      ]}
+      
+
+      >
          <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777',alignSelf:'flex-end' }}>
             {formatTime(item.created_at)}
           </Text>
@@ -373,7 +376,7 @@ elevation: 5,
           ))}
         </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 

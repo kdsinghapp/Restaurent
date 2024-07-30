@@ -9,6 +9,8 @@ import {
   TextInput,
   StyleSheet,
   PermissionsAndroid,
+  Alert,
+  Linking,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -46,12 +48,16 @@ const isFocuse = useIsFocused()
         granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED ||
         granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !== PermissionsAndroid.RESULTS.GRANTED
       ) {
-        console.log('Camera or storage permission denied');
+        
+      }
+      else{
+  
       }
     } catch (err) {
       console.warn(err);
     }
   };
+
   // const openImageLibrary = async (setImage) => {
   //   const cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
   //   const storagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);

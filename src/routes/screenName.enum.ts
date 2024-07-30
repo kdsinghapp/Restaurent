@@ -12,6 +12,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   Add_DISH ='Add_DISH',
   DISH_LIST ='DISH_LIST',
   EditDish ='EditDish',
+  Category='Category',
 
   // Tab Screens
   HOME_SCREEN='HOME_SCREEN',
@@ -26,6 +27,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   TrackResToUser='TrackResToUser',
   MsgNotification='MsgNotification',
   Account='Account',
+  AskLocation='AskLocation',
 
 //Features screen
 

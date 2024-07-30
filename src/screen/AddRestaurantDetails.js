@@ -8,7 +8,7 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import DatePicker from 'react-native-date-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
@@ -16,6 +16,7 @@ import Loading from '../configs/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { update_profile, update_restaurant_details } from '../redux/feature/featuresSlice';
 import messaging from '@react-native-firebase/messaging';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 export default function AddRestaurantDetails() {
   const route = useRoute();
   const { item } = route.params;

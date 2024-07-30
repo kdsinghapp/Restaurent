@@ -105,7 +105,7 @@ export const get_restaurant_dish = createAsyncThunk(
   async (params, thunkApi) => {
     console.log('================get_restaurant_dish=APi===================',params);
     try {
-      const response = await API.get(`/restaurant/details/products/dishes/get-restaurant-dish?restaurant_id=${params.user_id}`, {
+      const response = await API.get(`/restaurant/details/products/dishes/get-restaurant-dish?restaurant_id=${params.user_id}&category_id=${params.category_id}`, {
         headers: {
           Accept: 'application/json'
         },
@@ -532,7 +532,7 @@ export const add_restaurant_dish = createAsyncThunk(
       if (responseData.success) {
        successToast(responseData.message);
        
-       params.navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE);
+       params.navigation.navigate(ScreenNameEnum.Category);
       } else {
         errorToast(responseData.message); 
         console.log('==============add_restaurant_dish======================');

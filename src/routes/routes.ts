@@ -37,6 +37,8 @@ import MyOrders from "../screen/FeaturesScreen/MyOrders";
 import TrackResToUser from "../screen/FeaturesScreen/TrackResToUser";
 import MsgNotification from "../screen/MsgNotification";
 import Account from "../screen/FeaturesScreen/Account";
+import AskLocation from "../screen/FeaturesScreen/AskLocation";
+import Category from "../screen/FeaturesScreen/Category";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -147,6 +149,14 @@ const _routes = {
     {
       name: ScreenNameEnum.Account,
       Component:Account ,
+    },
+    {
+      name: ScreenNameEnum.AskLocation,
+      Component:AskLocation ,
+    },
+    {
+      name: ScreenNameEnum.Category,
+      Component:Category ,
     },
    
    

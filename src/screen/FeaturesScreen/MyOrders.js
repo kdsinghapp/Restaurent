@@ -15,12 +15,16 @@ import {
 } from 'react-native-responsive-screen';
 import { get_order_data_by_id } from '../../redux/feature/featuresSlice';
 import Loading from '../../configs/Loader';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import ProfileHeader from './ProfileHeader';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 export default function MyOrders() {
-  const [status, setStatus] = useState('Accepted');
+
+  const route = useRoute()
+  const {type} = route.params
+
+  const [status, setStatus] = useState(type);
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
   const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);

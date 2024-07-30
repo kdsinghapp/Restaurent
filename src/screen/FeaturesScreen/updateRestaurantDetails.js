@@ -173,6 +173,8 @@ export default function UpdateRestaurantDetails() {
     },
     [navigation]
 );
+
+
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}

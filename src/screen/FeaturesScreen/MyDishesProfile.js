@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import ProfileHeader from './ProfileHeader';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,8 @@ import { delete_restaurant_dish, get_restaurant_dish } from '../../redux/feature
 import Loading from '../../configs/Loader';
 
 export default function MyDishesProfile() {
+    const route = useRoute();
+  const { item } = route.params;
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isLoading = useSelector(state => state.feature.isLoading);
@@ -29,6 +31,8 @@ export default function MyDishesProfile() {
   const [loading, setLoading] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState(null);
 
+
+console.log('item?.rescat_id,',item?.rescat_id);
   useEffect(() => {
     get_Mydishes();
   }, []);
@@ -36,6 +40,7 @@ export default function MyDishesProfile() {
   const get_Mydishes = async () => {
     const params = {
       user_id: user.user_data?.restaurant_id,
+      category_id: item?.rescat_id,
     };
     await dispatch(get_restaurant_dish(params));
   };
@@ -54,14 +59,7 @@ export default function MyDishesProfile() {
     }
   };
 
-  const groupedDishes = ResturantDish.reduce((groups, dish) => {
-    const category = dish.restaurant_dish_category_name;
-    if (!groups[category]) {
-      groups[category] = [];
-    }
-    groups[category].push(dish);
-    return groups;
-  }, {});
+
 
   const renderDish = ({ item }) => (
     <View style={[styles.dishContainer, styles.shadow]}>
@@ -131,35 +129,6 @@ export default function MyDishesProfile() {
     </View>
   );
 
-  const renderCategory = ({ item: [categoryName, dishes] }) => {
-    const isExpanded = expandedCategory === categoryName;
-    const itemsToShow = isExpanded ? dishes : dishes.slice(0, 4);
-console.log('itemsToShow',itemsToShow);
-    return (
-      <View key={categoryName}>
-        <View style={styles.categoryHeader}>
-          <Text style={styles.categoryName}>
-            {categoryName}
-          </Text>
-          {dishes.length > 4 && (
-            <TouchableOpacity
-              onPress={() => setExpandedCategory(isExpanded ? null : categoryName)}
-              style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>
-                {isExpanded ? 'Show Less' : 'See All'}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <FlatList
-          data={itemsToShow}
-          numColumns={2}
-          renderItem={renderDish}
-          keyExtractor={(item) => item.restaurant_dish_id.toString()}
-        />
-      </View>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -167,7 +136,7 @@ console.log('itemsToShow',itemsToShow);
         {isLoading ? <Loading /> : null}
         <View style={styles.header}>
           <View style={styles.headerTitle}>
-            <ProfileHeader name={'My Dishes'} />
+            <ProfileHeader name={item?.rescat_name} />
           </View>
 
           <TouchableOpacity
@@ -182,22 +151,13 @@ console.log('itemsToShow',itemsToShow);
           </TouchableOpacity>
         </View>
         <View style={styles.dishesContainer}>
-          {Object.entries(groupedDishes).length > 0 ? (
-            expandedCategory ? (
-              // Show only the expanded category
-              <FlatList
-                data={Object.entries(groupedDishes).filter(([categoryName]) => categoryName === expandedCategory)}
-                renderItem={renderCategory}
-                keyExtractor={(item) => item[0]}
+          {ResturantDish.length > 0 ? (
+                <FlatList
+                data={ResturantDish}
+                numColumns={2}
+                renderItem={renderDish}
+                keyExtractor={(item) => item.restaurant_dish_id.toString()}
               />
-            ) : (
-              // Show all categories
-              <FlatList
-                data={Object.entries(groupedDishes)}
-                renderItem={renderCategory}
-                keyExtractor={(item) => item[0]}
-              />
-            )
           ) : (
             <View style={styles.noDishFound}>
               <Text style={styles.noDishText}>
@@ -255,6 +215,15 @@ const styles = StyleSheet.create({
     marginBottom: hp(1),
     width: '45%',
     justifyContent: 'center',
+    shadowColor: "#000",
+shadowOffset: {
+	width: 0,
+	height: 2,
+},
+shadowOpacity: 0.25,
+shadowRadius: 3.84,
+
+elevation: 5,
   },
   shadow: {
     // Add your shadow styles here
@@ -323,6 +292,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
   },
   categoryName: {
     fontSize: 20,
@@ -333,6 +303,7 @@ const styles = StyleSheet.create({
   },
   seeAllButton: {
     marginRight: 10,
+
   },
   seeAllText: {
     fontSize: 14,
