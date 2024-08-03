@@ -13,6 +13,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   DISH_LIST ='DISH_LIST',
   EditDish ='EditDish',
   Category='Category',
+  Revenue='Revenue',
 
   // Tab Screens
   HOME_SCREEN='HOME_SCREEN',

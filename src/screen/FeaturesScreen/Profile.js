@@ -335,6 +335,11 @@ const Account = [
     screen: ScreenNameEnum.MyOrder
   },
   {
+    name: 'My Revenue',
+   
+    screen: ScreenNameEnum.Revenue
+  },
+  {
     name: 'My Dishes',
    
     screen: ScreenNameEnum.Category

@@ -107,7 +107,8 @@ export default function AskLocation() {
 
     try {
       const formData = new FormData();
-      formData.append('user_id', user?.user_data.useres_id,);
+     // formData.append('user_id', user?.user_data.useres_id,);
+     formData.append('user_id', user?.user_data?.useres_id);
       formData.append('device_token', token);
 
 

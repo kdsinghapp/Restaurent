@@ -39,6 +39,7 @@ import MsgNotification from "../screen/MsgNotification";
 import Account from "../screen/FeaturesScreen/Account";
 import AskLocation from "../screen/FeaturesScreen/AskLocation";
 import Category from "../screen/FeaturesScreen/Category";
+import Revenue from "../screen/FeaturesScreen/Revenue";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -157,6 +158,10 @@ const _routes = {
     {
       name: ScreenNameEnum.Category,
       Component:Category ,
+    },
+    {
+      name: ScreenNameEnum.Revenue,
+      Component:Revenue ,
     },
    
    

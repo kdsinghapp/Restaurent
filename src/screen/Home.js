@@ -101,7 +101,14 @@ export default function Home() {
   const RestaurantOder = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
+
+        if(item.subtitile == 'Revenue'){
+          navigation.navigate(ScreenNameEnum.Revenue)
+        }
+        else{
         navigation.navigate(ScreenNameEnum.MyOrder,{type:item.name});
+        }
+
       }}
       style={[
         styles.shadow,
@@ -314,7 +321,7 @@ const restaurantOrders = [
   },
   {
     id: '4',
-    name: 'Cancel ',
+    name: 'Cancel',
     subtitile: 'Orders',
 
 

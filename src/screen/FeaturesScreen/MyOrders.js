@@ -142,6 +142,8 @@ export default function MyOrders() {
           setIsExpandedIndex(index)
         }}
       >
+
+        {isLoading?<Loading />:null   }
         <View style={{ width: '88%', justifyContent: 'center', }}>
           <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777' }}>
             Order ID- {item.resord_id}

@@ -97,7 +97,7 @@ const TrackResToUser = () => {
         <ImageBackground source={require('../../assets/croping/Map3x.png')} style={styles.mapBackground}>
           <MapView
             style={styles.map}
-            provider={PROVIDER_GOOGLE}
+          //  provider={PROVIDER_GOOGLE}
             initialRegion={
               {
                 ...dropLocation,

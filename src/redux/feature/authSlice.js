@@ -36,7 +36,7 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
 
     // Make POST request to verify OTP
     const response = await fetch(
-      'https://loveeatsdb.com/loveeat/api/restaurant/auth/login',
+      'https://loveeatsdb.com/api/restaurant/auth/login',
       requestOptions,
     );
 
@@ -144,7 +144,7 @@ export const validOtp = createAsyncThunk(
 
       // Make POST request to verify OTP
       const response = await fetch(
-        'https://loveeatsdb.com/loveeat/api//restaurant/auth/verify-otp',
+        'https://loveeatsdb.com/api//restaurant/auth/verify-otp',
         requestOptions,
       );
 
@@ -195,7 +195,7 @@ export const CreateNewPassword = createAsyncThunk(
       };
 
       const response = fetch(
-        'https://loveeatsdb.com/loveeat/api//restaurant/auth/create-new-password-without-login',
+        'https://loveeatsdb.com/api/restaurant/auth/create-new-password-without-login',
         requestOptions,
       )
         .then(response => response.text())

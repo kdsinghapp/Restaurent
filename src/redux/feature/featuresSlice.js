@@ -23,6 +23,8 @@ const initialState = {
   FoodCategory:null,
   Orderlocations: [],
   BankAccountList:[],
+  MyEarning:[],
+  PaymentsTransaction:[]
 };
 export const get_order_locations = createAsyncThunk(
   'get_order_locations',
@@ -314,7 +316,7 @@ export const change_order_status = createAsyncThunk(
       // Handle successful response
       if (responseData.success) {
         successToast("Order Is Accepted ");
-        params.navigation.navigate(ScreenNameEnum.MyOrder)
+        params.navigation.navigate(ScreenNameEnum.MyOrder,{type:'Accepted'})
        
       } else {
         errorToast(responseData.message); 
@@ -944,13 +946,123 @@ export const get_privacy_policy = createAsyncThunk(
     }
   },
 );
+export const my_earning = createAsyncThunk(
+  'my_earning',
+  async (params, thunkApi) => {
+    console.log('MyEarning',params.token);
+    try {
+      const response = await API.get('/restaurant/my-earning',{
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+        },
+      });
 
+      if (response.data.success) {
+        console.log('User my_earning-profile Succesfuly');
+      }
+      return response.data.data;
+    } catch (error) {
+      console.log('🚀 ~ /my_earning-profile error:', error);
+
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);
+export const get_payments = createAsyncThunk(
+  'get_payments',
+  async (params, thunkApi) => {
+    console.log('MyEarning',params.token);
+    try {
+      const response = await API.get('/restaurant/get-payments',{
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+        },
+      });
+
+      if (response.data.success) {
+        console.log('User restaurant/get-payments-profile Succesfuly');
+      }
+      return response.data.data;
+    } catch (error) {
+      console.log('🚀 ~ /restaurant/get-payments-profile error:', error);
+
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);
+export const payment_withdraw = createAsyncThunk(
+  'payment_withdraw',
+  async (params, thunkApi) => {
+   
+    try {
+      const response = await API.get('/restaurant/payment-withdraw',{
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+        },
+      });
+console.log('response.data',response.data);
+      if (response.data.success) {
+        console.log('Userpayment_withdraw Succesfuly');
+        successToast('Withdraw Request Send Succesfuly')
+      }
+      return response.data.data;
+    } catch (error) {
+      console.log('🚀 ~ /restaurant/get-payment_withdraw-profile error:', error);
+
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);
 const FeatureSlice = createSlice({
   name: 'featureSlice',
   initialState,
   reducers: {},
   extraReducers: builder => {
-
+    builder.addCase(my_earning.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(my_earning.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.MyEarning = action.payload;
+    });
+    builder.addCase(my_earning.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+     
+    });
+    builder.addCase(payment_withdraw.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(payment_withdraw.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+   
+    });
+    builder.addCase(payment_withdraw.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+     
+    });
+    builder.addCase(get_payments.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(get_payments.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.PaymentsTransaction = action.payload;
+    });
+    builder.addCase(get_payments.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+     
+    });
     builder.addCase(get_order_locations.pending, state => {
       state.isLoading = true;
     });
