@@ -73,7 +73,7 @@ export default function MyOrders() {
   }, [isFocused]);
 
   const makePhoneCall = (Number) => {
-    console.log(Number);
+
         RNImmediatePhoneCall.immediatePhoneCall(Number);
       }
   const TopRateRestaurant = ({ item, index }) => {
@@ -436,6 +436,7 @@ export default function MyOrders() {
             </TouchableOpacity>
           </View>
         )}
+
       </TouchableOpacity>
     );
   };

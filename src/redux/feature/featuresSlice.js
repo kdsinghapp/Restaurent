@@ -24,7 +24,8 @@ const initialState = {
   Orderlocations: [],
   BankAccountList:[],
   MyEarning:[],
-  PaymentsTransaction:[]
+  PaymentsTransaction:[],
+  orderDataHome:[]
 };
 export const get_order_locations = createAsyncThunk(
   'get_order_locations',
@@ -316,7 +317,7 @@ export const change_order_status = createAsyncThunk(
       // Handle successful response
       if (responseData.success) {
         successToast("Order Is Accepted ");
-        params.navigation.navigate(ScreenNameEnum.MyOrder,{type:'Accepted'})
+      //  params.navigation.navigate(ScreenNameEnum.MyOrder,{type:'Accepted'})
        
       } else {
         errorToast(responseData.message); 
@@ -339,6 +340,62 @@ export const get_order_data_by_id = createAsyncThunk(
     try {
       // Create form data with identity and otp
 console.log('============get_order_data_by_id========================');
+console.log(params.data);
+console.log('====================================');
+      const formdata = new FormData();
+
+      formdata.append("restaurant_id", params.data.restaurant_id);
+      formdata.append("status", params.data.status);
+
+      // Configure request headers
+      const myHeaders = new Headers();
+      myHeaders.append('Accept', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${params.token}`);
+
+      // Create request options
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow',
+      };
+
+      // Make POST request to verify OTP
+      const response = await fetch(
+        `${base_url.url}/restaurant/get-order-data-by-id`,
+        requestOptions,
+      );
+
+      // Parse response as JSON
+      const responseData = await response.json();
+
+      console.log('restaurant/get-order-data-by-id=>>>>>>>>>>>>> :', responseData);
+
+      // Handle successful response
+      if (responseData.success) {
+        //successToast(responseData.message);
+        //params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+      } else {
+        //errorToast(responseData.message); 
+       console.log('restaurant/get-order-data-by-id',responseData.message);
+      }
+
+      // Return response data
+      return responseData.data;
+    } catch (error) {
+      console.error('Error:', error);
+      errorToast('Network error');
+      // Reject with error
+      throw error;
+    }
+  },
+);
+export const get_order_data_by_Home = createAsyncThunk(
+  'get_order_data_by_Home',
+  async (params, thunkApi) => {
+    try {
+      // Create form data with identity and otp
+console.log('============get_order_data_by_Home========================');
 console.log(params.data);
 console.log('====================================');
       const formdata = new FormData();
@@ -1028,6 +1085,21 @@ const FeatureSlice = createSlice({
       state.MyEarning = action.payload;
     });
     builder.addCase(my_earning.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.isSuccess = false;
+     
+    });
+    builder.addCase(get_order_data_by_Home.pending, state => {
+      state.isLoading = false;
+    });
+    builder.addCase(get_order_data_by_Home.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.isError = false;
+      state.orderDataHome = action.payload;
+    });
+    builder.addCase(get_order_data_by_Home.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.isSuccess = false;

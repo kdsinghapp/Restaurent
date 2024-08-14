@@ -8,6 +8,7 @@ import {
 import { change_order_status, get_order_data_by_id } from '../redux/feature/featuresSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { errorToast } from './customToast';
 const Order_List = ({ item }) => {
   const initialPrepTime = parseInt(item.order_preapare_time?.substring(0, 2)) || 0;
   const [prepTime, setPrepTime] = useState(initialPrepTime);
@@ -50,8 +51,10 @@ const navigation = useNavigation()
 
     dispatch(get_order_data_by_id(params));
   };
-  const OderStatus = async (item, status) => {
 
+  const OderStatus = async (item, status) => {
+  if(prepTime == 0 && status === 'Accepted') return errorToast("Please Enter Preparing Time")
+     
     try {
       const params = {
         order_id: item.resord_id,
