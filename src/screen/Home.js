@@ -56,6 +56,9 @@ export default function Home() {
   }, []);
 
 
+
+
+
   const get_order_status = async sts => {
     try {
       const params = {
@@ -142,6 +145,7 @@ export default function Home() {
 
   const PickedOrder = OrderStatus?.filter(item => item.delivery_status === 'Pickuped' && item.status === 'Ready');
   const RedyOrder = OrderStatus?.filter(item => item.delivery_status !== 'Pickuped' && item.status === 'Ready');
+  const PreparingOrderList = OrderStatus?.filter(item => item.delivery_status === 'Pending' && item.status === 'Accepted');
 
   const RestaurantOder = ({ item }) => (
     <TouchableOpacity
@@ -151,7 +155,7 @@ export default function Home() {
           navigation.navigate(ScreenNameEnum.Revenue)
         }
         else {
-          navigation.navigate(ScreenNameEnum.MyOrder, { type: item.name });
+          navigation.navigate(ScreenNameEnum.MyOrder, { type: item.status });
         }
 
       }}
@@ -191,10 +195,11 @@ export default function Home() {
       </Text>
       <Text
         style={{
-          fontSize: 10,
+          fontSize: 16,
           fontWeight: '700',
           lineHeight: 15,
-          color: '#9E9E9E',
+          color: '#000',
+          marginTop: 10
         }}>
         {item.id == '1' && TotalList?.total_order}
         {item.id == '3' && TotalList?.complete_order}
@@ -630,6 +635,684 @@ export default function Home() {
       </TouchableOpacity>
     );
   };
+  const ReadyOrderList = ({ item, index }) => {
+
+    const isExpand = isExpanded && isExpandedIndex === index
+    const statusImage =
+      item.status === 'Complete'
+        ? require('../assets/croping/Complete2x.png')
+        : item.status === 'Cancel'
+          ? require('../assets/croping/Close2x.png')
+          : require('../assets/croping/pending.png');
+
+    const statusColor =
+      item.status === 'Complete'
+        ? '#00C366'
+        : item.status === 'Cancel'
+          ? '#F44336'
+          : '#FFA500';
+
+    const statusBackgroundColor =
+      item.status === 'Complete'
+        ? 'rgba(0, 195, 102, 0.2)'
+        : item.status === 'Cancel'
+          ? '#FFDADA'
+          : 'rgba(255, 165, 0, 0.2)';
+
+    const totalPrice = item.order_details.reduce(
+      (acc, curr) => acc + curr.quantity * curr.price_per_unit,
+      0,
+    );
+    const formatTime = (dateTimeString) => {
+
+
+      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const date = new Date(dateTimeString);
+
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+
+      const dayOfWeek = daysOfWeek[date.getDay()];
+      const month = monthsOfYear[date.getMonth()];
+      const day = date.getDate();
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = ('0' + date.getMinutes()).slice(-2);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+
+      return `${dayOfWeek} ${month} ${day}, ${year} `;
+    };
+
+
+
+    return (
+      <TouchableOpacity
+        // disabled={item.status === 'Pending'}
+        style={[styles.container, styles.shadow]}
+        onPress={() => {
+          setIsExpanded(!isExpanded)
+          setIsExpandedIndex(index)
+        }}
+      >
+
+        {isLoading ? <Loading /> : null}
+        <View style={{ width: '88%', justifyContent: 'center', }}>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: '#777777' }}>
+            Order ID- {item.resord_id}
+          </Text>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: '#777777' }}>
+            Order Time {formatTime(item.created_at)}
+          </Text>
+        </View>
+
+        <Text style={styles.detailsText}>Order Details:</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: item.user_data?.images }}
+              style={{
+                height: '90%',
+                width: '90%',
+                borderRadius: 100,
+                borderColor: '#7756FC',
+              }}
+              resizeMode="cover"
+            />
+          </View>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 14, color: "#000", fontWeight: '600' }}>{item.user_data?.full_name}</Text>
+            <Text style={{ fontSize: 12, color: "#777777", fontWeight: '600' }}>Contact {item.user_data?.mobile_number}</Text>
+          </View>
+        </View>
+        {!isExpand && <View style={{ marginTop: 20 }}>
+          <View style={styles.detailsRow}>
+            <Text style={styles.totalPriceText}>Total Bill:</Text>
+            <Text style={{ width: '20%' }}>-</Text>
+            <Text
+              style={{
+
+                ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+              }}
+            >
+              ${item.total_price.toFixed(2)}
+            </Text>
+          </View>
+          <View
+            style={{
+              marginTop: 20,
+              backgroundColor: statusBackgroundColor,
+              flexDirection: 'row',
+              borderRadius: 5,
+              height: 34,
+              alignItems: 'center',
+              paddingHorizontal: 10,
+            }}
+          >
+            <Image source={statusImage} style={{ height: 20, width: 20 }} />
+            <Text
+              style={{
+                color: statusColor,
+                marginLeft: 10,
+                fontSize: 12,
+                lineHeight: 15,
+                fontWeight: '500',
+                marginRight: item.status === 'Accepted' ? 5 : 0
+              }}
+            >
+              {item.status === 'Complete' && 'Yeay, you have completed it!'}
+              {item.status === 'Cancel' &&
+                (item.user_order_status === 'Cancel By User'
+                  ? 'This order was canceled by the User!'
+                  : 'You canceled this booking!')}
+              {item.status === 'Pending' && 'Your booking is pending!'}
+              {item.status === 'Accepted' && item.delivery_status != 'Pickuped' && 'this order is under Preparing!'}
+              {item.status === 'Ready' && item.delivery_status !== 'Pickuped' && 'Your order is Ready!'}
+              {item.status === 'Ready' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
+
+
+            </Text>
+
+          </View>
+
+
+        </View>
+        }
+
+        {isExpand && (<>
+          <View style={{ marginTop: 5 }}>
+            {item.order_details.map((dish, index) => (
+              <View key={index} style={{ marginTop: 15 }}>
+
+                <View style={{ marginTop: 5 }}>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 14, color: "#000", fontWeight: '500' }}>
+                      {dish.dish_name} x {dish.quantity}
+                    </Text>
+                    <View>
+                      <Text style={{ fontSize: 14, color: "#000", fontWeight: '500' }}>
+                        Total: {(dish.quantity * dish.price_per_unit).toFixed(2)}
+                      </Text>
+
+                      <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
+                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+
+            <View
+              style={{
+                marginTop: 20,
+                backgroundColor: statusBackgroundColor,
+                flexDirection: 'row',
+                borderRadius: 5,
+                height: 34,
+                alignItems: 'center',
+                paddingHorizontal: 10,
+              }}
+            >
+              <Image source={statusImage} style={{ height: 20, width: 20 }} />
+              <Text
+                style={{
+                  color: statusColor,
+                  marginLeft: 10,
+                  fontSize: 12,
+                  lineHeight: 15,
+                  fontWeight: '500',
+                  marginRight: item.status === 'Accepted' ? 5 : 0
+                }}
+              >
+                {item.status === 'Complete' && 'Yeay, you have completed it!'}
+                {item.status === 'Cancel' &&
+                  (item.user_order_status === 'Cancel By User'
+                    ? 'You canceled this booking!'
+                    : 'Your order was canceled by the restaurant!')}
+                {item.status === 'Pending' && 'Your booking is pending!'}
+                {item.status === 'Ready' && item.delivery_status !== 'Pickuped' && 'Your order is Ready!'}
+                {item.status === 'Accepted' && item.delivery_status != 'Pickuped' && 'this order is under Preparing!'}
+
+                {item.status === 'Ready' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
+
+
+              </Text>
+
+            </View>
+
+
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 10 }]}>
+              <Text style={styles.totalPriceText}>Tax Amount :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+                }}
+              >
+                ${item.tax_amount}.00
+              </Text>
+            </View>
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
+              <Text style={styles.totalPriceText}>Delivery charge :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20 },
+                }}
+              >
+                ${item.delivery_charge}.00
+              </Text>
+            </View>
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
+              <Text style={styles.totalPriceText}>Sub Total :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20 },
+                }}
+              >
+                ${item.sub_total}.00
+              </Text>
+            </View>
+            <View style={styles.detailsRow}>
+              <Text style={[styles.totalPriceText, { fontSize: 14 }]}>Total Bill:</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+                }}
+              >
+                ${item.total_price.toFixed(2)}
+              </Text>
+            </View>
+
+
+          </View>
+
+        </>
+        )}
+
+        {item.delivery_status !== 'Pending' && item.delivery_status !== 'Deliverd' && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              height: 60, // adjust as per your requirements
+              marginTop: 20,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => makePhoneCall(item.driver_data.driver_mobile_number)}
+            >
+              <Image
+                source={require('../assets/croping/Call3x.png')}
+                style={{ height: 60, width: 60 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+
+                if (item.delivery_status == 'Pickuped') {
+
+                  navigation.navigate(ScreenNameEnum.TrackResToUser, { OrderId: item.resord_id });
+
+                }
+                else {
+                  navigation.navigate(ScreenNameEnum.TRACK_ORDER, { OrderId: item.resord_id });
+                }
+              }}
+              style={{
+                backgroundColor: '#352C48',
+                alignItems: 'center',
+                height: 40,
+                borderRadius: 30,
+                justifyContent: 'center',
+                width: '80%',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: '500',
+                  lineHeight: 22,
+                  color: '#FFFFFF',
+                }}
+              >
+                Track
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+
+        {OrderDetail === 'Preparing' && <TouchableOpacity
+
+          onPress={() => {
+            OderStatus(item, 'Ready')
+          }}
+          style={{
+            backgroundColor: '#22aa00',
+            alignItems: 'center', justifyContent: 'center',
+            height: 45, width: '90%', borderRadius: 10, marginVertical: 15, alignSelf: 'center'
+          }}>
+          <Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>
+        </TouchableOpacity>}
+      </TouchableOpacity>
+    );
+  };
+  const PreparingOrder = ({ item, index }) => {
+
+    const isExpand = isExpanded && isExpandedIndex === index
+    const statusImage =
+      item.status === 'Complete'
+        ? require('../assets/croping/Complete2x.png')
+        : item.status === 'Cancel'
+          ? require('../assets/croping/Close2x.png')
+          : require('../assets/croping/pending.png');
+
+    const statusColor =
+      item.status === 'Complete'
+        ? '#00C366'
+        : item.status === 'Cancel'
+          ? '#F44336'
+          : '#FFA500';
+
+    const statusBackgroundColor =
+      item.status === 'Complete'
+        ? 'rgba(0, 195, 102, 0.2)'
+        : item.status === 'Cancel'
+          ? '#FFDADA'
+          : 'rgba(255, 165, 0, 0.2)';
+
+    const totalPrice = item.order_details.reduce(
+      (acc, curr) => acc + curr.quantity * curr.price_per_unit,
+      0,
+    );
+    const formatTime = (dateTimeString) => {
+
+
+      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const date = new Date(dateTimeString);
+
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+
+      const dayOfWeek = daysOfWeek[date.getDay()];
+      const month = monthsOfYear[date.getMonth()];
+      const day = date.getDate();
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = ('0' + date.getMinutes()).slice(-2);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+
+      return `${dayOfWeek} ${month} ${day}, ${year} `;
+    };
+
+
+
+    return (
+      <TouchableOpacity
+        // disabled={item.status === 'Pending'}
+        style={[styles.container, styles.shadow]}
+        onPress={() => {
+          setIsExpanded(!isExpanded)
+          setIsExpandedIndex(index)
+        }}
+      >
+
+        {isLoading ? <Loading /> : null}
+        <View style={{ width: '88%', justifyContent: 'center', }}>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: '#777777' }}>
+            Order ID- {item.resord_id}
+          </Text>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: '#777777' }}>
+            Order Time {formatTime(item.created_at)}
+          </Text>
+        </View>
+
+        <Text style={styles.detailsText}>Order Details:</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: item.user_data?.images }}
+              style={{
+                height: '90%',
+                width: '90%',
+                borderRadius: 100,
+                borderColor: '#7756FC',
+              }}
+              resizeMode="cover"
+            />
+          </View>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 14, color: "#000", fontWeight: '600' }}>{item.user_data?.full_name}</Text>
+            <Text style={{ fontSize: 12, color: "#777777", fontWeight: '600' }}>Contact {item.user_data?.mobile_number}</Text>
+          </View>
+        </View>
+        {!isExpand && <View style={{ marginTop: 20 }}>
+          <View style={styles.detailsRow}>
+            <Text style={styles.totalPriceText}>Total Bill:</Text>
+            <Text style={{ width: '20%' }}>-</Text>
+            <Text
+              style={{
+
+                ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+              }}
+            >
+              ${item.total_price.toFixed(2)}
+            </Text>
+          </View>
+          <View
+            style={{
+              marginTop: 20,
+              backgroundColor: statusBackgroundColor,
+              flexDirection: 'row',
+              borderRadius: 5,
+              height: 34,
+              alignItems: 'center',
+              paddingHorizontal: 10,
+            }}
+          >
+            <Image source={statusImage} style={{ height: 20, width: 20 }} />
+            <Text
+              style={{
+                color: statusColor,
+                marginLeft: 10,
+                fontSize: 12,
+                lineHeight: 15,
+                fontWeight: '500',
+                marginRight: item.status === 'Accepted' ? 5 : 0
+              }}
+            >
+              {item.status === 'Complete' && 'Yeay, you have completed it!'}
+              {item.status === 'Cancel' &&
+                (item.user_order_status === 'Cancel By User'
+                  ? 'This order was canceled by the User!'
+                  : 'You canceled this booking!')}
+              {item.status === 'Pending' && 'Your booking is pending!'}
+              {item.status === 'Accepted' && item.delivery_status != 'Pickuped' && 'this order is under Preparing!'}
+              {item.status === 'Ready' && item.delivery_status !== 'Pickuped' && 'Your order is Ready!'}
+              {item.status === 'Ready' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
+
+
+            </Text>
+
+          </View>
+
+
+        </View>
+        }
+
+        {isExpand && (<>
+          <View style={{ marginTop: 5 }}>
+            {item.order_details.map((dish, index) => (
+              <View key={index} style={{ marginTop: 15 }}>
+
+                <View style={{ marginTop: 5 }}>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 14, color: "#000", fontWeight: '500' }}>
+                      {dish.dish_name} x {dish.quantity}
+                    </Text>
+                    <View>
+                      <Text style={{ fontSize: 14, color: "#000", fontWeight: '500' }}>
+                        Total: {(dish.quantity * dish.price_per_unit).toFixed(2)}
+                      </Text>
+
+                      <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
+                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+
+            <View
+              style={{
+                marginTop: 20,
+                backgroundColor: statusBackgroundColor,
+                flexDirection: 'row',
+                borderRadius: 5,
+                height: 34,
+                alignItems: 'center',
+                paddingHorizontal: 10,
+              }}
+            >
+              <Image source={statusImage} style={{ height: 20, width: 20 }} />
+              <Text
+                style={{
+                  color: statusColor,
+                  marginLeft: 10,
+                  fontSize: 12,
+                  lineHeight: 15,
+                  fontWeight: '500',
+                  marginRight: item.status === 'Accepted' ? 5 : 0
+                }}
+              >
+                {item.status === 'Complete' && 'Yeay, you have completed it!'}
+                {item.status === 'Cancel' &&
+                  (item.user_order_status === 'Cancel By User'
+                    ? 'You canceled this booking!'
+                    : 'Your order was canceled by the restaurant!')}
+                {item.status === 'Pending' && 'Your booking is pending!'}
+                {item.status === 'Ready' && item.delivery_status !== 'Pickuped' && 'Your order is Ready!'}
+                {item.status === 'Accepted' && item.delivery_status != 'Pickuped' && 'this order is under Preparing!'}
+
+                {item.status === 'Ready' && item.delivery_status == 'Pickuped' && 'Your order is Pickuped by rider!'}
+
+
+              </Text>
+
+            </View>
+
+
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 10 }]}>
+              <Text style={styles.totalPriceText}>Tax Amount :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+                }}
+              >
+                ${item.tax_amount}.00
+              </Text>
+            </View>
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
+              <Text style={styles.totalPriceText}>Delivery charge :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20 },
+                }}
+              >
+                ${item.delivery_charge}.00
+              </Text>
+            </View>
+            <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
+              <Text style={styles.totalPriceText}>Sub Total :</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20 },
+                }}
+              >
+                ${item.sub_total}.00
+              </Text>
+            </View>
+            <View style={styles.detailsRow}>
+              <Text style={[styles.totalPriceText, { fontSize: 14 }]}>Total Bill:</Text>
+              <Text style={{ width: '20%' }}>-</Text>
+              <Text
+                style={{
+
+                  ...{ color: '#000', fontWeight: '600', marginRight: 20, },
+                }}
+              >
+                ${item.total_price.toFixed(2)}
+              </Text>
+            </View>
+
+
+          </View>
+
+        </>
+        )}
+
+        {item.delivery_status !== 'Pending' && item.delivery_status !== 'Deliverd' && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              height: 60, // adjust as per your requirements
+              marginTop: 20,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => makePhoneCall(item.driver_data.driver_mobile_number)}
+            >
+              <Image
+                source={require('../assets/croping/Call3x.png')}
+                style={{ height: 60, width: 60 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+
+                if (item.delivery_status == 'Pickuped') {
+
+                  navigation.navigate(ScreenNameEnum.TrackResToUser, { OrderId: item.resord_id });
+
+                }
+                else {
+                  navigation.navigate(ScreenNameEnum.TRACK_ORDER, { OrderId: item.resord_id });
+                }
+              }}
+              style={{
+                backgroundColor: '#352C48',
+                alignItems: 'center',
+                height: 40,
+                borderRadius: 30,
+                justifyContent: 'center',
+                width: '80%',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: '500',
+                  lineHeight: 22,
+                  color: '#FFFFFF',
+                }}
+              >
+                Track
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+
+        {OrderDetail === 'Preparing' && <TouchableOpacity
+
+          onPress={() => {
+            OderStatus(item, 'Ready')
+          }}
+          style={{
+            backgroundColor: '#22aa00',
+            alignItems: 'center', justifyContent: 'center',
+            height: 45, width: '90%', borderRadius: 10, marginVertical: 15, alignSelf: 'center'
+          }}>
+          <Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>
+        </TouchableOpacity>}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
@@ -736,8 +1419,8 @@ export default function Home() {
           {OrderDetail == 'Preparing' &&
             <>
               {OrderStatus?.length > 0 ? <FlatList
-                data={OrderStatus}
-                renderItem={TopRateRestaurant}
+                data={PreparingOrderList}
+                renderItem={PreparingOrder}
 
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
@@ -751,7 +1434,7 @@ export default function Home() {
             <>
               {RedyOrder?.length > 0 ? <FlatList
                 data={RedyOrder}
-                renderItem={TopRateRestaurant}
+                renderItem={ReadyOrderList}
 
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
@@ -761,7 +1444,7 @@ export default function Home() {
                 </Text>}
             </>
           }
-          {OrderDetail == 'Picked up' &&
+          {OrderDetail == 'Pickuped' &&
             <>
               {PickedOrder?.length > 0 ? <FlatList
                 data={PickedOrder}
@@ -786,6 +1469,7 @@ const restaurantOrders = [
     id: '1',
     name: 'Total',
     subtitile: 'Orders',
+    status: 'Accepted'
 
 
   },
@@ -800,6 +1484,7 @@ const restaurantOrders = [
     id: '3',
     name: 'Complete',
     subtitile: 'Orders',
+    status: 'Complete'
 
 
   },
@@ -807,6 +1492,7 @@ const restaurantOrders = [
     id: '4',
     name: 'Cancel',
     subtitile: 'Orders',
+    status: 'Cancel'
 
 
   },
@@ -814,7 +1500,7 @@ const restaurantOrders = [
     id: '5',
     name: 'Total ',
     subtitile: 'Revenue',
-
+    status: 'Revenue'
 
   },
 
@@ -834,7 +1520,7 @@ const ORDERDATA = [
     status: 'Ready'
   },
   {
-    Name: 'Picked up',
+    Name: 'Pickuped',
     status: 'Ready'
   },
 ]

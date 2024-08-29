@@ -33,6 +33,7 @@ export default function UpdateAddRestaurantDetails() {
   const [selectedDayForTime, setSelectedDayForTime] = useState('');
   const [isSettingOpenTime, setIsSettingOpenTime] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
+  const [isEdit, setisEdit] = useState(true);
 
   useEffect(() => {
     if (restaurantDetails) {
@@ -84,6 +85,7 @@ export default function UpdateAddRestaurantDetails() {
 
   const renderDayItem = ({ item }) => (
     <TouchableOpacity
+disabled={isEdit}
       style={[
         styles.dayItem,
         selectedDays.includes(item.name) && styles.selectedDayItem,
@@ -95,6 +97,7 @@ export default function UpdateAddRestaurantDetails() {
 
   const renderTimeItem = ({ item }) => (
     <TouchableOpacity
+    disabled={isEdit}
       style={[
         styles.timeItem,
         validationErrors[item.name + '_open'] && styles.errorBorder,
@@ -113,6 +116,7 @@ export default function UpdateAddRestaurantDetails() {
 
   const renderCloseTimeItem = ({ item }) => (
     <TouchableOpacity
+    disabled={isEdit}
       style={[
         styles.timeItem,
         validationErrors[item.name + '_close'] && styles.errorBorder,
@@ -230,9 +234,9 @@ export default function UpdateAddRestaurantDetails() {
           </View>
         </View>
 
-        <TouchableOpacity onPress={handleNext} style={styles.tabBtn}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
+      {!isEdit &&  <TouchableOpacity onPress={handleNext} style={styles.tabBtn}>
+          <Text style={styles.nextButtonText}>Save</Text>
+        </TouchableOpacity>}
         <View style={{ height: hp(2) }} />
       </ScrollView>
       <DatePicker

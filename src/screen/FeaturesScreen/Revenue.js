@@ -269,13 +269,18 @@ errorToast("Insufficient Balance")
             Payment History
           </Text>
         </View>
-     { PaymentsTransaction?.payments &&   <View style={{flex: 1}}>
+     { PaymentsTransaction?.payments?.length > 0  ?  <View style={{flex: 1}}>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={PaymentsTransaction?.payments}
             renderItem={renderItem}
           />
-        </View>}
+        </View>:<View style={{flex: 1,justifyContent:'center',alignItems:'center'}}>
+
+          <Text style={{fontSize:16,color:'#000',fontWeight:'600'}}>No Transaction Found</Text>
+        </View>
+
+        }
   
         </ScrollView>
       </View>

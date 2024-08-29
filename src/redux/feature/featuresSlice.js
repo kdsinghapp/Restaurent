@@ -1364,6 +1364,7 @@ const FeatureSlice = createSlice({
     });
     builder.addCase(get_order_data_by_id.pending, state => {
       state.isLoading = false;
+      state.OrderDetails =[]
     });
     builder.addCase(get_order_data_by_id.fulfilled, (state, action) => {
       state.isLoading = false;

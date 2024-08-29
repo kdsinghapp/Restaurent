@@ -27,18 +27,21 @@ export default function MyOrders() {
   const [status, setStatus] = useState(type);
   const OrderDetails = useSelector(state => state.feature.OrderDetails);
   const user = useSelector(state => state.auth.userData);
-  const isLoading = useSelector(state => state.feature.isLoading);
+ 
   const dispatch = useDispatch();
   const navigation = useNavigation()
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedIndex, setIsExpandedIndex] = useState(null);
   const isFocused = useIsFocused();
+const [isLoading,setisLoading] = useState(false)
+
 
   useEffect(() => {
     get_order(status);
   }, [status]);
 
   const get_order = async sts => {
+    setisLoading(true)
     try {
       const params = {
         data: {
@@ -47,9 +50,12 @@ export default function MyOrders() {
         },
         token: user?.token,
       };
-      await dispatch(get_order_data_by_id(params));
+      await dispatch(get_order_data_by_id(params)).then(res=>{
+        setisLoading(false)
+      })
     } catch (err) {
       console.error(err);
+      setisLoading(false)
     }
   };
 
@@ -143,7 +149,7 @@ export default function MyOrders() {
         }}
       >
 
-        {isLoading?<Loading />:null   }
+
         <View style={{ width: '88%', justifyContent: 'center', }}>
           <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777' }}>
             Order ID- {item.resord_id}
@@ -443,9 +449,10 @@ export default function MyOrders() {
 
   return (
     <View style={{ paddingHorizontal: 15, flex: 1, backgroundColor: '#FFFFFF' }}>
-      {isLoading && <Loading />}
+      {isLoading ?<Loading />:null}
       <ScrollView showsVerticalScrollIndicator={false}>
       <ProfileHeader name={'My Orders'} />
+
         <View
           style={{
             height: hp(10),

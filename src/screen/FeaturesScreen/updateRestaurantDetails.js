@@ -9,6 +9,7 @@ import {
   TextInput,
   StyleSheet,
   PermissionsAndroid,
+  Pressable,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -26,6 +27,7 @@ export default function UpdateRestaurantDetails() {
   const isLoading = useSelector(state => state.feature.isLoading);
   const restaurantDetails = useSelector(state => state.feature.ResturantDetails);
   const user = useSelector(state => state.auth.userData);
+  const [isEdit, setisEdit] = useState(true);
 
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('select address');
@@ -96,10 +98,10 @@ export default function UpdateRestaurantDetails() {
       console.log(err);
     });
   };
-  
 
 
-  
+
+
   const handleNext = () => {
     const updatedRestaurantDetails = {
       res_name: restaurantName,
@@ -151,44 +153,40 @@ export default function UpdateRestaurantDetails() {
   }
   const handleSelectLocation = useCallback(
     (details) => {
-        const { lat, lng } = details.geometry.location;
-        console.log({
-            latitude: lat,
-            longitude: lng,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-        });
-        setLocation({
-          latitude: lat,
-          longitude: lng,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-  
-  
-        const formattedAddress = formatAddress(details);
-        console.log('details=>>>>>>>>>>>>>>>>>>>>>', formattedAddress);
-        setRestaurantLocation(formattedAddress)
-     
+      const { lat, lng } = details.geometry.location;
+
+      setLocation({
+        latitude: lat,
+        longitude: lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+
+
+      const formattedAddress = formatAddress(details);
+
+      setRestaurantLocation(formattedAddress)
+
     },
     [navigation]
-);
+  );
 
 
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-     
+
       {restaurantDetails && (<>
         <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
-         <View >
-         <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handleSelectLocation} />
-       </View>
+        <Pressable disabled={isEdit} >
+          <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handleSelectLocation}   />
+        </Pressable>
         <ScrollView showsVerticalScrollIndicator={false}>
-         
+
           <View style={styles.formContainer}>
             <View style={styles.textInputContainer}>
               <TextInput
+              editable={!isEdit}
                 placeholder="Restaurant Name"
                 placeholderTextColor={'#ADA4A5'}
                 style={styles.textInput}
@@ -196,8 +194,9 @@ export default function UpdateRestaurantDetails() {
                 onChangeText={setRestaurantName}
               />
             </View>
-           
+
             <TouchableOpacity
+                        disabled={isEdit}
               style={styles.imageUploadContainer}
               onPress={() => openImageLibrary(setRestaurantPhoto)}>
               {restaurantPhoto ? (
@@ -219,6 +218,7 @@ export default function UpdateRestaurantDetails() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
+            disabled={isEdit}
               style={styles.imageUploadContainer}
               onPress={() => openImageLibrary(setCertificate)}>
               {certificate ? (
@@ -248,7 +248,7 @@ export default function UpdateRestaurantDetails() {
 
           <View style={{ height: hp(10) }} />
         </ScrollView>
-        </>
+      </>
       )}
     </View>
   );
