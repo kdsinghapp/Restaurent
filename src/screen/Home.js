@@ -10,6 +10,9 @@ import {
   Platform,
   PermissionsAndroid,
   StyleSheet,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -49,6 +52,7 @@ export default function Home() {
   const [prepTime, setPrepTime] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedIndex, setIsExpandedIndex] = useState(null);
+  const [loading,setLoading]= useState(false)
   const isFocused = useIsFocused();
   React.useEffect(() => {
     notificationListener();
@@ -89,7 +93,7 @@ export default function Home() {
     };
   }, [isFocused]);
   const OderStatus = async (item, status) => {
-
+    setLoading(true)
     if (prepTime == 0 && status === 'Accepted') return errorToast("Please Enter Preparing Time")
 
     try {
@@ -103,13 +107,15 @@ export default function Home() {
 
 
       dispatch(change_order_status(params)).then(res => {
+        setLoading(false)
         get_order_status('Accepted');
       });
     } catch (err) {
+      setLoading(false)
       console.log('=================params===================', err);
     }
   };
-
+  console.log('OrderDetails?.length',OrderDetails?.length);
 
   useEffect(() => {
     get_order();
@@ -142,10 +148,38 @@ export default function Home() {
 
     dispatch(get_order_data_by_Home(params));
   };
+  const backAction = () => {
+    // Get the current route index using getState
+    const currentRouteIndex = navigation.getState().index;
 
+    if (currentRouteIndex === 0) {
+      // If the user is on the home screen, exit the app
+      Alert.alert("Exit App", "Do you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true; // This prevents the default back behavior
+    } else {
+      // Navigate back if not on the home screen
+      navigation.goBack();
+      return true; // This prevents the default back behavior
+    }
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, []);
+ 
   const PickedOrder = OrderStatus?.filter(item => item.delivery_status === 'Pickuped' && item.status === 'Ready');
   const RedyOrder = OrderStatus?.filter(item => item.delivery_status !== 'Pickuped' && item.status === 'Ready');
-  const PreparingOrderList = OrderStatus?.filter(item => item.delivery_status === 'Pending' && item.status === 'Accepted');
+  const PreparingOrderList = OrderStatus?.filter(item =>  item.status === 'Accepted');
 
   const RestaurantOder = ({ item }) => (
     <TouchableOpacity
@@ -167,7 +201,7 @@ export default function Home() {
           borderRadius: 10,
           height: hp(12),
           width: hp(12),
-          backgroundColor: '#FFFFFF',
+          backgroundColor: item.color,
           alignItems: 'center',
           justifyContent: 'center',
           paddingTop: 25,
@@ -177,19 +211,19 @@ export default function Home() {
       ]}>
       <Text
         style={{
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: '700',
           lineHeight: 15,
-          color: '#7756FC',
+          color: item.txtcolor,
         }}>
         {item.name}
       </Text>
       <Text
         style={{
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: '700',
           lineHeight: 15,
-          color: '#7756FC',
+          color: item.txtcolor,
         }}>
         {item.subtitile}
       </Text>
@@ -198,7 +232,7 @@ export default function Home() {
           fontSize: 16,
           fontWeight: '700',
           lineHeight: 15,
-          color: '#000',
+          color: item.txtcolor,
           marginTop: 10
         }}>
         {item.id == '1' && TotalList?.total_order}
@@ -1031,6 +1065,8 @@ export default function Home() {
 
 
 
+
+
     return (
       <TouchableOpacity
         // disabled={item.status === 'Pending'}
@@ -1308,7 +1344,7 @@ export default function Home() {
             alignItems: 'center', justifyContent: 'center',
             height: 45, width: '90%', borderRadius: 10, marginVertical: 15, alignSelf: 'center'
           }}>
-          <Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>
+         {loading?<ActivityIndicator  size={20} color={'#e9595a'} />:<Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>}
         </TouchableOpacity>}
       </TouchableOpacity>
     );
@@ -1469,7 +1505,10 @@ const restaurantOrders = [
     id: '1',
     name: 'Total',
     subtitile: 'Orders',
-    status: 'Accepted'
+    status: 'Accepted',
+
+    color:'#5cbdb3',
+    txtcolor:'#fff'
 
 
   },
@@ -1484,15 +1523,18 @@ const restaurantOrders = [
     id: '3',
     name: 'Complete',
     subtitile: 'Orders',
-    status: 'Complete'
-
+    status: 'Complete',
+    color:'#de9362',
+    txtcolor:'#fff'
 
   },
   {
     id: '4',
     name: 'Cancel',
     subtitile: 'Orders',
-    status: 'Cancel'
+    status: 'Cancel',
+    color:'#ed8090',
+    txtcolor:'#fff'
 
 
   },
@@ -1500,8 +1542,9 @@ const restaurantOrders = [
     id: '5',
     name: 'Total ',
     subtitile: 'Revenue',
-    status: 'Revenue'
-
+    status: 'Revenue',
+    color:'#5ccc8c',
+    txtcolor:'#fff'
   },
 
 ];
@@ -1509,19 +1552,23 @@ const restaurantOrders = [
 const ORDERDATA = [
   {
     Name: 'New Order',
-    status: 'Pending'
+    status: 'Pending',
+    
   },
   {
     Name: 'Preparing',
-    status: 'Accepted'
+    status: 'Accepted',
+  
   },
   {
     Name: 'Ready',
-    status: 'Ready'
+    status: 'Ready',
+   
   },
   {
     Name: 'Pickuped',
-    status: 'Ready'
+    status: 'Ready',
+   
   },
 ]
 

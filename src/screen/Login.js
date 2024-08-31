@@ -7,8 +7,9 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  BackHandler,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {styles} from '../configs/Styles';
 import TextInputField from '../configs/TextInput';
@@ -117,6 +118,43 @@ errorToast(
   }
   };
 
+  const backAction = () => {
+    // Get the current route index using getState
+    const currentRouteIndex = navigation.getState().index;
+
+    if (currentRouteIndex === 0) {
+      // If the user is on the home screen, exit the app
+      Alert.alert("Exit App", "Do you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true; // This prevents the default back behavior
+    } else {
+      // Navigate back if not on the home screen
+      Alert.alert("Exit App", "Do you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+
+      return true; // This prevents the default back behavior
+    }
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, []);
+ 
 
   return (
     <View style={{flex: 1,backgroundColor:'#fff'}}>
@@ -248,56 +286,9 @@ errorToast(
               </Text>
             </TouchableOpacity>
           </View>
-          {/* <View style={{marginVertical: 10, justifyContent: 'center'}}>
-            <Text
-              style={{
-                fontSize: 16,
-                lineHeight: 22,
-                fontWeight: '500',
-                color: '#000000',
-              }}>
-              OR
-            </Text>
-          </View> */}
-        </View>
-        {/* <TouchableOpacity
-          onPress={() => {}}
-          style={{
-          
          
-            height: 60,
-            alignSelf: 'center',
-            width: '98%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 15,
-            borderRadius: 15,
-            marginTop: 20,
-            flexDirection: 'row',
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 1,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 2,
-
-            elevation: 5,
-            backgroundColor: '#fff',
-            marginHorizontal: 5,
-          }}>
-          <GLogo width={24} height={24} />
-          <Text
-            style={{
-              fontWeight: '600',
-              fontSize: 16,
-              color: '#000000',
-              lineHeight: 19.09,
-              marginLeft: 10,
-            }}>
-            Login with Google
-          </Text>
-        </TouchableOpacity> */}
+        </View>
+     
       </View>
       </ScrollView>
     </View>

@@ -453,13 +453,11 @@ const [isLoading,setisLoading] = useState(false)
       <ScrollView showsVerticalScrollIndicator={false}>
       <ProfileHeader name={'My Orders'} />
 
-        <View
-          style={{
-            height: hp(10),
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexDirection: 'row',
-          }}>
+        <ScrollView
+        horizontal
+        contentContainerStyle={{marginTop:20,paddingHorizontal:20}}
+        showsHorizontalScrollIndicator={false}
+       >
           <TouchableOpacity
             disabled={status === 'Accepted'}
             onPress={() => setStatus('Accepted')}
@@ -468,7 +466,7 @@ const [isLoading,setisLoading] = useState(false)
               borderRadius: 30,
               alignItems: 'center',
               justifyContent: 'center',
-              width: wp('28%'),
+              width: wp('30%'),
               height: 47,
             }}>
             <Text
@@ -478,7 +476,28 @@ const [isLoading,setisLoading] = useState(false)
                 fontWeight: '500',
                 color: status === 'Accepted' ? '#FFFFFF' : '#352C48',
               }}>
-              Accepted
+              Pending
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={status === 'Ready'}
+            onPress={() => setStatus('Ready')}
+            style={{
+              backgroundColor: status === 'Ready' ? '#7756FC' : '#FFF',
+              borderRadius: 30,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: wp('30%'),
+              height: 47,
+            }}>
+            <Text
+              style={{
+                fontSize: 18,
+                lineHeight: 27,
+                fontWeight: '500',
+                color: status === 'Ready' ? '#FFFFFF' : '#352C48',
+              }}>
+              Ready
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -489,7 +508,7 @@ const [isLoading,setisLoading] = useState(false)
               borderRadius: 30,
               alignItems: 'center',
               justifyContent: 'center',
-              width: wp('28%'),
+              width: wp('30%'),
               height: 47,
             }}>
             <Text
@@ -510,7 +529,7 @@ const [isLoading,setisLoading] = useState(false)
               borderRadius: 30,
               alignItems: 'center',
               justifyContent: 'center',
-              width: wp('28%'),
+              width: wp('30%'),
               height: 47,
             }}>
             <Text
@@ -523,7 +542,7 @@ const [isLoading,setisLoading] = useState(false)
               Cancel
             </Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
         <View style={{ marginTop: 20 }}>
           {OrderDetails?.length === 0 ? (
             <View style={{ alignItems: 'center', marginTop: 20 }}>

@@ -32,7 +32,7 @@ export default function MyDishesProfile() {
   const [expandedCategory, setExpandedCategory] = useState(null);
 
 
-console.log('item?.rescat_id,',item?.rescat_id);
+
   useEffect(() => {
     get_Mydishes();
   }, []);

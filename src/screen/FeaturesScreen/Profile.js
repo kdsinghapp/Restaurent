@@ -291,7 +291,7 @@ const user = useSelector(state => state.auth.userData);
           Log Out
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
          Delete_Account()
         }}
@@ -312,7 +312,7 @@ const user = useSelector(state => state.auth.userData);
           }}>
          Delete Account
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

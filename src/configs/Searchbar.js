@@ -41,7 +41,6 @@ export default function Searchbar({...props}) {
       value={searchText}
       style={{
         marginLeft: 10,
-
         width: '85%',
         fontSize: 16,
         lineHeight: 24,

@@ -316,11 +316,17 @@ export const change_order_status = createAsyncThunk(
 
       // Handle successful response
       if (responseData.success) {
-        successToast("Order Is Accepted ");
+       if(params.status == 'Accepted'){
+
+          successToast("Order Accepted  Successfuly",3000);
+        }
+        else{
+          errorToast("Order Cancel  Successfuly",3000);
+        }
       //  params.navigation.navigate(ScreenNameEnum.MyOrder,{type:'Accepted'})
        
       } else {
-        errorToast(responseData.message); 
+        errorToast(responseData.message,3000); 
        
       }
 

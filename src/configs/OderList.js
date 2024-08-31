@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Arrow from '../assets/sgv/2arrow.svg';
 import {
-    heightPercentageToDP as hp,
-    widthPercentageToDP as wp,
-  } from 'react-native-responsive-screen';
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import { change_order_status, get_order_data_by_id } from '../redux/feature/featuresSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +14,10 @@ const Order_List = ({ item }) => {
   const [prepTime, setPrepTime] = useState(initialPrepTime);
   const [isExpanded, setIsExpanded] = useState(true);
   const user = useSelector(state => state.auth.userData);
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
+
+  const [Loading, setLoading] = useState(false)
+  const [type, setType] = useState(false)
   const GetoderID = async timestamp => {
     // Extracting components from the timestamp
     const [date, time] = timestamp.split(' ');
@@ -25,7 +28,7 @@ const dispatch = useDispatch()
     const orderId = `${year}${month}${day}${hour}${minute}${second}`;
     return orderId;
   };
-const navigation = useNavigation()
+  const navigation = useNavigation()
   useEffect(() => {
     setPrepTime(initialPrepTime);
   }, [initialPrepTime]);
@@ -53,24 +56,30 @@ const navigation = useNavigation()
   };
 
   const OderStatus = async (item, status) => {
-  if(prepTime == 0 && status === 'Accepted') return errorToast("Please Enter Preparing Time")
-     
+    setType(status)
+    if (prepTime == 0 && status == 'Accepted') {
+      setLoading(false)
+      return errorToast("Please Enter Preparing Time")
+    }
+
+    setLoading(true)
     try {
       const params = {
         order_id: item.resord_id,
         status: status,
         token: user?.token,
         order_preapare_time: prepTime,
-        navigation:navigation
+        navigation: navigation
       };
 
-      console.log('=================params===================', params.data);
 
       dispatch(change_order_status(params)).then(res => {
         get_order();
+        setLoading(false)
       });
     } catch (err) {
       console.log('=================params===================', err);
+      setLoading(false)
     }
   };
 
@@ -98,17 +107,17 @@ const navigation = useNavigation()
   return (
     <View
       style={[
-       
-        {
-            shadowColor: "#000",
-shadowOffset: {
-	width: 0,
-	height: 2,
-},
-shadowOpacity: 0.25,
-shadowRadius: 3.84,
 
-elevation: 5,
+        {
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+
+          elevation: 5,
           borderRadius: 10,
           marginTop: 20,
           backgroundColor: '#FFF',
@@ -116,12 +125,12 @@ elevation: 5,
           padding: 10,
         },
       ]}
-      
 
-      >
-         <Text style={{ fontSize: 12, fontWeight: '500',color:'#777777',alignSelf:'flex-end' }}>
-            {formatTime(item.created_at)}
-          </Text>
+
+    >
+      <Text style={{ fontSize: 12, fontWeight: '500', color: '#777777', alignSelf: 'flex-end' }}>
+        {formatTime(item.created_at)}
+      </Text>
       <View
         style={{
           paddingHorizontal: 15,
@@ -132,11 +141,11 @@ elevation: 5,
         }}>
         <View>
           <Image
-            source={{ uri: item.user_data.images}}
+            source={{ uri: item.user_data.images }}
             style={{ height: 50, width: 50, borderRadius: 25 }}
           />
         </View>
-        
+
         <View style={{ width: '65%' }}>
           <Text
             style={{
@@ -147,7 +156,7 @@ elevation: 5,
             }}>
             ID: {item.resord_id}
           </Text>
-         
+
           <Text
             style={{
               color: '#352C48',
@@ -201,7 +210,7 @@ elevation: 5,
           </View>
         </View>
       </View>
-    {item.instruction &&  <View
+      {item.instruction && <View
         style={{
           paddingHorizontal: 15,
           height: hp(5),
@@ -211,9 +220,9 @@ elevation: 5,
         }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ color: '#777777', fontWeight: '600', fontSize: 14 }}>
-          Instruction :- {item.instruction}
+            Instruction :- {item.instruction}
           </Text>
-        
+
         </View>
       </View>}
       <View
@@ -280,6 +289,7 @@ elevation: 5,
         <TouchableOpacity
           onPress={() => {
             OderStatus(item, 'Accepted');
+            setLoading(true)
           }}
           style={{
             backgroundColor: '#15BE77',
@@ -289,7 +299,7 @@ elevation: 5,
             justifyContent: 'center',
             width: '40%',
           }}>
-          <Text
+          {Loading && type == 'Accepted' ? <ActivityIndicator size={20} color={'#e9595a'} /> : <Text
             style={{
               fontSize: 15,
               fontWeight: '500',
@@ -297,11 +307,12 @@ elevation: 5,
               color: '#FFFFFF',
             }}>
             Accept
-          </Text>
+          </Text>}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             OderStatus(item, 'Cancel');
+            setLoading(true)
           }}
           style={{
             backgroundColor: '#FF0000',
@@ -312,7 +323,7 @@ elevation: 5,
             justifyContent: 'center',
             width: '40%',
           }}>
-          <Text
+          {Loading && type == 'Cancel' ? <ActivityIndicator size={20} color={'#e9595a'} /> : <Text
             style={{
               fontSize: 15,
               fontWeight: '500',
@@ -321,6 +332,7 @@ elevation: 5,
             }}>
             Decline
           </Text>
+          }
         </TouchableOpacity>
         <View
           style={{

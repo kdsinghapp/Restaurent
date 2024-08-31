@@ -33,7 +33,7 @@ export default function ProfileHeader({name,Dwidth}) {
           <View style={{justifyContent: 'center', width:Dwidth}}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: '700',
                 lineHeight: 27,
                 color: '#000',
