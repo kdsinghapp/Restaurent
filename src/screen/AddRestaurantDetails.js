@@ -106,7 +106,7 @@ export default function AddRestaurantDetails() {
   const getToken = async () => {
     try {
       const token = await messaging().getToken();
-      console.log('FCM token=>>>>>>>>>>>>>>:', token);
+   
      send_token(token)
     } catch (error) {
       console.error('Error getting FCM token:', error);
@@ -191,7 +191,7 @@ export default function AddRestaurantDetails() {
       dispatch(update_restaurant_details(params));
     }
   };
-console.log(user?.user_data?.useres_id,);
+
   return (
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
@@ -339,14 +339,28 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: '#000',
   },
-  tabBtn: {
-    backgroundColor: '#3498db',
-    borderRadius: 30,
-    padding: 10,
+  tabBtn:{
+    height:60,
+
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 15,
+    borderRadius: 60,
+    marginTop: 25,
+   
     width: '100%',
-    marginTop: hp(5),
+  
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+
+    elevation: 1,
+    backgroundColor: '#352C48',
   },
   nextButtonText: {
     fontWeight: '600',

@@ -123,7 +123,7 @@ export default function SignUp() {
   return (
     <View style={{flex: 1}}>
        {isLoading ? <Loading /> : null}
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Image
           source={require('../assets/images/Image-36.png')}
           style={{height: hp(26), width: '100%'}}
@@ -228,7 +228,7 @@ export default function SignUp() {
                   }}>
                   I agree to the medidoc
                 </Text>
-                <TouchableOpacity style={{marginHorizontal: 5}}>
+                <View style={{marginHorizontal: 5}}>
                   <Text
                     style={{
                       color: '#7756FC',
@@ -238,7 +238,7 @@ export default function SignUp() {
                     }}>
                     Terms of Service
                   </Text>
-                </TouchableOpacity>
+                </View>
                 <Text
                   style={{
                     color: '#909090',
@@ -264,7 +264,7 @@ export default function SignUp() {
                   },
                 }}
               />
-              <TouchableOpacity style={{}}>
+              <View style={{}}>
                 <Text
                   style={{
                     color: '#7756FC',
@@ -274,7 +274,7 @@ export default function SignUp() {
                   }}>
                   Privacy Policy
                 </Text>
-              </TouchableOpacity>
+              </View>
             </View>
           </View>
           <Text

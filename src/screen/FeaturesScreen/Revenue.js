@@ -35,8 +35,26 @@ import { errorToast } from '../../configs/customToast';
     const dispatch = useDispatch()
     const user = useSelector(state => state.auth.userData);
   
-
-   
+    function formatDateTimeForUser(dateTimeString) {
+      const date = new Date(dateTimeString);
+    
+      // Automatically detect the user's locale and time zone
+      const userLocale = navigator.language || 'en-US'; // Fallback to 'en-US' if detection fails
+      const options = {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short',
+      };
+    
+      // Format the date and time according to the user's locale and time zone
+      const formattedDateTime = date.toLocaleString(userLocale, options);
+    
+      return formattedDateTime;
+    }
     useEffect(() => {
       getEarning()
     }, [user])
@@ -86,7 +104,7 @@ errorToast("Insufficient Balance")
     const renderItem = ({item}) => {
       return (
 
-        <View style={{height: hp(12),
+        <View style={{height: hp(14),
         paddingHorizontal:5,
         justifyContent: 'center'}}>
         {item.order_id &&  <Text
@@ -166,10 +184,12 @@ errorToast("Insufficient Balance")
                     style={{
                       fontWeight: '700',
                       fontSize: 10,
-                      lineHeight:22,
+                      lineHeight:12,
                       alignItems: 'center',
                       color: '#777777',
-                      marginTop:10
+                      marginTop:10,
+                      textAlign:'right',
+                      marginVertical:5
                     }}>
                  {item.status}
                   </Text>
@@ -177,12 +197,12 @@ errorToast("Insufficient Balance")
                     style={{
                       fontWeight: '400',
                       fontSize: 12,
-                      lineHeight:22,
+                      lineHeight:14,
                       alignItems: 'center',
                       color: '#000',
                 
                     }}>
-                 {item.payment_date}
+                 {formatDateTimeForUser(item.payment_date)}
                   </Text>
               </View>
           </View>

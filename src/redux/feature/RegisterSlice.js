@@ -15,7 +15,7 @@ const initialState = {
 export const register = createAsyncThunk(
   'register',
   async (params, thunkApi) => {
-    console.log('Register =>>>>>>>>>>', params.data);
+
     try {
       const myHeaders = new Headers();
       myHeaders.append("Accept", "application/json");
@@ -39,7 +39,7 @@ export const register = createAsyncThunk(
         .then((response) => response.text())
         .then((res) => {
           const response = JSON.parse(res)
-    console.log(response);      
+    
       if (response.success) {
         params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
      successToast(

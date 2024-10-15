@@ -52,7 +52,7 @@ export default function Home() {
   const [prepTime, setPrepTime] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpandedIndex, setIsExpandedIndex] = useState(null);
-  const [loading,setLoading]= useState(false)
+  const [loading, setLoading] = useState(false)
   const isFocused = useIsFocused();
   React.useEffect(() => {
     notificationListener();
@@ -115,7 +115,7 @@ export default function Home() {
       console.log('=================params===================', err);
     }
   };
-  console.log('OrderDetails?.length',OrderDetails?.length);
+
 
   useEffect(() => {
     get_order();
@@ -176,10 +176,10 @@ export default function Home() {
     return () =>
       BackHandler.removeEventListener("hardwareBackPress", backAction);
   }, []);
- 
+
   const PickedOrder = OrderStatus?.filter(item => item.delivery_status === 'Pickuped' && item.status === 'Ready');
   const RedyOrder = OrderStatus?.filter(item => item.delivery_status !== 'Pickuped' && item.status === 'Ready');
-  const PreparingOrderList = OrderStatus?.filter(item =>  item.status === 'Accepted');
+  const PreparingOrderList = OrderStatus?.filter(item => item.status === 'Accepted' && item.delivery_status !== 'Pickuped');
 
   const RestaurantOder = ({ item }) => (
     <TouchableOpacity
@@ -360,7 +360,7 @@ export default function Home() {
     );
     const formatTime = (dateTimeString) => {
 
-      console.log(dateTimeString);
+
       const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -1344,7 +1344,7 @@ export default function Home() {
             alignItems: 'center', justifyContent: 'center',
             height: 45, width: '90%', borderRadius: 10, marginVertical: 15, alignSelf: 'center'
           }}>
-         {loading?<ActivityIndicator  size={20} color={'#e9595a'} />:<Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>}
+          {loading ? <ActivityIndicator size={20} color={'#e9595a'} /> : <Text style={{ fontSize: 18, color: '#fff', fontWeight: '700' }}>Ready</Text>}
         </TouchableOpacity>}
       </TouchableOpacity>
     );
@@ -1447,9 +1447,11 @@ export default function Home() {
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
               /> :
-                <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
-                  No Order Found
-                </Text>}
+              <View style={{flex:1,justifyContent:'center',alignItems:'center',marginTop:50}}>
+              <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
+                No Order Found
+              </Text>
+              </View>}
             </>
           }
           {OrderDetail == 'Preparing' &&
@@ -1461,9 +1463,12 @@ export default function Home() {
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
               /> :
-                <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
-                  No Order Found
-                </Text>}
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                  <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
+                    No Order Found
+                  </Text>
+                </View>
+              }
             </>
           }
           {OrderDetail == 'Ready' &&
@@ -1475,9 +1480,13 @@ export default function Home() {
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
               /> :
-                <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
-                  No Order Found
-                </Text>}
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                  <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
+                    No Order Found
+                  </Text>
+                </View>
+
+              }
             </>
           }
           {OrderDetail == 'Pickuped' &&
@@ -1489,9 +1498,12 @@ export default function Home() {
                 ListFooterComponent={<View style={{ height: hp(2) }} />}
                 showsVerticalScrollIndicator={false}
               /> :
-                <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
-                  No Order Found
-                </Text>}
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                  <Text style={{ fontSize: 18, fontWeight: '500', color: '#000' }}>
+                    No Order Found
+                  </Text>
+                </View>
+              }
             </>
           }
         </View>
@@ -1507,8 +1519,8 @@ const restaurantOrders = [
     subtitile: 'Orders',
     status: 'Accepted',
 
-    color:'#5cbdb3',
-    txtcolor:'#fff'
+    color: '#5cbdb3',
+    txtcolor: '#fff'
 
 
   },
@@ -1524,8 +1536,8 @@ const restaurantOrders = [
     name: 'Complete',
     subtitile: 'Orders',
     status: 'Complete',
-    color:'#de9362',
-    txtcolor:'#fff'
+    color: '#de9362',
+    txtcolor: '#fff'
 
   },
   {
@@ -1533,8 +1545,8 @@ const restaurantOrders = [
     name: 'Cancel',
     subtitile: 'Orders',
     status: 'Cancel',
-    color:'#ed8090',
-    txtcolor:'#fff'
+    color: '#ed8090',
+    txtcolor: '#fff'
 
 
   },
@@ -1543,8 +1555,8 @@ const restaurantOrders = [
     name: 'Total ',
     subtitile: 'Revenue',
     status: 'Revenue',
-    color:'#5ccc8c',
-    txtcolor:'#fff'
+    color: '#5ccc8c',
+    txtcolor: '#fff'
   },
 
 ];
@@ -1553,22 +1565,22 @@ const ORDERDATA = [
   {
     Name: 'New Order',
     status: 'Pending',
-    
+
   },
   {
     Name: 'Preparing',
     status: 'Accepted',
-  
+
   },
   {
     Name: 'Ready',
     status: 'Ready',
-   
+
   },
   {
     Name: 'Pickuped',
     status: 'Ready',
-   
+
   },
 ]
 

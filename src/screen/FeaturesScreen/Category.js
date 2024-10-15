@@ -21,7 +21,7 @@ export default function Category() {
   const isLoading = useSelector(state => state.feature.isLoading);
   const FoodCategory = useSelector(state => state.feature.FoodCategory);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState(FoodCategory);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
 
   useEffect(() => {
@@ -32,11 +32,11 @@ export default function Category() {
       setFilteredCategories(FoodCategory)
     })
 
+    setFilteredCategories(FoodCategory)
+  }, [isFocused, user ]);
 
-  }, [isFocused, user]);
-  useEffect(() => {
-    setFilteredCategories(FoodCategory);
-}, [FoodCategory]);
+
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
@@ -92,11 +92,11 @@ export default function Category() {
                         searchText={searchTerm}
                     />
                 </View>
-      {filteredCategories?.length > 0 ? (
+      {filteredCategories?.length > 0  || FoodCategory?.length >0? (
       
          <FlatList
          showsVerticalScrollIndicator={false}
-         data={filteredCategories}
+         data={filteredCategories?.length !== undefined ?filteredCategories:FoodCategory}
          renderItem={renderItem}
          keyExtractor={item => item.rescat_id.toString()}
          numColumns={numColumns}

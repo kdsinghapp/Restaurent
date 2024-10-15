@@ -7,6 +7,7 @@ import {
   TextInput,
   StyleSheet,
   Platform,
+  Keyboard,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -36,6 +37,7 @@ export default function EditProfile() {
   const getProfile = useSelector(state => state.feature.getProfile);
   const [profile, setprofile] = useState('');
   const [imageUrl, setimageUrl] = useState('');
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -44,7 +46,26 @@ export default function EditProfile() {
     };
     dispatch(get_Profile(params));
   }, [user]);
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // Keyboard is open
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // Keyboard is closed
+      }
+    );
 
+    // Clean up listeners on component unmount
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
   useEffect(() => {
     if (getProfile) {
       setName(getProfile.useres_full_name || '');
@@ -170,6 +191,7 @@ export default function EditProfile() {
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
         <View style={styles.bottomSpacing} />
+        <View style={{ height:isKeyboardVisible?hp(23):23 }} />
       </ScrollView>
     </View>
   );

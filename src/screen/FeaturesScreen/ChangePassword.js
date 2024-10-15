@@ -49,7 +49,7 @@ export default function ChangePassword() {
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 15 }}>
       {isLoading ?<Loading />:null}
-      <ProfileHeader name={'Change Password'} Dwidth={'40%'} />
+      <ProfileHeader name={'Change Password'} Dwidth={'50%'} />
       <View style={{ marginTop: 20 }}>
         <TextInputField
           hide={true}
@@ -87,7 +87,7 @@ export default function ChangePassword() {
         />
       </View>
       <TouchableOpacity
-        style={[styles.tabBtn, { position: 'absolute', bottom: 10 }]}
+        style={[styles.tabBtn, { position: 'absolute', bottom:30 }]}
         onPress={handleSave}
       >
         <Text

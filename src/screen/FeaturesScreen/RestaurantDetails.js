@@ -113,7 +113,7 @@ const isFocuse = useIsFocused()
 
 
       const formattedAddress = formatAddress(details);
-      console.log('details=>>>>>>>>>>>>>>>>>>>>>', formattedAddress);
+
       setRestaurantLocation(formattedAddress)
     },
     [navigation]

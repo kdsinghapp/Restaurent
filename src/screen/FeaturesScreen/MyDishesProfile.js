@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react';
 import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import ProfileHeader from './ProfileHeader';
 import ScreenNameEnum from '../../routes/screenName.enum';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,12 +30,12 @@ export default function MyDishesProfile() {
   const user = useSelector(state => state.auth.userData);
   const [loading, setLoading] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState(null);
-
+const isFocus = useIsFocused()
 
 
   useEffect(() => {
     get_Mydishes();
-  }, []);
+  }, [isFocus]);
 
   const get_Mydishes = async () => {
     const params = {
@@ -46,7 +46,7 @@ export default function MyDishesProfile() {
   };
 
   const delete_dish = async (id) => {
-    console.log('Deleting dish with ID:', id);
+
     try {
       const params = {
         restaurant_dish_id: id,
@@ -94,7 +94,7 @@ export default function MyDishesProfile() {
 
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate(ScreenNameEnum.EditDish, { item: item });
+          navigation.navigate(ScreenNameEnum.EditDish, { item: item,categoryitem:route.params.item });
         }}
         style={styles.editButton}>
         <Text style={styles.buttonText}>
@@ -136,10 +136,12 @@ export default function MyDishesProfile() {
         {isLoading ? <Loading /> : null}
         <View style={styles.header}>
           <View style={styles.headerTitle}>
-            <ProfileHeader name={item?.rescat_name} />
-          </View>
+            <View style={{width:'100%'}}>
 
-          <TouchableOpacity
+            <ProfileHeader name={item?.rescat_name} />
+            </View>
+
+            <TouchableOpacity
             onPress={() => {
               navigation.navigate(ScreenNameEnum.Add_DISH);
             }}
@@ -149,6 +151,9 @@ export default function MyDishesProfile() {
               style={styles.addIcon}
             />
           </TouchableOpacity>
+          </View>
+
+         
         </View>
         <View style={styles.dishesContainer}>
           {ResturantDish.length > 0 ? (
@@ -180,13 +185,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent:'space-between'
   },
   headerTitle: {
     width: '90%',
+    flexDirection:'row',justifyContent:'space-between',alignItems:'center'
   },
   addButton: {
-    justifyContent: 'center',
-    marginTop: 8,
+marginTop:40
   },
   addIcon: {
     height: 32,

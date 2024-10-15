@@ -10,9 +10,9 @@ export default function ProfileHeader({name,Dwidth}) {
   return (
     <View >
          {Platform.OS === 'ios' ? (
-          <View style={{height:40}} />
+          <View style={{height:45}} />
         ) : (
-          <View style={{height:0}} />
+          <View style={{height:10}} />
         )}
         <View
           style={{

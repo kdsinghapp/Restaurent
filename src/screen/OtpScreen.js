@@ -22,7 +22,7 @@ const isLoading = useSelector(state => state.auth.isLoading);
     setValue,
   });
   const dispatch = useDispatch();
-  console.log(identity,value);
+
 
   const ValidOtp =()=>{
 

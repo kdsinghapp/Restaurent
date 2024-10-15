@@ -308,13 +308,28 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontWeight: '600',
   },
-  tabBtn: {
-    backgroundColor: '#3498db',
-    borderRadius: 30,
-    padding: 10,
+  tabBtn:{
+    height:50,
+
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 15,
+    borderRadius: 60,
+    marginTop: 65,
+   
     width: '100%',
+  
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+
+    elevation: 1,
+    backgroundColor: '#352C48',
   },
   nextButtonText: {
     fontWeight: '600',

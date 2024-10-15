@@ -43,7 +43,7 @@ export const login = createAsyncThunk('login', async (params, thunkApi) => {
     // Parse response as JSON
     const responseData = await response.json();
 
-    console.log('Response login :', responseData.data);
+
 
     // Handle successful response
     if (responseData.success) {
@@ -73,14 +73,11 @@ export const sendOtpRestPass = createAsyncThunk(
   'auth/sendOtpRestPass',
   async (params, thunkApi) => {
     try {
-      console.log('==================params ==================');
-      console.log(params.data);
-      console.log('====================================');
-
+ 
       const formData = new FormData();
       formData.append('identity', params.data.identity);
 
-      console.log('FormData:', formData);
+   
 
       const response = await API.post(
         '/restaurant/auth/password-reset',
@@ -93,7 +90,7 @@ export const sendOtpRestPass = createAsyncThunk(
         },
       );
 
-      console.log('Response:', response);
+
 
       if (response.data.success) {
         successToast('OTP Sent Successfully');
@@ -144,7 +141,7 @@ export const validOtp = createAsyncThunk(
 
       // Make POST request to verify OTP
       const response = await fetch(
-        'https://loveeatsdb.com/api//restaurant/auth/verify-otp',
+        'https://loveeatsdb.com/api/restaurant/auth/verify-otp',
         requestOptions,
       );
 
@@ -176,7 +173,7 @@ export const CreateNewPassword = createAsyncThunk(
   'create-new-password-without-login',
   async (params, thunkApi) => {
     const {identity, password, otp} = params.data;
-    console.log('create-new-password-without-login', identity, password, otp);
+
     try {
       const myHeaders = new Headers();
       myHeaders.append('Accept', 'application/json');
@@ -201,7 +198,7 @@ export const CreateNewPassword = createAsyncThunk(
         .then(response => response.text())
         .then(result => {
           const response = JSON.parse(result);
-          console.log(response);
+      
           if (response.success) {
             params.navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
             successToast('Password updated successfully');

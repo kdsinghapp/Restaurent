@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, Animated, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, Animated, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import ProfileHeader from './ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +23,28 @@ export default function Account() {
     const isFocused = useIsFocused();
     const slideAnim = useState(new Animated.Value(-300))[0];  // Initial position
     const getProfile = useSelector(state => state.feature.getProfile);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          () => {
+            setKeyboardVisible(true); // Keyboard is open
+          }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+          'keyboardDidHide',
+          () => {
+            setKeyboardVisible(false); // Keyboard is closed
+          }
+        );
+    
+        // Clean up listeners on component unmount
+        return () => {
+          keyboardDidHideListener.remove();
+          keyboardDidShowListener.remove();
+        };
+      }, []);
     useEffect(() => {
         getBankAccount();
         get_Profile_data()
@@ -220,6 +242,8 @@ export default function Account() {
                                         style={[styles.tabBtn, { marginTop: 15 }]}>
                                         <Text style={styles.tabBtnText}>Cancel</Text>
                                     </TouchableOpacity>
+
+                                    <View  style={{height:isKeyboardVisible?heightPercentageToDP(20):30}} />
                                 </View>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -245,6 +269,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
         paddingHorizontal:20,
+        height:50,
         color:'#000',
         fontWeight:'500'
     },

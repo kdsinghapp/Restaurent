@@ -32,7 +32,7 @@ export default function AskLocation() {
     if (Platform.OS === 'ios') {
       const authStatus = await Geolocation.requestAuthorization('whenInUse');
       if (authStatus === 'granted' || authStatus === 'whenInUse') {
-        console.log('You can use the location', user?.restaurant_register);
+
 
         if (user?.restaurant_register) {
           navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
@@ -96,7 +96,7 @@ export default function AskLocation() {
   const getToken = async () => {
     try {
       const token = await messaging().getToken();
-      console.log('FCM token=>>>>>>>>>>>>>>:', token);
+
       send_token(token)
     } catch (error) {
       console.error('Error getting FCM token:', error);

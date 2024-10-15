@@ -9,6 +9,7 @@ import {
   TextInput,
   StyleSheet,
   PermissionsAndroid,
+  Keyboard,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
@@ -30,6 +31,7 @@ export default function AddDish() {
   const [prepareTime, setPrepareTime] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(null); // State to hold the selected category
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const isLoading = useSelector(state => state.feature.isLoading);
   const FoodCategory = useSelector(state => state.feature.FoodCategory);
@@ -87,7 +89,27 @@ export default function AddDish() {
     };
     await dispatch(get_restaurant_dish(params));
   };
-console.log('category',category);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // Keyboard is open
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // Keyboard is closed
+      }
+    );
+
+    // Clean up listeners on component unmount
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
   const Add_Dish = async () => {
     try {
       const params = {
@@ -239,7 +261,9 @@ console.log('category',category);
             Add Dish
           </Text>
         </TouchableOpacity>
-        <View style={{ height: 20 }} />
+        <View style={{ height:isKeyboardVisible?hp(33):33 }} />
+
+
       </ScrollView>
     </View>
   );

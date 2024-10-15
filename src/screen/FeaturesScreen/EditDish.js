@@ -8,6 +8,7 @@ import {
   Platform,
   TextInput,
   StyleSheet,
+  Keyboard,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -19,11 +20,12 @@ import Loading from '../../configs/Loader';
 import ProfileHeader from './ProfileHeader';
 import { Food_categories, get_restaurant_dish, update_restaurant_dish } from '../../redux/feature/featuresSlice';
 import { Dropdown } from 'react-native-element-dropdown';
+import ScreenNameEnum from '../../routes/screenName.enum';
 
 export default function EditDish() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { item } = route.params;
+  const { item ,categoryitem } = route.params;
   const [image, setImage] = useState(item?.restaurant_dish_image); // State to hold the selected image
   const [dishName, setDishName] = useState('');
   const [dishPrice, setDishPrice] = useState('');
@@ -33,11 +35,14 @@ export default function EditDish() {
   const [category, setCategory] =useState('');; // State to hold the selected category
   const FoodCategory = useSelector(state => state.feature.FoodCategory);
 
+
+  console.log('categoryitem',categoryitem);
   useEffect(() => {
     Get_Category();
   }, [user]);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-  console.log( typeof item.restaurant_dish_price.toString());
+
 const user = useSelector(state => state.auth.userData);
   const isLoading = useSelector(state => state.feature.isLoading);
   const dispatch = useDispatch();
@@ -52,7 +57,26 @@ const user = useSelector(state => state.auth.userData);
     setCategory(item.restaurant_dish_category)
   }, [item]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // Keyboard is open
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // Keyboard is closed
+      }
+    );
 
+    // Clean up listeners on component unmount
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
   
   const openImageLibrary = () => {
     ImagePicker.openPicker({
@@ -93,8 +117,9 @@ const user = useSelector(state => state.auth.userData);
 
      
 
-    dispatch(update_restaurant_dish(params)).then(res => {
-    get_Mydishes()
+    dispatch(update_restaurant_dish(params)).then( async res => {
+
+   navigation.navigate(ScreenNameEnum.MY_DISHES_PROFILE,{ item: categoryitem })
     });
   };
 
@@ -229,7 +254,8 @@ const user = useSelector(state => state.auth.userData);
             Update Dish
           </Text>
         </TouchableOpacity>
-        <View style={{height:hp(5)}} />
+        <View style={{ height:isKeyboardVisible?hp(33):33 }} />
+
       </ScrollView>
     </View>
   );

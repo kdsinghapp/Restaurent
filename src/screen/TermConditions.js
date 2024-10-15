@@ -24,7 +24,7 @@ export default function TermConditions() {
   const params ={
     token:user.token
   }
-    console.log(user.token);
+
   useEffect(() => {
     dispatch(get_terms_conditions(params));
   }, [isFocuss]);
