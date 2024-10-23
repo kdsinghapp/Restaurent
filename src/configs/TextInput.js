@@ -23,6 +23,7 @@ export default function TextInputField({...props}) {
           borderWidth: 2,
           borderColor: props.isFocus ? '#6D6EEC' : '#F7F8F8',
           height: 60,
+          paddingHorizontal:10,
           borderRadius: 40,
           alignItems: 'center',
           backgroundColor: '#F7F8F8',

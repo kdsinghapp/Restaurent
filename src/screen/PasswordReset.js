@@ -1,18 +1,18 @@
-import {View, Text, Image, TouchableOpacity,Platform, TextInput, Alert,ScrollView, StyleSheet} from 'react-native';
+import { View, Text, Image, TouchableOpacity, Platform, TextInput, Alert, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import React, { useState } from 'react';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useNavigation} from '@react-navigation/native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
 import Loading from '../configs/Loader';
 import ScreenNameEnum from '../routes/screenName.enum';
 import { sendOtpRestPass } from '../redux/feature/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import {CountryPicker} from 'react-native-country-codes-picker';
+import { CountryPicker } from 'react-native-country-codes-picker';
 import { errorToast } from '../configs/customToast';
 
 export default function PasswordRest() {
   const navigation = useNavigation();
 
-  const [Email,setEmail] = useState('')
+  const [Email, setEmail] = useState('')
   const [mobile, setMobile] = useState('')
   const isLoading = useSelector(state => state.auth.isLoading);
   const [show, setShow] = useState(false);
@@ -20,47 +20,47 @@ export default function PasswordRest() {
   const [code, setCode] = useState('');
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const numberRegex = /^[0-9]+$/;
- 
- 
+
+
   const dispatch = useDispatch();
 
   const Submit = () => {
-    if (Email != '' || mobile != '' ) {
+    if (Email != '' || mobile != '') {
       if (emailRegex.test(Email)) {
 
         console.log(' Email');
-       
+
 
         const params = {
           data: {
             identity: Email,
-  
-           
-          },
-          navigation: navigation,
-        };
- 
-        dispatch(sendOtpRestPass(params));
-      }
-      
-      else if (numberRegex.test(mobile)) {
-       
-        if(code =='') return errorToast(
-          'Please Select Country Code.',
-        );
-       
-        console.log('Mobile');
-        const params = {
-          data: {
-            identity: code+'-'+mobile,
-           
+
+
           },
           navigation: navigation,
         };
 
-       dispatch(sendOtpRestPass(params));
+        dispatch(sendOtpRestPass(params));
       }
-   
+
+      else if (numberRegex.test(mobile)) {
+
+        if (code == '') return errorToast(
+          'Please Select Country Code.',
+        );
+
+        console.log('Mobile');
+        const params = {
+          data: {
+            identity: code + '-' + mobile,
+
+          },
+          navigation: navigation,
+        };
+
+        dispatch(sendOtpRestPass(params));
+      }
+
       else {
         Alert.alert(
           'Invalid Input',
@@ -72,49 +72,51 @@ export default function PasswordRest() {
     }
   };
   return (
-    <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
-    {isLoading ? <Loading /> : null}
-    {Platform.OS === 'ios' ?<View style={{height: 68}} />: <View style={{height:5}} />}
-    <ScrollView showsVerticalScrollIndicator={false} 
-    
-   >
-      <View style={{marginTop:20}}/>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.goBack();
-        }}>
-        <Image
-          source={require('../assets/croping/Back-Navs2x.png')}
-          style={{height: 32, width: 32}}
-        />
-      </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+      <StatusBar   backgroundColor={'#fff'} />
+      <View style={{ flex: 1, paddingHorizontal: 10, backgroundColor: '#fff' }}>
+        {isLoading ? <Loading /> : null}
 
-      <View style={{height: hp(15), marginTop: 5}}>
-        <View style={{marginTop: 25}}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 22,
-              lineHeight: 24,
-              color: '#000000',
+        <ScrollView showsVerticalScrollIndicator={false}
+
+        >
+          <View style={{}} />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
             }}>
-            Password Reset
-          </Text>
-        </View>
-        <View style={{marginTop: 5}}>
-          <Text
-            style={{
-              fontWeight: '400',
-              fontSize: 14,
-              lineHeight: 24,
-              color: '#9DB2BF',
-            
-            }}>
-          Please put your mobile number to reset your password
-          </Text>
-        </View>
-      </View>
-      {/* <View
+            <Image
+              source={require('../assets/croping/Back-Navs2x.png')}
+              style={{ height: 32, width: 32 }}
+            />
+          </TouchableOpacity>
+
+          <View style={{ height: hp(15), marginTop: 5 }}>
+            <View style={{ marginTop: 25 }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  fontSize: 22,
+                  lineHeight: 24,
+                  color: '#000000',
+                }}>
+                Password Reset
+              </Text>
+            </View>
+            <View style={{ marginTop: 5 }}>
+              <Text
+                style={{
+                  fontWeight: '400',
+                  fontSize: 14,
+                  lineHeight: 24,
+                  color: '#9DB2BF',
+
+                }}>
+                Please put your mobile number to reset your password
+              </Text>
+            </View>
+          </View>
+          {/* <View
         style={styles.tab}>
         <View style={{width:'25%',padding:5}}>
           <Image
@@ -177,96 +179,99 @@ placeholderTextColor={'#000'}
             }}
           />
       </View> */}
-      <View
-        style={styles.tab}>
-    
-        <View style={{width:'25%',padding:5}}>
-          <Image
-            source={require('../assets/croping/Email_Box3x.png')}
-            style={{height:'100%',width:'100%'}}
-            resizeMode='contain'
-          />
-        </View>
-        <View style={{width:'60%', marginLeft: 30, height: 43}}>
-          <View>
+          <View
+            style={styles.tab}>
+
+            <View style={{ width: '25%', padding: 5 }}>
+              <Image
+                source={require('../assets/croping/Email_Box3x.png')}
+                style={{ height: '100%', width: '100%' }}
+                resizeMode='contain'
+              />
+            </View>
+            <View style={{ width: '60%', marginLeft: 30, height: 43 }}>
+              <View>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 19.09,
+                    fontWeight: '700',
+                    color: '#000000',
+                  }}>
+                  Email
+                </Text>
+              </View>
+              <View style={{}}>
+                <TextInput
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 19.09,
+                    fontWeight: '400',
+                    color: '#000',
+                    lineHeight: 21
+                  }}
+                  placeholderTextColor={'#000'}
+                  placeholder='Enter email'
+
+                  onChangeText={(txt) => setEmail(txt)}
+                  value={Email}
+                />
+
+
+              </View>
+            </View>
+          </View>
+          <View style={{ height: hp(33), alignItems: 'center', justifyContent: 'center' }}>
+            <Image source={require('../assets/croping/I_13x.png')}
+              resizeMode='contain'
+              style={{ height: '80%', width: '80%' }} />
+          </View>
+          <View style={{ height: hp(22) }} />
+          <TouchableOpacity
+
+            onPress={() => {
+              Submit()
+
+            }}
+            style={{
+              backgroundColor: '#1D0B38',
+              alignItems: 'center',
+              height: 60,
+              borderRadius: 60,
+              position: 'absolute',
+              bottom: 30,
+
+              width: '100%',
+
+              alignSelf: 'center',
+              justifyContent: 'center',
+            }}>
             <Text
               style={{
-                fontSize: 16,
-                lineHeight: 19.09,
-                fontWeight: '700',
-                color: '#000000',
+                fontSize: 17,
+                lineHeight: 25.5,
+                fontWeight: '600',
+                color: '#FFFFFF',
               }}>
-              Email
+              Submit
             </Text>
-          </View>
-          <View style={{}}>
-            <TextInput
-              style={{
-                fontSize: 14,
-                lineHeight: 19.09,
-                fontWeight: '400',
-                color: '#000',
-                lineHeight:21
-              }}   
-              placeholderTextColor={'#000'}
-              placeholder='Enter email'
+          </TouchableOpacity>
+      
 
-              onChangeText={(txt)=>setEmail(txt)}
-              value={Email}
-              />
-            
-       
-          </View>
-        </View>
+        </ScrollView>
       </View>
-      <View style={{height:hp(33),alignItems:'center',justifyContent:'center'}}>
-<Image   source={require('../assets/croping/I_13x.png')} 
-resizeMode='contain'
-style={{height:'80%',width:'80%'}}/>
-</View>
-      <TouchableOpacity
-
-onPress={()=>{
-  Submit()
-
-}}
-style={{
-          backgroundColor: '#1D0B38',
-          alignItems: 'center',
-          height:60,
-          borderRadius:60,
-  marginTop:hp(16),
-     
-          width: '100%',
-        
-          alignSelf: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            fontSize: 17,
-            lineHeight: 25.5,
-            fontWeight: '600',
-            color: '#FFFFFF',
-          }}>
-          Submit
-        </Text>
-      </TouchableOpacity>
-<View style={{height:hp(10)}} />
-     
-      </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 
 const styles = StyleSheet.create({
-  tab:{
-    marginHorizontal:10,
-    
-    marginTop:10,
+  tab: {
+    marginHorizontal: 10,
+
+    marginTop: 10,
     height: hp(15),
-    padding:5,
+    padding: 5,
     borderRadius: 10,
     shadowColor: '#000',
     backgroundColor: '#fff',

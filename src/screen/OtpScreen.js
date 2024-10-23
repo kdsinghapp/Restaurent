@@ -1,4 +1,4 @@
-import {View, Text, Image, TouchableOpacity, Platform, StyleSheet,ScrollView} from 'react-native';
+import {View, Text, Image, TouchableOpacity, Platform, StyleSheet,ScrollView, StatusBar, SafeAreaView} from 'react-native';
 import React ,{useState}from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useNavigation} from '@react-navigation/native';
@@ -39,11 +39,13 @@ const isLoading = useSelector(state => state.auth.isLoading);
 
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
        {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ?<View style={{height: 68}} />: <View style={{height:10}} />}
+   
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{marginTop:20}}/>
+        <View style={{}}/>
       <TouchableOpacity
         onPress={() => {
           navigation.goBack();
@@ -140,6 +142,7 @@ style={{
       </TouchableOpacity>
 
     </View>
+    </SafeAreaView>
   );
 }
 
