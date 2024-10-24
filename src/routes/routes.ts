@@ -40,6 +40,7 @@ import Account from "../screen/FeaturesScreen/Account";
 import AskLocation from "../screen/FeaturesScreen/AskLocation";
 import Category from "../screen/FeaturesScreen/Category";
 import Revenue from "../screen/FeaturesScreen/Revenue";
+import CheckApporve from "../screen/CheckApporve";
 
 const _routes = {
   REGISTRATION_ROUTE: [
@@ -162,6 +163,10 @@ const _routes = {
     {
       name: ScreenNameEnum.Revenue,
       Component:Revenue ,
+    },
+    {
+      name: ScreenNameEnum.CheckApporve,
+      Component:CheckApporve ,
     },
    
    

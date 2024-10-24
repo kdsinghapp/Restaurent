@@ -80,8 +80,8 @@ android {
         applicationId "com.LoveEatRestaurent"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.9.5"
+        versionCode 16
+        versionName "1.9.6"
     }
     signingConfigs {
          debug {

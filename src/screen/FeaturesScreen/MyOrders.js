@@ -136,7 +136,7 @@ const [isLoading,setisLoading] = useState(false)
       hours = hours % 12;
       hours = hours ? hours : 12; // the hour '0' should be '12'
     
-      return `${dayOfWeek} ${month} ${day}, ${year} `;
+      return `${dayOfWeek}  ${month}  ${day},  ${year} `;
     };
     
 
@@ -190,7 +190,7 @@ const [isLoading,setisLoading] = useState(false)
                 ...{ color: '#000', fontWeight: '600', marginRight: 20, },
               }}
             >
-              ${item.total_price.toFixed(2)}
+               £{item.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -251,7 +251,7 @@ const [isLoading,setisLoading] = useState(false)
                       </Text>
 
                       <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
-                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                        (Price per unit:  £{dish.price_per_unit.toFixed(2)})
                       </Text>
                     </View>
                   </View>
@@ -307,7 +307,7 @@ const [isLoading,setisLoading] = useState(false)
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.tax_amount}.00
+                 £{item.tax_amount}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -319,7 +319,7 @@ const [isLoading,setisLoading] = useState(false)
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.delivery_charge}.00
+                 £{item.delivery_charge}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -331,7 +331,7 @@ const [isLoading,setisLoading] = useState(false)
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.sub_total}.00
+                 £{item.sub_total}.00
               </Text>
             </View>
             <View style={styles.detailsRow}>
@@ -343,7 +343,7 @@ const [isLoading,setisLoading] = useState(false)
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.total_price.toFixed(2)}
+                 £{item.total_price.toFixed(2)}
               </Text>
             </View>
 

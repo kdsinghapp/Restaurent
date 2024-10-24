@@ -204,7 +204,13 @@ export const update_restaurant_details = createAsyncThunk(
       // Handle successful response
       if (responseData.success) {
         successToast('Update Restaurant Details Successfuly');
-        params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+        if(params.firsTime){
+          params.navigation.navigate(ScreenNameEnum.CheckApporve);
+        }
+        else{
+
+          params.navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
+        }
       } else {
         errorToast(responseData.message); 
        

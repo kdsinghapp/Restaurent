@@ -64,7 +64,7 @@ const isLoading = useSelector(state => state.auth.isLoading);
               lineHeight: 24,
               color: '#000000',
             }}>
-           Check your mail or check your cell phone
+           Check your mail 
           </Text>
         </View>
         <View style={{marginTop: 5}}>

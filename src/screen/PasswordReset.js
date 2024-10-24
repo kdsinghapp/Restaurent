@@ -112,7 +112,7 @@ export default function PasswordRest() {
                   color: '#9DB2BF',
 
                 }}>
-                Please put your mobile number to reset your password
+                Please put your email address to reset your password
               </Text>
             </View>
           </View>

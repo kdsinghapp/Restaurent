@@ -90,7 +90,7 @@ const isFocus = useIsFocused()
             {' '}
             Price:-
           </Text>{' '}
-          ${item.restaurant_dish_price}
+          £{item.restaurant_dish_price}
         </Text>
       </View>
 

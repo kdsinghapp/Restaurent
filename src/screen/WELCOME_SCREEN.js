@@ -12,39 +12,55 @@ export default function WELCOME_SCREEN() {
   const getProfile = useSelector(state => state.feature.getProfile);
   const isLogOut = useSelector(state => state.auth.isLogOut);
   const isLogin = useSelector(state => state.auth.isLogin);
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const isFoucs = useIsFocused();
-  console.log('================splash screen====================',getProfile?.restaurant_register);
+
   const checkLogout = () => {
+
+    console.log('getProfile?.useres_status',getProfile?.useres_status);
     if ((!isLogOut && !isLogin) || (isLogOut && !isLogin)) {
       console.log('================Login====================');
       navigation.navigate(ScreenNameEnum.LOGIN_SCREEN);
     }
     if (!isLogOut && isLogin) {
-      if(getProfile?.restaurant_register){
+      if (getProfile?.restaurant_register && getProfile?.useres_status === 'ACTIVE') {
 
         navigation.navigate(ScreenNameEnum.BOTTOM_TAB);
-      }else{
+      }
+      else if (getProfile?.restaurant_register && getProfile?.useres_status === 'INACTIVE') {
+        navigation.navigate(ScreenNameEnum.CheckApporve);
+      }
+      else if (!getProfile?.restaurant_register && getProfile?.useres_status === 'INACTIVE') {
         navigation.navigate(ScreenNameEnum.RESTAURANT_DETAILS);
+      }
+      else {
+     
       }
     }
   };
   useEffect(() => {
     const params = {
-      token: user.token,
+      token: user?.token,
     };
     dispatch(get_Profile(params));
-    checkLogout();
+
   }, [isFoucs, isLogOut]);
+  useEffect(() => {
+    checkLogout()
+
+  }, [getProfile]);
+
+
+
 
   return (
-    <View style={{flex:1,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'}} >
-      <Image   
-      
-    source={require('../assets/croping/appLogo.png')}
-    style={{height:200,width:200}}
+    <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }} >
+      <Image
 
-    resizeMode='contain'
+        source={require('../assets/croping/appLogo.png')}
+        style={{ height: 200, width: 200 }}
+
+        resizeMode='contain'
       />
 
     </View>

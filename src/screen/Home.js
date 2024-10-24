@@ -40,6 +40,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Order_List from '../configs/OderList';
 import { notificationListener } from './FeaturesScreen/NotificationComponent';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
+import useBackHandler from './useBackHandler';
 export default function Home() {
   const user = useSelector(state => state.auth.userData);
   const OrderDetails = useSelector(state => state.feature.orderDataHome);
@@ -150,34 +151,9 @@ export default function Home() {
 
     dispatch(get_order_data_by_Home(params));
   };
-  const backAction = () => {
-    // Get the current route index using getState
-    const currentRouteIndex = navigation.getState().index;
 
-    if (currentRouteIndex === 0) {
-      // If the user is on the home screen, exit the app
-      Alert.alert("Exit App", "Do you want to exit?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() }
-      ]);
-      return true; // This prevents the default back behavior
-    } else {
-      // Navigate back if not on the home screen
-      navigation.goBack();
-      return true; // This prevents the default back behavior
-    }
-  };
+  useBackHandler(navigation,'Home');
 
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () =>
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }, []);
 
   const PickedOrder = OrderStatus?.filter(item => item.delivery_status === 'Pickuped' && item.status === 'Ready');
   const RedyOrder = OrderStatus?.filter(item => item.delivery_status !== 'Pickuped' && item.status === 'Ready');
@@ -384,7 +360,7 @@ export default function Home() {
       hours = hours % 12;
       hours = hours ? hours : 12; // the hour '0' should be '12'
 
-      return `${dayOfWeek} ${month} ${day}, ${year} `;
+      return `${dayOfWeek} £{month} £{day}, £{year} `;
     };
 
 
@@ -438,7 +414,7 @@ export default function Home() {
                 ...{ color: '#000', fontWeight: '600', marginRight: 20, },
               }}
             >
-              ${item.total_price.toFixed(2)}
+              £{item.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -499,7 +475,7 @@ export default function Home() {
                       </Text>
 
                       <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
-                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                        (Price per unit: £{dish.price_per_unit.toFixed(2)})
                       </Text>
                     </View>
                   </View>
@@ -556,7 +532,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.tax_amount}.00
+                £{item.tax_amount}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -568,7 +544,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.delivery_charge}.00
+                £{item.delivery_charge}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -580,7 +556,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.sub_total}.00
+                £{item.sub_total}.00
               </Text>
             </View>
             <View style={styles.detailsRow}>
@@ -592,7 +568,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.total_price.toFixed(2)}
+                £{item.total_price.toFixed(2)}
               </Text>
             </View>
 
@@ -777,7 +753,7 @@ export default function Home() {
                 ...{ color: '#000', fontWeight: '600', marginRight: 20, },
               }}
             >
-              ${item.total_price.toFixed(2)}
+              {item.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -838,7 +814,7 @@ export default function Home() {
                       </Text>
 
                       <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
-                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                        (Price per unit: £{dish.price_per_unit.toFixed(2)})
                       </Text>
                     </View>
                   </View>
@@ -895,7 +871,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.tax_amount}.00
+                £{item.tax_amount}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -907,7 +883,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.delivery_charge}.00
+                £{item.delivery_charge}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -919,7 +895,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.sub_total}.00
+                £{item.sub_total}.00
               </Text>
             </View>
             <View style={styles.detailsRow}>
@@ -931,7 +907,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.total_price.toFixed(2)}
+                £{item.total_price.toFixed(2)}
               </Text>
             </View>
 
@@ -1118,7 +1094,7 @@ export default function Home() {
                 ...{ color: '#000', fontWeight: '600', marginRight: 20, },
               }}
             >
-              ${item.total_price.toFixed(2)}
+              £{item.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -1179,7 +1155,7 @@ export default function Home() {
                       </Text>
 
                       <Text style={{ fontSize: 10, color: "#000", fontWeight: '500' }}>
-                        (Price per unit: ${dish.price_per_unit.toFixed(2)})
+                        (Price per unit: £{dish.price_per_unit.toFixed(2)})
                       </Text>
                     </View>
                   </View>
@@ -1236,7 +1212,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.tax_amount}.00
+                £{item.tax_amount}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -1248,7 +1224,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.delivery_charge}.00
+                £{item.delivery_charge}.00
               </Text>
             </View>
             <View style={[styles.detailsRow, { borderBottomWidth: 0, marginTop: 0 }]}>
@@ -1260,7 +1236,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20 },
                 }}
               >
-                ${item.sub_total}.00
+                £{item.sub_total}.00
               </Text>
             </View>
             <View style={styles.detailsRow}>
@@ -1272,7 +1248,7 @@ export default function Home() {
                   ...{ color: '#000', fontWeight: '600', marginRight: 20, },
                 }}
               >
-                ${item.total_price.toFixed(2)}
+                £{item.total_price.toFixed(2)}
               </Text>
             </View>
 

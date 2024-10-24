@@ -14,6 +14,7 @@ ADD_RESTAURANT_DETAILS = 'ADD_RESTAURANT_DETAILS',
   EditDish ='EditDish',
   Category='Category',
   Revenue='Revenue',
+  CheckApporve="CheckApporve",
 
   // Tab Screens
   HOME_SCREEN='HOME_SCREEN',

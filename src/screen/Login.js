@@ -22,6 +22,7 @@ import {login} from '../redux/feature/authSlice';
 import {CountryPicker} from 'react-native-country-codes-picker';
 import Loading from '../configs/Loader';
 import { errorToast } from '../configs/customToast';
+import useBackHandler from './useBackHandler';
 export default function Login() {
   const [identity, setIdentity] = useState();
   const [password, setPassword] = useState('');
@@ -118,42 +119,7 @@ errorToast(
   }
   };
 
-  const backAction = () => {
-    // Get the current route index using getState
-    const currentRouteIndex = navigation.getState().index;
-
-    if (currentRouteIndex === 0) {
-      // If the user is on the home screen, exit the app
-      Alert.alert("Exit App", "Do you want to exit?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() }
-      ]);
-      return true; // This prevents the default back behavior
-    } else {
-      // Navigate back if not on the home screen
-      Alert.alert("Exit App", "Do you want to exit?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() }
-      ]);
-
-      return true; // This prevents the default back behavior
-    }
-  };
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () =>
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }, []);
+  useBackHandler(navigation,'Home');
  
 
   return (
@@ -188,7 +154,7 @@ errorToast(
             countryCode={countryCode}
             PickCountry={setCountry}
             onChangeText={handleIdentityText}
-            placeholder={'Email Address / Mobile number'}
+            placeholder={'Email Address'}
             firstLogo={true}
             img={Number?require('../assets/croping/Phone3x.png'):require('../assets/croping/Emal3x.png')}
           />

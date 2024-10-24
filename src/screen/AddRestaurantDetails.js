@@ -189,6 +189,7 @@ export default function AddRestaurantDetails() {
           res_users_restaurants_id:user?.user_data?.useres_id,
         
         navigation: navigation,
+        firsTime:true
       };
       dispatch(update_restaurant_details(params)).then(res=>{
         const params = {

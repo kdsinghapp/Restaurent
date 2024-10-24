@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {CountryPicker} from 'react-native-country-codes-picker';
 import {register} from '../redux/feature/RegisterSlice';
 import Loading from '../configs/Loader';
+import useBackHandler from './useBackHandler';
 export default function SignUp() {
   const [isSelected, setSelection] = useState(false);
 
@@ -119,6 +120,8 @@ export default function SignUp() {
     dispatch(register(params));
 
   };
+  useBackHandler(navigation,'Signup');
+ 
 
   return (
     <View style={{flex: 1}}>
