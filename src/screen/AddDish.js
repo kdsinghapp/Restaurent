@@ -10,6 +10,8 @@ import {
   StyleSheet,
   PermissionsAndroid,
   Keyboard,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
@@ -148,13 +150,11 @@ export default function AddDish() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={{ height:-20 }} />
-        ) : (
-          <View style={{ height: 0 }} />
-          )}
+     
           <ProfileHeader name={'Add Dish'} Dwidth={'25%'} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <TouchableOpacity
@@ -266,6 +266,7 @@ export default function AddDish() {
 
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

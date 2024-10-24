@@ -10,6 +10,8 @@ import {
   StyleSheet,
   PermissionsAndroid,
   Pressable,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -173,6 +175,8 @@ export default function UpdateRestaurantDetails() {
 
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
 
@@ -251,6 +255,7 @@ export default function UpdateRestaurantDetails() {
       </>
       )}
     </View>
+    </SafeAreaView>
   );
 }
 

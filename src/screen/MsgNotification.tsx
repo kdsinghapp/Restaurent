@@ -9,6 +9,8 @@
       FlatList,
       ScrollView,
       Alert,
+      StatusBar,
+      SafeAreaView,
     } from 'react-native';
     import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
     import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -88,6 +90,8 @@ import ProfileHeader from './FeaturesScreen/ProfileHeader';
       );
     
       return (
+        <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+        <StatusBar   backgroundColor={'#fff'} />
         <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {isLoading?<Loading />:null}
@@ -109,6 +113,7 @@ import ProfileHeader from './FeaturesScreen/ProfileHeader';
             </View>
           </ScrollView>
         </View>
+        </SafeAreaView>
       );
     };
     

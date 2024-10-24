@@ -8,6 +8,8 @@ import {
   StyleSheet,
   Platform,
   Keyboard,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -89,7 +91,7 @@ export default function EditProfile() {
         console.log(err);
       });
   };
-
+console.log('getProfile',getProfile);
   const handleSave = () => {
 
     const data = new FormData();
@@ -126,6 +128,8 @@ export default function EditProfile() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -194,6 +198,7 @@ export default function EditProfile() {
         <View style={{ height:isKeyboardVisible?hp(23):23 }} />
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

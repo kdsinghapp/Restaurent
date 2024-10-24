@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet, ActivityIndicator, Platform, PermissionsAndroid, StatusBar, SafeAreaView } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -92,6 +92,8 @@ const TrackOrder = () => {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {dropLocation && driverLocation &&
 
@@ -147,6 +149,7 @@ const TrackOrder = () => {
           </TouchableOpacity>
         </ImageBackground>}
     </View>
+    </SafeAreaView>
   );
 };
 

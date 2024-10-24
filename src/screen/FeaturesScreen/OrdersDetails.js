@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -212,6 +214,9 @@ export default function OrdersDetails() {
     </View>
   );
   return (
+
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10}}>
     
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -233,6 +238,7 @@ export default function OrdersDetails() {
       </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   )
 }
 

@@ -8,6 +8,8 @@ import {
   TextInput,
   StyleSheet,
   FlatList,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React from 'react';
 import Loading from '../configs/Loader';
@@ -64,13 +66,11 @@ const navigation =useNavigation();
     }
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={{height: 68}} />
-      ) : (
-        <View style={{height: 10}} />
-      )}
+     
       <ScrollView showsVerticalScrollIndicator={false}>
         <TouchableOpacity
           onPress={() => {
@@ -153,6 +153,7 @@ onPress={()=>{
 </TouchableOpacity>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

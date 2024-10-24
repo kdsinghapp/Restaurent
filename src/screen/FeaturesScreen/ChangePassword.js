@@ -2,6 +2,8 @@ import {
   View,
   Text,
   TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, { useState } from 'react';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -39,7 +41,7 @@ export default function ChangePassword() {
       password: newPassword,
       c_password: confirmPassword,
       old_password: currentPassword,
-      user_id:user?.user_data.useres_id,
+      user_id: user?.user_data.useres_id,
       token: user?.token
     }
 
@@ -47,61 +49,64 @@ export default function ChangePassword() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 15 }}>
-      {isLoading ?<Loading />:null}
-      <ProfileHeader name={'Change Password'} Dwidth={'50%'} />
-      <View style={{ marginTop: 20 }}>
-        <TextInputField
-          hide={true}
-          onChangeText={handleCurrentPasswordChange}
-          isFocus={true}
-          name={'Current Password'}
-          placeholder={'Current Password'}
-          firstLogo={false}
-          showEye={true}
-          txtColor={'#7756FC'}
-        />
-      </View>
-      <View style={{ marginTop: 10 }}>
-        <TextInputField
-          hide={true}
-          onChangeText={handleNewPasswordChange}
-          isFocus={true}
-          name={'New Password'}
-          placeholder={'New Password'}
-          firstLogo={false}
-          showEye={true}
-          txtColor={'#7756FC'}
-        />
-      </View>
-      <View style={{ marginTop: 10 }}>
-        <TextInputField
-          hide={true}
-          onChangeText={handleConfirmPasswordChange}
-          isFocus={true}
-          name={'Confirm Password'}
-          placeholder={'Confirm Password'}
-          firstLogo={false}
-          showEye={true}
-          txtColor={'#7756FC'}
-        />
-      </View>
-      <TouchableOpacity
-        style={[styles.tabBtn, { position: 'absolute', bottom:30 }]}
-        onPress={handleSave}
-      >
-        <Text
-          style={{
-            fontWeight: '600',
-            fontSize: 17,
-            color: '#fff',
-            lineHeight: 25.5,
-            marginLeft: 10,
-          }}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <StatusBar backgroundColor={'#fff'} />
+      <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 15 }}>
+        {isLoading ? <Loading /> : null}
+        <ProfileHeader name={'Change Password'} Dwidth={'50%'} />
+        <View style={{ marginTop: 20 }}>
+          <TextInputField
+            hide={true}
+            onChangeText={handleCurrentPasswordChange}
+            isFocus={true}
+            name={'Current Password'}
+            placeholder={'Current Password'}
+            firstLogo={false}
+            showEye={true}
+            txtColor={'#7756FC'}
+          />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <TextInputField
+            hide={true}
+            onChangeText={handleNewPasswordChange}
+            isFocus={true}
+            name={'New Password'}
+            placeholder={'New Password'}
+            firstLogo={false}
+            showEye={true}
+            txtColor={'#7756FC'}
+          />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <TextInputField
+            hide={true}
+            onChangeText={handleConfirmPasswordChange}
+            isFocus={true}
+            name={'Confirm Password'}
+            placeholder={'Confirm Password'}
+            firstLogo={false}
+            showEye={true}
+            txtColor={'#7756FC'}
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.tabBtn, { position: 'absolute', bottom: 30 }]}
+          onPress={handleSave}
         >
-          Save
-        </Text>
-      </TouchableOpacity>
-    </View>
+          <Text
+            style={{
+              fontWeight: '600',
+              fontSize: 17,
+              color: '#fff',
+              lineHeight: 25.5,
+              marginLeft: 10,
+            }}
+          >
+            Save
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }

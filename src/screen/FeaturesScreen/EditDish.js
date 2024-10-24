@@ -9,6 +9,8 @@ import {
   TextInput,
   StyleSheet,
   Keyboard,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -136,13 +138,11 @@ const user = useSelector(state => state.auth.userData);
     await dispatch(get_restaurant_dish(params));
   };
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={styles.iosMargin} />
-      ) : (
-        <View style={styles.androidMargin} />
-      )}
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileHeader name={'Edit Dish'} Dwidth={'25%'} />
         <TouchableOpacity
@@ -258,6 +258,7 @@ const user = useSelector(state => state.auth.userData);
 
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

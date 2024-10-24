@@ -7,6 +7,8 @@ import {
   Platform,
   FlatList,
   StyleSheet,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import DatePicker from 'react-native-date-picker';
@@ -187,6 +189,8 @@ disabled={isEdit}
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
       
@@ -248,6 +252,7 @@ disabled={isEdit}
         onCancel={() => setDatePickerVisible(false)}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

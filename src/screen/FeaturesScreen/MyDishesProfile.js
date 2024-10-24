@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -131,6 +133,8 @@ const isFocus = useIsFocused()
 
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {isLoading ? <Loading /> : null}
@@ -173,6 +177,7 @@ const isFocus = useIsFocused()
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

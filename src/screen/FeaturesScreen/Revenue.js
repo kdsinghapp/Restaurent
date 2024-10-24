@@ -10,6 +10,8 @@
     StyleSheet,
     ImageBackground,
     Platform,
+    StatusBar,
+    SafeAreaView,
   } from 'react-native';
   import React, {useEffect, useState} from 'react';
   import {
@@ -210,13 +212,11 @@ errorToast("Insufficient Balance")
       );
     };
     return (
+      <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+      <StatusBar   backgroundColor={'#fff'} />
       <View style={{flex: 1, backgroundColor: '#FFF', paddingHorizontal: 15}}>
            <ScrollView showsVerticalScrollIndicator={false}>
-         {Platform.OS === 'ios' ? (
-          <View style={{ height:10,backgroundColor:'#fff' }} />
-        ) : (
-          <View style={{ height: 0 }} />
-        )}
+         
         <ProfileHeader name={'My Revenue'} />
         {isLoading?<Loading />:null}
         <View style={{marginTop: 30}}>
@@ -304,6 +304,7 @@ errorToast("Insufficient Balance")
   
         </ScrollView>
       </View>
+      </SafeAreaView>
     );
   }
   

@@ -7,6 +7,8 @@ import {
     Platform,
     TextInput,
     FlatList,
+    SafeAreaView,
+    StatusBar,
   } from 'react-native';
   import React from 'react';
   import Loading from '../configs/Loader';
@@ -21,13 +23,11 @@ import {
   export default function DishList() {
     const navigation = useNavigation();
     return (
+      <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+      <StatusBar   backgroundColor={'#fff'} />
       <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
         {false ? <Loading /> : null}
-        {Platform.OS === 'ios' ? (
-          <View style={{height: 68}} />
-        ) : (
-          <View style={{height:5}} />
-        )}
+       
         <ScrollView showsVerticalScrollIndicator={false}>
           <ProfileHeader name={'Dishes'} Dwidth={'25%'} />
         
@@ -58,6 +58,7 @@ import {
             </TouchableOpacity>
      
       </View>
+      </SafeAreaView>
     );
   }
   

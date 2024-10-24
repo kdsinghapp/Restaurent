@@ -7,6 +7,8 @@ import {
   Platform,
   FlatList,
   StyleSheet,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 
 import DatePicker from 'react-native-date-picker';
@@ -14,7 +16,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import ProfileHeader from './FeaturesScreen/ProfileHeader';
 import Loading from '../configs/Loader';
 import { useDispatch, useSelector } from 'react-redux';
-import { update_profile, update_restaurant_details } from '../redux/feature/featuresSlice';
+import { get_Profile, update_profile, update_restaurant_details } from '../redux/feature/featuresSlice';
 import messaging from '@react-native-firebase/messaging';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 export default function AddRestaurantDetails() {
@@ -188,18 +190,22 @@ export default function AddRestaurantDetails() {
         
         navigation: navigation,
       };
-      dispatch(update_restaurant_details(params));
+      dispatch(update_restaurant_details(params)).then(res=>{
+        const params = {
+          token: user.token,
+        };
+        dispatch(get_Profile(params));
+
+      })
     }
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={styles.iosHeader} />
-      ) : (
-        <View style={styles.androidHeader} />
-      )}
+     
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
         <View style={styles.formContainer}>
@@ -258,6 +264,7 @@ export default function AddRestaurantDetails() {
         onCancel={() => setDatePickerVisible(false)}
       />
     </View>
+    </SafeAreaView>
   );
 }
 

@@ -11,6 +11,8 @@ import {
   PermissionsAndroid,
   Alert,
   Linking,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import Loading from '../../configs/Loader';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -163,13 +165,11 @@ const isFocuse = useIsFocused()
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? (
-        <View style={styles.iosHeader} />
-      ) : (
-        <View style={styles.androidHeader} />
-      )}
+    
       <ProfileHeader name={'Restaurant Details'} Dwidth={'45%'} />
       <View >
         <GooglePlacesInput placeholder={restaurantLocation} onPlaceSelected={handleSelectLocation} />
@@ -242,6 +242,7 @@ const isFocuse = useIsFocused()
         </TouchableOpacity>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

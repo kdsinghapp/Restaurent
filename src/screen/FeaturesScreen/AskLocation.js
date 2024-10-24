@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, Platform, PermissionsAndroid, Alert, Linking, StyleSheet } from 'react-native'
+import { View, Text, Image, ScrollView, TouchableOpacity, Platform, PermissionsAndroid, Alert, Linking, StyleSheet, SafeAreaView, StatusBar } from 'react-native'
 import React, { useEffect } from 'react'
 
 
@@ -132,11 +132,11 @@ export default function AskLocation() {
 
 
   return (
-
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{ flex: 1, paddingHorizontal: 15, backgroundColor: '#fff' }}>
       {isLoading ? <Loading /> : null}
-      {Platform.OS === 'ios' ? <View style={{ height: 68 }} /> :
-        <View style={{ height: 20 }} />}
+
 
 
 
@@ -184,6 +184,7 @@ export default function AskLocation() {
 
 
     </View>
+    </SafeAreaView>
   )
 }
 

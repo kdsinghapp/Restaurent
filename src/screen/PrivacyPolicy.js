@@ -1,4 +1,4 @@
-import { View, Text,Image, StyleSheet,ScrollView,TouchableOpacity } from 'react-native'
+import { View, Text,Image, StyleSheet,ScrollView,TouchableOpacity, SafeAreaView, StatusBar } from 'react-native'
 import React, { useEffect } from 'react'
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
@@ -46,6 +46,8 @@ export default function PrivacyPolicy() {
 
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex:1,backgroundColor:'#fff',paddingHorizontal:15}}>
    {isLoading ? <Loading /> : null}
    <ProfileHeader  name={'Privacy Policy'} Dwidth={'40%'}/>
@@ -62,6 +64,7 @@ export default function PrivacyPolicy() {
         </View>
 
     </View>
+    </SafeAreaView>
   )
 }
 

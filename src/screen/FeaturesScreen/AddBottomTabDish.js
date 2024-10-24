@@ -7,6 +7,8 @@ import {
     Platform,
     TextInput,
     FlatList,
+    StatusBar,
+    SafeAreaView,
   } from 'react-native';
   import React from 'react';
 
@@ -22,13 +24,11 @@ import ScreenNameEnum from '../../routes/screenName.enum';
   export default function AddDishBottomTab() {
     const navigation = useNavigation();
     return (
+      <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+      <StatusBar   backgroundColor={'#fff'} />
       <View style={{flex: 1, paddingHorizontal: 10, backgroundColor: '#fff'}}>
         {false ? <Loading /> : null}
-        {Platform.OS === 'ios' ? (
-          <View style={{height: 68}} />
-        ) : (
-          <View style={{height: 10}} />
-        )}
+       
         <ScrollView showsVerticalScrollIndicator={false}>
           <ProfileHeader name={'Add Dish'} Dwidth={'25%'} />
           <TouchableOpacity
@@ -175,6 +175,7 @@ import ScreenNameEnum from '../../routes/screenName.enum';
           <View  style={{height:hp(3)}} />
         </ScrollView>
       </View>
+      </SafeAreaView>
     );
   }
   

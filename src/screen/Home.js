@@ -13,6 +13,8 @@ import {
   ActivityIndicator,
   BackHandler,
   Alert,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -1351,18 +1353,16 @@ export default function Home() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{ flex: 1, backgroundColor: '#FFF', paddingHorizontal: 10 }}>
 
-      {Platform.OS === 'ios' ? (
-        <View style={{ height: 20 }} />
-      ) : (
-        <View style={{ height: 0 }} />
-      )}
+     
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{
             flexDirection: 'row',
-            marginTop: 20,
+            marginTop:10,
             justifyContent: 'space-between',
             paddingHorizontal: 5,
           }}>
@@ -1509,6 +1509,7 @@ export default function Home() {
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

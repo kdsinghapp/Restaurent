@@ -9,6 +9,8 @@ import {
   Settings,
   ScrollView,
   Alert,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -97,14 +99,12 @@ const user = useSelector(state => state.auth.userData);
     );
   };
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex: 1, backgroundColor: '#fff', paddingHorizontal: 20}}>
       {isLoading ? <Loading /> : null}
 <ScrollView showsVerticalScrollIndicator={false}>
-      {Platform.OS === 'ios' ? (
-        <View style={{height: 68}} />
-      ) : (
-        <View style={{height: 10}} />
-      )}
+   
       <View style={{height: hp(5),marginTop:10}}>
         <Text
           style={{
@@ -315,6 +315,7 @@ const user = useSelector(state => state.auth.userData);
       </TouchableOpacity> */}
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

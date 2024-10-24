@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
@@ -79,6 +79,8 @@ export default function Category() {
 };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={styles.container}>
       {isLoading ? <Loading /> : null}
       <ProfileHeader name={'Category'} Dwidth={'25%'} />
@@ -107,6 +109,7 @@ export default function Category() {
       </View>
       )}
     </View>
+    </SafeAreaView>
   );
 }
 

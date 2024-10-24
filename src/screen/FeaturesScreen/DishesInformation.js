@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   ImageBackground,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import React, {useState} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -92,6 +94,8 @@ export default function DishInformation() {
   );
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{flex: 1}}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <ImageBackground
@@ -277,6 +281,7 @@ onPress={()=>{
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

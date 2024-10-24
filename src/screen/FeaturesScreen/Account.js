@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, Animated, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, Animated, KeyboardAvoidingView, Platform, Keyboard, SafeAreaView, StatusBar } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import ProfileHeader from './ProfileHeader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,24 +27,24 @@ export default function Account() {
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
-          'keyboardDidShow',
-          () => {
-            setKeyboardVisible(true); // Keyboard is open
-          }
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true); // Keyboard is open
+            }
         );
         const keyboardDidHideListener = Keyboard.addListener(
-          'keyboardDidHide',
-          () => {
-            setKeyboardVisible(false); // Keyboard is closed
-          }
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false); // Keyboard is closed
+            }
         );
-    
+
         // Clean up listeners on component unmount
         return () => {
-          keyboardDidHideListener.remove();
-          keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
         };
-      }, []);
+    }, []);
     useEffect(() => {
         getBankAccount();
         get_Profile_data()
@@ -111,7 +111,7 @@ export default function Account() {
 
         dispatch(update_profile(params)).then(res => {
             getBankAccount(),
-            get_Profile_data()
+                get_Profile_data()
         })
     };
 
@@ -137,34 +137,35 @@ export default function Account() {
             useNativeDriver: true,
         }).start();
     };
-   const get_Profile_data =() => {
+    const get_Profile_data = () => {
         const params = {
-          token: user.token,
+            token: user.token,
         };
         dispatch(get_Profile(params));
-      }
-    
-    return (
-        <View style={{ flex: 1, padding: 20 }}>
+    }
+
+    return (<SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <StatusBar backgroundColor={'#fff'} />
+        <View style={{ flex: 1, paddingHorizontal: 20 }}>
             {isLoading && <Loading />}
-            <ProfileHeader name={'Account'} />
+            <ProfileHeader name={'Account'}  Dwidth={'30%'}/>
             <ScrollView>
                 {accountList?.length > 0 ? (
                     accountList.map((details, index) => (
-                        <TouchableOpacity 
-                        onPress={() => {
-                            updateAccount(details?.account_id)
-                          
-                        }}
-                        key={index} style={styles.accountCard}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                updateAccount(details?.account_id)
+
+                            }}
+                            key={index} style={styles.accountCard}>
                             <View style={{ width: '90%' }}>
                                 <Text style={styles.cardTitle}>Account Details {index + 1}</Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Number :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_number}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Holder Name :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.account_name}</Text></Text>
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Sort Code :-<Text style={{ color: '#000', fontWeight: '700' }}> {details.sort_code}</Text></Text>
-                   
+
                                 <Text style={{ color: '#777777', fontWeight: '600' }}>Account Type :- <Text style={{ color: '#000', fontWeight: '700' }}>{details.account_type}</Text></Text>
-                                {getProfile?.account_id != details?.account_id &&  <TouchableOpacity
+                                {getProfile?.account_id != details?.account_id && <TouchableOpacity
                                     onPress={() => Remove_account(details.account_id)}
                                     style={[styles.deleteButton]}>
                                     <Text style={styles.deleteButtonText}>Delete Account</Text>
@@ -176,7 +177,7 @@ export default function Account() {
                                     status={getProfile?.account_id == details?.account_id ? 'checked' : 'unchecked'}
                                     onPress={() => {
                                         updateAccount(details?.account_id)
-                                      
+
                                     }}
                                 />
                             </View>
@@ -197,7 +198,7 @@ export default function Account() {
                     onRequestClose={hideAddAccountForm}
                 >
                     <Animated.View style={[styles.modalContainer, { transform: [{ translateY: slideAnim }] }]}>
-                        <KeyboardAvoidingView behavior={Platform.OS == 'android' ?  'height':'padding' }>
+                        <KeyboardAvoidingView behavior={Platform.OS == 'android' ? 'height' : 'padding'}>
                             <ScrollView contentContainerStyle={styles.modalScrollContainer}>
                                 <View style={styles.modalContent}>
                                     <Text style={styles.label}>Account Holder Name:</Text>
@@ -243,7 +244,7 @@ export default function Account() {
                                         <Text style={styles.tabBtnText}>Cancel</Text>
                                     </TouchableOpacity>
 
-                                    <View  style={{height:isKeyboardVisible?heightPercentageToDP(20):30}} />
+                                    <View style={{ height: isKeyboardVisible ? heightPercentageToDP(20) : 30 }} />
                                 </View>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -251,6 +252,7 @@ export default function Account() {
                 </Modal>
             </ScrollView>
         </View>
+    </SafeAreaView>
     );
 }
 
@@ -268,10 +270,10 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 5,
         marginBottom: 5,
-        paddingHorizontal:20,
-        height:50,
-        color:'#000',
-        fontWeight:'500'
+        paddingHorizontal: 20,
+        height: 50,
+        color: '#000',
+        fontWeight: '500'
     },
     accountCard: {
         flexDirection: 'row',
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
-        color:'#000'
+        color: '#000'
     },
     deleteButton: {
         marginTop: 15,

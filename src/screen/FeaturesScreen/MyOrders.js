@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -448,6 +450,8 @@ const [isLoading,setisLoading] = useState(false)
   };
 
   return (
+    <SafeAreaView style={{ flex: 1,backgroundColor:'#fff' }}>
+    <StatusBar   backgroundColor={'#fff'} />
     <View style={{ paddingHorizontal: 15, flex: 1, backgroundColor: '#FFFFFF' }}>
       {isLoading ?<Loading />:null}
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -559,6 +563,7 @@ const [isLoading,setisLoading] = useState(false)
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

@@ -1,4 +1,4 @@
-import { View, Text, Platform,TouchableOpacity,Image } from 'react-native'
+import { View, Text, Platform,TouchableOpacity,Image, SafeAreaView, StatusBar } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -8,15 +8,12 @@ export default function ProfileHeader({name,Dwidth}) {
     const navigation  = useNavigation();
 
   return (
+
     <View >
-         {Platform.OS === 'ios' ? (
-          <View style={{height:45}} />
-        ) : (
-          <View style={{height:10}} />
-        )}
+        
         <View
           style={{
-            height: hp(7),
+          paddingBottom:hp(3),
             alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -46,5 +43,6 @@ export default function ProfileHeader({name,Dwidth}) {
           </View>
         </View>
     </View>
+ 
   )
 }
