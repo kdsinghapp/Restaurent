@@ -182,7 +182,7 @@ export default function AddRestaurantDetails() {
           res_monday_close: closeTimes.Monday,
           res_tuesday_close: closeTimes.Tuesday,
           res_wednesday_close: closeTimes.Wednesday,
-          res_thursday_close: closeTimes.ThursThursday,
+          res_thursday_close: closeTimes.Thursday,
           res_friday_close: closeTimes.Friday,
           res_saturday_close: closeTimes.Saturday,
           res_sunday_close: closeTimes.Sunday,
